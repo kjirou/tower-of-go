@@ -9,9 +9,9 @@ import (
 )
 
 type FieldElement struct {
-	Y int
-	X int
 	Symbol string
+	X int
+	Y int
 }
 
 type FieldMatrix [][]FieldElement
@@ -22,9 +22,9 @@ func createFieldMatrix(y int, x int) FieldMatrix {
 		row := make([]FieldElement, x)
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
 			row[columnIndex] = FieldElement{
-				rowIndex,
-				columnIndex,
-				".",
+				Y: rowIndex,
+				X: columnIndex,
+				Symbol: ".",
 			}
 		}
 		matrix[rowIndex] = row
@@ -50,7 +50,7 @@ func renderFieldMatrix(fieldMatrix FieldMatrix) string {
 	lines := make([]string, y)
 	for rowIndex := 0; rowIndex < y; rowIndex++ {
 		line := ""
-		// Use mapping method
+		// TODO: Use mapping method
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
 			line += renderFieldElement(fieldMatrix[rowIndex][columnIndex])
 		}
