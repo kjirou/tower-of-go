@@ -8,10 +8,36 @@ import (
 	"strings"
 )
 
+type FieldObject struct {
+	// TODO: Enumerize
+	Class string
+}
+
+func (fo FieldObject) render() string {
+	switch fo.Class {
+		case "empty":
+			return ""
+		case "hero":
+			return "@"
+		case "wall":
+			return "#"
+		default:
+			return "?"
+	}
+}
+
 type FieldElement struct {
-	Symbol string
+	Object FieldObject
 	X int
 	Y int
+}
+
+func (fe FieldElement) render() string {
+	output := fe.Object.render()
+	if output == "" {
+		output = "."
+	}
+	return output
 }
 
 type FieldMatrix [][]FieldElement
@@ -21,10 +47,14 @@ func createFieldMatrix(y int, x int) FieldMatrix {
 	for rowIndex := 0; rowIndex < y; rowIndex++ {
 		row := make([]FieldElement, x)
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
+			// TODO: Embed into the following FieldElement initialization
+			fieldObject := FieldObject{
+				Class: "empty",
+			}
 			row[columnIndex] = FieldElement{
 				Y: rowIndex,
 				X: columnIndex,
-				Symbol: ".",
+				Object: fieldObject,
 			}
 		}
 		matrix[rowIndex] = row
@@ -40,10 +70,6 @@ func measureFieldMatrixX(fieldMatrix FieldMatrix) int {
 	return len(fieldMatrix[0])
 }
 
-func renderFieldElement(fieldElement FieldElement) string {
-	return fieldElement.Symbol
-}
-
 func renderFieldMatrix(fieldMatrix FieldMatrix) string {
 	y := measureFieldMatrixY(fieldMatrix)
 	x := measureFieldMatrixX(fieldMatrix)
@@ -52,7 +78,7 @@ func renderFieldMatrix(fieldMatrix FieldMatrix) string {
 		line := ""
 		// TODO: Use mapping method
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
-			line += renderFieldElement(fieldMatrix[rowIndex][columnIndex])
+			line += fieldMatrix[rowIndex][columnIndex].render()
 		}
 		lines[rowIndex] = line
 	}
