@@ -97,6 +97,9 @@ func main() {
 	state := State{
 		fieldMatrix: createFieldMatrix(12, 20),
 	}
+	state.fieldMatrix[1][2].Object = FieldObject{
+		Class: "hero",
+	}
 	output := render(state)
 	fmt.Println(output)
 }
