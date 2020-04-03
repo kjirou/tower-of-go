@@ -13,34 +13,17 @@ type FieldObject struct {
 	Class string
 }
 
-func (fo FieldObject) render() string {
-	switch fo.Class {
-		case "empty":
-			return ""
-		case "hero":
-			return "@"
-		case "wall":
-			return "#"
-		default:
-			return "?"
-	}
-}
-
 type FieldElement struct {
 	Object FieldObject
 	X int
 	Y int
 }
 
-func (fe FieldElement) render() string {
-	output := fe.Object.render()
-	if output == "" {
-		output = "."
-	}
-	return output
-}
-
 type FieldMatrix [][]FieldElement
+
+type State struct {
+	fieldMatrix FieldMatrix
+}
 
 func createFieldMatrix(y int, x int) FieldMatrix {
 	matrix := make(FieldMatrix, y)
@@ -70,6 +53,27 @@ func measureFieldMatrixX(fieldMatrix FieldMatrix) int {
 	return len(fieldMatrix[0])
 }
 
+func renderFieldObject(fo FieldObject) string {
+	switch fo.Class {
+		case "empty":
+			return ""
+		case "hero":
+			return "@"
+		case "wall":
+			return "#"
+		default:
+			return "?"
+	}
+}
+
+func renderFieldElement(fe FieldElement) string {
+	output := renderFieldObject(fe.Object)
+	if output == "" {
+		output = "."
+	}
+	return output
+}
+
 func renderFieldMatrix(fieldMatrix FieldMatrix) string {
 	y := measureFieldMatrixY(fieldMatrix)
 	x := measureFieldMatrixX(fieldMatrix)
@@ -78,15 +82,21 @@ func renderFieldMatrix(fieldMatrix FieldMatrix) string {
 		line := ""
 		// TODO: Use mapping method
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
-			line += fieldMatrix[rowIndex][columnIndex].render()
+			line += renderFieldElement(fieldMatrix[rowIndex][columnIndex])
 		}
 		lines[rowIndex] = line
 	}
 	return strings.Join(lines, "\n")
 }
 
+func render(state State) string {
+	return renderFieldMatrix(state.fieldMatrix)
+}
+
 func main() {
-	fieldMatrix := createFieldMatrix(12, 20)
-	output := renderFieldMatrix(fieldMatrix)
+	state := State{
+		fieldMatrix: createFieldMatrix(12, 20),
+	}
+	output := render(state)
 	fmt.Println(output)
 }
