@@ -106,8 +106,6 @@ func createFieldMatrix(y int, x int) FieldMatrix {
 
 func renderFieldObject(fo FieldObject) string {
 	switch fo.Class {
-		case "empty":
-			return ""
 		case "hero":
 			return "@"
 		case "wall":
@@ -118,11 +116,10 @@ func renderFieldObject(fo FieldObject) string {
 }
 
 func renderFieldElement(fe FieldElement) string {
-	output := renderFieldObject(fe.Object)
-	if output == "" {
-		output = "."
+	if fe.Object.IsEmpty() {
+		return "."
 	}
-	return output
+	return renderFieldObject(fe.Object)
 }
 
 func renderFieldMatrix(fieldMatrix FieldMatrix) string {
