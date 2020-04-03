@@ -12,6 +12,11 @@ import (
 // Model
 // -----
 
+type FieldPosition struct {
+	X int
+	Y int
+}
+
 type FieldObject struct {
 	// TODO: Enumerize
 	Class string
@@ -19,8 +24,7 @@ type FieldObject struct {
 
 type FieldElement struct {
 	Object FieldObject
-	X int
-	Y int
+	Position FieldPosition
 }
 
 type FieldMatrix [][]FieldElement
@@ -43,12 +47,15 @@ func createFieldMatrix(y int, x int) FieldMatrix {
 		row := make([]FieldElement, x)
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
 			// TODO: Embed into the following FieldElement initialization
+			fieldPosition := FieldPosition{
+				Y: rowIndex,
+				X: columnIndex,
+			}
 			fieldObject := FieldObject{
 				Class: "empty",
 			}
 			row[columnIndex] = FieldElement{
-				Y: rowIndex,
-				X: columnIndex,
+				Position: fieldPosition,
 				Object: fieldObject,
 			}
 		}
