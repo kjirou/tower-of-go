@@ -25,6 +25,14 @@ type FieldElement struct {
 
 type FieldMatrix [][]FieldElement
 
+func (fm FieldMatrix) measureY() int {
+	return len(fm)
+}
+
+func (fm FieldMatrix) measureX() int {
+	return len(fm[0])
+}
+
 type State struct {
 	fieldMatrix FieldMatrix
 }
@@ -47,14 +55,6 @@ func createFieldMatrix(y int, x int) FieldMatrix {
 		matrix[rowIndex] = row
 	}
 	return matrix
-}
-
-func measureFieldMatrixY(fieldMatrix FieldMatrix) int {
-	return len(fieldMatrix)
-}
-
-func measureFieldMatrixX(fieldMatrix FieldMatrix) int {
-	return len(fieldMatrix[0])
 }
 
 // View
@@ -82,8 +82,8 @@ func renderFieldElement(fe FieldElement) string {
 }
 
 func renderFieldMatrix(fieldMatrix FieldMatrix) string {
-	y := measureFieldMatrixY(fieldMatrix)
-	x := measureFieldMatrixX(fieldMatrix)
+	y := fieldMatrix.measureY()
+	x := fieldMatrix.measureX()
 	lines := make([]string, y)
 	for rowIndex := 0; rowIndex < y; rowIndex++ {
 		line := ""
