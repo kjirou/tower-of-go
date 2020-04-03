@@ -22,6 +22,10 @@ type FieldObject struct {
 	Class string
 }
 
+func (fo FieldObject) IsEmpty() bool {
+	return fo.Class == "empty"
+}
+
 type FieldElement struct {
 	Object FieldObject
 	Position FieldPosition
@@ -29,12 +33,45 @@ type FieldElement struct {
 
 type FieldMatrix [][]FieldElement
 
-func (fm FieldMatrix) measureY() int {
-	return len(fm)
+func (fm *FieldMatrix) MeasureY() int {
+	return len(*fm)
 }
 
-func (fm FieldMatrix) measureX() int {
-	return len(fm[0])
+func (fm *FieldMatrix) MeasureX() int {
+	return len((*fm)[0])
+}
+
+func (fm *FieldMatrix) At(fp FieldPosition) (*FieldElement, error) {
+	// TODO: Is it correct? Should it return nil?
+	notFound := FieldElement{}
+	if fp.Y < 0 || fp.Y > fm.MeasureY() {
+		return &notFound, fmt.Errorf("That position (Y=%d) does not exist on the field-matrix.", fp.Y)
+	} else if fp.X < 0 || fp.X > fm.MeasureX() {
+		return &notFound, fmt.Errorf("That position (X=%d) does not exist on the field-matrix.", fp.X)
+	}
+	return &((*fm)[fp.Y][fp.X]), nil
+}
+
+func (fm *FieldMatrix) MoveObject(from FieldPosition, to FieldPosition) error {
+	fromElement, fromErr := fm.At(from)
+	if fromErr != nil {
+		return fromErr
+	}
+	if fromElement.Object.IsEmpty() {
+		return fmt.Errorf("The object to be moved does not exist.")
+	}
+	toElement, toErr := fm.At(to)
+	if toErr != nil {
+		return toErr
+	}
+	if toElement.Object.IsEmpty() == false {
+		return fmt.Errorf("An object exists at the destination.")
+	}
+	toElement.Object = fromElement.Object
+	fromElement.Object = FieldObject{
+		Class: "empty",
+	}
+	return nil
 }
 
 type State struct {
@@ -89,8 +126,8 @@ func renderFieldElement(fe FieldElement) string {
 }
 
 func renderFieldMatrix(fieldMatrix FieldMatrix) string {
-	y := fieldMatrix.measureY()
-	x := fieldMatrix.measureX()
+	y := fieldMatrix.MeasureY()
+	x := fieldMatrix.MeasureX()
 	lines := make([]string, y)
 	for rowIndex := 0; rowIndex < y; rowIndex++ {
 		line := ""
@@ -117,6 +154,8 @@ func main() {
 	state.fieldMatrix[1][2].Object = FieldObject{
 		Class: "hero",
 	}
+	moveErr := state.fieldMatrix.MoveObject(FieldPosition{Y: 1, X: 2}, FieldPosition{Y: 1, X: 5})
+	fmt.Println(moveErr)
 	output := render(state)
 	fmt.Println(output)
 }
