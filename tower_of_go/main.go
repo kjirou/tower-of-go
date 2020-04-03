@@ -22,7 +22,7 @@ type FieldObject struct {
 	Class string
 }
 
-func (fo FieldObject) IsEmpty() bool {
+func (fo *FieldObject) IsEmpty() bool {
 	return fo.Class == "empty"
 }
 
