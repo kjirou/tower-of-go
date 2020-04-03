@@ -2,11 +2,15 @@ package main
 
 // TODO:
 // - gofmt
+// - Separate to modules
 
 import (
 	"fmt"
 	"strings"
 )
+
+// Model
+// -----
 
 type FieldObject struct {
 	// TODO: Enumerize
@@ -53,6 +57,9 @@ func measureFieldMatrixX(fieldMatrix FieldMatrix) int {
 	return len(fieldMatrix[0])
 }
 
+// View
+// ----
+
 func renderFieldObject(fo FieldObject) string {
 	switch fo.Class {
 		case "empty":
@@ -92,6 +99,9 @@ func renderFieldMatrix(fieldMatrix FieldMatrix) string {
 func render(state State) string {
 	return renderFieldMatrix(state.fieldMatrix)
 }
+
+// Main Process
+// ------------
 
 func main() {
 	state := State{
