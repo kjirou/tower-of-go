@@ -107,6 +107,62 @@ func createFieldMatrix(y int, x int) FieldMatrix {
 // View
 // ----
 
+const blankRune rune = 0x0020  // " "
+const sharpRune rune = 0x0023  // "#"
+const plusRune rune = 0x002b  // "+"
+const dotRune rune = 0x002e  // "."
+const atRune rune = 0x0040  // "@"
+
+type ScreenElement struct {
+	character rune
+	//foregroundColor
+	//backgroundColor
+}
+
+// A layer that avoid to write logics tightly coupled with "termbox".
+type Screen struct {
+	matrix [][]ScreenElement
+}
+
+func (s *Screen) MeasureRowLength() int {
+	return len(s.matrix)
+}
+
+func (s *Screen) MeasureColumnLength() int {
+	return len(s.matrix[0])
+}
+
+func (s *Screen) AsText() string {
+	rowLength := s.MeasureRowLength()
+	columnLength := s.MeasureColumnLength()
+	lines := make([]string, rowLength)
+	for rowIndex := 0; rowIndex < rowLength; rowIndex++ {
+		line := make([]rune, columnLength)
+		// TODO: Use mapping method
+		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
+			line[columnIndex] = s.matrix[rowIndex][columnIndex].character
+		}
+		lines[rowIndex] = string(line)
+	}
+	return strings.Join(lines, "\n")
+}
+
+func createScreen(rowLength int, columnLength int) Screen {
+	matrix := make([][]ScreenElement, rowLength)
+	for rowIndex := 0; rowIndex < rowLength; rowIndex++ {
+		row := make([]ScreenElement, columnLength)
+		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
+			row[columnIndex] = ScreenElement{
+				character: dotRune,
+			}
+		}
+		matrix[rowIndex] = row
+	}
+	return Screen{
+		matrix: matrix,
+	}
+}
+
 func renderFieldObject(fo *FieldObject) string {
 	switch fo.Class {
 		case "hero":
@@ -140,14 +196,14 @@ func renderFieldMatrix(fieldMatrix FieldMatrix) string {
 	return strings.Join(lines, "\n")
 }
 
-func render(state *State) string {
-	return renderFieldMatrix(state.fieldMatrix)
+func render(screen *Screen, state *State) error {
+//	screenRowLength := screen.MeasureRowLength()
+//	screenColumnLength := screen.MeasureColumnLength()
+	return nil
 }
 
 // Main Process
 // ------------
-
-const plusRune rune = 0x002b  // "+"
 
 func runTermbox(initialOutput string) error {
 	termboxErr := termbox.Init()
@@ -182,13 +238,15 @@ func main() {
 	state.fieldMatrix[1][2].Object = FieldObject{
 		Class: "hero",
 	}
-	moveErr := state.fieldMatrix.MoveObject(FieldPosition{Y: 1, X: 2}, FieldPosition{Y: 1, X: 5})
-	fmt.Println(moveErr)
-	output := render(&state)
-	fmt.Println(output)
+
+	screen := createScreen(24 + 2, 80 + 2)
+
+	state.fieldMatrix.MoveObject(FieldPosition{Y: 1, X: 2}, FieldPosition{Y: 1, X: 5})
+
+	render(&screen, &state)
 
 	if doesRunTermbox {
-		termboxErr := runTermbox(output)
+		termboxErr := runTermbox("")
 		if termboxErr != nil {
 			panic(termboxErr)
 		}
@@ -205,5 +263,7 @@ func main() {
 			}
 		}
 		defer termbox.Close()
+	} else {
+		fmt.Println(screen.AsText())
 	}
 }
