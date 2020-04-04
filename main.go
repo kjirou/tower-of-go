@@ -107,6 +107,7 @@ func createFieldMatrix(y int, x int) FieldMatrix {
 // View
 // ----
 
+// TODO: Combine them into one `map[string]rune`.
 const blankRune rune = 0x0020  // " "
 const sharpRune rune = 0x0023  // "#"
 const plusRune rune = 0x002b  // "+"
