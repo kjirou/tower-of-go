@@ -128,6 +128,21 @@ type ScreenElement struct {
 	//backgroundColor
 }
 
+func (se *ScreenElement) renderWithFieldElement(fieldElement *FieldElement) {
+	symbol := dotRune
+	if !fieldElement.Object.IsEmpty() {
+		switch fieldElement.Object.Class {
+			case "hero":
+				symbol = atRune
+			case "wall":
+				symbol = sharpRune
+			default:
+				symbol = questionRune
+		}
+	}
+	se.character = symbol
+}
+
 // A layer that avoid to write logics tightly coupled with "termbox".
 type Screen struct {
 	matrix [][]ScreenElement
@@ -150,6 +165,48 @@ func (s *Screen) At(position ScreenPosition) (*ScreenElement, error) {
 		return &notFound, fmt.Errorf("That position (X=%d) does not exist on the screen-matrix.", position.X)
 	}
 	return &(s.matrix[position.Y][position.X]), nil
+}
+
+func (s *Screen) renderWithFieldMatrix(startPosition ScreenPosition, fieldMatrix FieldMatrix) {
+	rowLength := fieldMatrix.MeasureY()
+	columnLength := fieldMatrix.MeasureX()
+	for y := 0; y < rowLength; y++ {
+		for x := 0; x < columnLength; x++ {
+			position := ScreenPosition{
+				Y: startPosition.Y + y,
+				X: startPosition.X + x,
+			}
+			// TODO: Error handling.
+			element, _ := s.At(position)
+			element.renderWithFieldElement(&(fieldMatrix[y][x]))
+		}
+	}
+}
+
+func (s *Screen) render(state *State) {
+	rowLength := s.MeasureRowLength()
+	columnLength := s.MeasureColumnLength()
+
+	// Set borders on the screen.
+	for y := 0; y < rowLength; y++ {
+		for x := 0; x < columnLength; x++ {
+			isTopOrBottomEdge := y == 0 || y == rowLength - 1
+			isLeftOrRightEdge := x == 0 || x == columnLength - 1
+			character := blankRune
+			switch {
+			case isTopOrBottomEdge && isLeftOrRightEdge:
+				character = plusRune
+			case isTopOrBottomEdge && !isLeftOrRightEdge:
+				character = hyphenRune
+			case !isTopOrBottomEdge && isLeftOrRightEdge:
+				character = virticalBarRune
+			}
+			s.matrix[y][x].character = character
+		}
+	}
+
+	// Place the field.
+	s.renderWithFieldMatrix(ScreenPosition{Y: 1, X: 1}, state.fieldMatrix)
 }
 
 func (s *Screen) AsText() string {
@@ -181,65 +238,6 @@ func createScreen(rowLength int, columnLength int) Screen {
 	return Screen{
 		matrix: matrix,
 	}
-}
-
-func renderFieldElement(screenElement *ScreenElement, fieldElement *FieldElement) {
-	symbol := dotRune
-	if !fieldElement.Object.IsEmpty() {
-		switch fieldElement.Object.Class {
-			case "hero":
-				symbol = atRune
-			case "wall":
-				symbol = sharpRune
-			default:
-				symbol = questionRune
-		}
-	}
-	screenElement.character = symbol
-}
-
-func renderFieldMatrix(screen *Screen, startPosition ScreenPosition, fieldMatrix FieldMatrix) {
-	rowLength := fieldMatrix.MeasureY()
-	columnLength := fieldMatrix.MeasureX()
-	for y := 0; y < rowLength; y++ {
-		for x := 0; x < columnLength; x++ {
-			position := ScreenPosition{
-				Y: startPosition.Y + y,
-				X: startPosition.X + x,
-			}
-			// TODO: Error handling.
-			element, _ := screen.At(position)
-			renderFieldElement(element, &(fieldMatrix[y][x]))
-		}
-	}
-}
-
-func render(screen *Screen, state *State) error {
-	rowLength := screen.MeasureRowLength()
-	columnLength := screen.MeasureColumnLength()
-
-	// Set borders on the screen.
-	for y := 0; y < rowLength; y++ {
-		for x := 0; x < columnLength; x++ {
-			isTopOrBottomEdge := y == 0 || y == rowLength - 1
-			isLeftOrRightEdge := x == 0 || x == columnLength - 1
-			character := blankRune
-			switch {
-			case isTopOrBottomEdge && isLeftOrRightEdge:
-				character = plusRune
-			case isTopOrBottomEdge && !isLeftOrRightEdge:
-				character = hyphenRune
-			case !isTopOrBottomEdge && isLeftOrRightEdge:
-				character = virticalBarRune
-			}
-			screen.matrix[y][x].character = character
-		}
-	}
-
-	// Place the field.
-	renderFieldMatrix(screen, ScreenPosition{Y: 1, X: 1}, state.fieldMatrix)
-
-	return nil
 }
 
 // Main Process
@@ -283,7 +281,7 @@ func main() {
 
 	state.fieldMatrix.MoveObject(FieldPosition{Y: 1, X: 2}, FieldPosition{Y: 1, X: 5})
 
-	render(&screen, &state)
+	screen.render(&state)
 
 	if doesRunTermbox {
 		termboxErr := runTermbox("")
