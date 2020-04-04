@@ -38,20 +38,20 @@ type Field struct {
 	matrix [][]FieldElement
 }
 
-func (field *Field) MeasureY() int {
+func (field *Field) MeasureRowLength() int {
 	return len(field.matrix)
 }
 
-func (field *Field) MeasureX() int {
+func (field *Field) MeasureColumnLength() int {
 	return len(field.matrix[0])
 }
 
 func (field *Field) At(position FieldPosition) (*FieldElement, error) {
 	// TODO: Is it correct? Should it return nil?
 	notFound := FieldElement{}
-	if position.Y < 0 || position.Y > field.MeasureY() {
+	if position.Y < 0 || position.Y > field.MeasureRowLength() {
 		return &notFound, fmt.Errorf("That position (Y=%d) does not exist on the field-matrix.", position.Y)
-	} else if position.X < 0 || position.X > field.MeasureX() {
+	} else if position.X < 0 || position.X > field.MeasureColumnLength() {
 		return &notFound, fmt.Errorf("That position (X=%d) does not exist on the field-matrix.", position.X)
 	}
 	return &(field.matrix[position.Y][position.X]), nil
@@ -172,8 +172,8 @@ func (s *Screen) At(position ScreenPosition) (*ScreenElement, error) {
 }
 
 func (s *Screen) renderField(startPosition ScreenPosition, field Field) {
-	rowLength := field.MeasureY()
-	columnLength := field.MeasureX()
+	rowLength := field.MeasureRowLength()
+	columnLength := field.MeasureColumnLength()
 	for y := 0; y < rowLength; y++ {
 		for x := 0; x < columnLength; x++ {
 			position := ScreenPosition{
