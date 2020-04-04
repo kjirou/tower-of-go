@@ -72,7 +72,7 @@ func (field *Field) MoveObject(from FieldPosition, to FieldPosition) error {
 }
 
 type State struct {
-	field Field
+	Field Field
 }
 
 func createField(y int, x int) Field {
@@ -199,7 +199,7 @@ func (s *Screen) render(state *State) {
 	}
 
 	// Place the field.
-	s.renderField(ScreenPosition{Y: 1, X: 1}, state.field)
+	s.renderField(ScreenPosition{Y: 1, X: 1}, state.Field)
 }
 
 func (s *Screen) AsText() string {
@@ -280,21 +280,21 @@ func main() {
 	}
 
 	state := State{
-		field: createField(12, 20),
+		Field: createField(12, 20),
 	}
 
 	// Dummy data
-	state.field.At(FieldPosition{Y: 2, X: 5}).Object = FieldObject{
+	state.Field.At(FieldPosition{Y: 2, X: 5}).Object = FieldObject{
 		Class: "hero",
 	}
-	fieldRowLength := state.field.MeasureRowLength()
-	fieldColumnLength := state.field.MeasureColumnLength()
+	fieldRowLength := state.Field.MeasureRowLength()
+	fieldColumnLength := state.Field.MeasureColumnLength()
 	for y := 0; y < fieldRowLength; y++ {
 		for x := 0; x < fieldColumnLength; x++ {
 			isTopOrBottomEdge := y == 0 || y == fieldRowLength - 1
 			isLeftOrRightEdge := x == 0 || x == fieldColumnLength - 1
 			if isTopOrBottomEdge || isLeftOrRightEdge {
-				state.field.At(FieldPosition{Y: y, X: x}).Object = FieldObject{
+				state.Field.At(FieldPosition{Y: y, X: x}).Object = FieldObject{
 					Class: "wall",
 				}
 			}
