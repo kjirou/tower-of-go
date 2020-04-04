@@ -236,20 +236,22 @@ func createScreen(rowLength int, columnLength int) Screen {
 // Main Process
 // ------------
 
-func runTermbox(initialOutput string) error {
+func drawTerminal(screen *Screen) {
+	for y, row := range screen.matrix {
+		for x, screenElement := range row {
+			termbox.SetCell(x, y, screenElement.character, termbox.ColorWhite, termbox.ColorBlack)
+		}
+	}
+	termbox.Flush()
+}
+
+func initializeTermbox(screen *Screen) error {
 	termboxErr := termbox.Init()
 	if termboxErr != nil {
 		return termboxErr
 	}
-
 	termbox.SetInputMode(termbox.InputEsc)
-
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-
-	termbox.SetCell(0, 0, plusRune, termbox.ColorWhite, termbox.ColorBlack)
-
-	termbox.Flush()
-
 	return nil
 }
 
@@ -272,15 +274,18 @@ func main() {
 	screen.render(&state)
 
 	if doesRunTermbox {
-		termboxErr := runTermbox("")
+		termboxErr := initializeTermbox(&screen)
 		if termboxErr != nil {
 			panic(termboxErr)
 		}
-		// TODO: Can it move into the runTermbox?
+		defer termbox.Close()
+
+		drawTerminal(&screen)
+
+		// TODO: Can it move into the initializeTermbox?
 		didQuitApplication := false
 		for didQuitApplication == false {
 			event := termbox.PollEvent()
-			fmt.Println(event.Type)
 			switch event.Type {
 			case termbox.EventKey:
 				if event.Key == termbox.KeyCtrlC || event.Key == termbox.KeyCtrlQ {
@@ -288,7 +293,6 @@ func main() {
 				}
 			}
 		}
-		defer termbox.Close()
 	} else {
 		fmt.Println(screen.AsText())
 	}
