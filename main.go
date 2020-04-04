@@ -111,8 +111,10 @@ func createFieldMatrix(y int, x int) FieldMatrix {
 const blankRune rune = 0x0020  // " "
 const sharpRune rune = 0x0023  // "#"
 const plusRune rune = 0x002b  // "+"
+const hyphenRune rune = 0x002d  // "-"
 const dotRune rune = 0x002e  // "."
 const atRune rune = 0x0040  // "@"
+const virticalBarRune rune = 0x007C  // "|"
 
 type ScreenElement struct {
 	character rune
@@ -198,8 +200,27 @@ func renderFieldMatrix(fieldMatrix FieldMatrix) string {
 }
 
 func render(screen *Screen, state *State) error {
-//	screenRowLength := screen.MeasureRowLength()
-//	screenColumnLength := screen.MeasureColumnLength()
+	rowLength := screen.MeasureRowLength()
+	columnLength := screen.MeasureColumnLength()
+
+	// Set borders on the screen.
+	for y := 0; y < rowLength; y++ {
+		for x := 0; x < columnLength; x++ {
+			isTopOrBottomEdge := y == 0 || y == rowLength - 1
+			isLeftOrRightEdge := x == 0 || x == columnLength - 1
+			character := blankRune
+			switch {
+			case isTopOrBottomEdge && isLeftOrRightEdge:
+				character = plusRune
+			case isTopOrBottomEdge && !isLeftOrRightEdge:
+				character = hyphenRune
+			case !isTopOrBottomEdge && isLeftOrRightEdge:
+				character = virticalBarRune
+			}
+			screen.matrix[y][x].character = character
+		}
+	}
+
 	return nil
 }
 
