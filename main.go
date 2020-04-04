@@ -34,36 +34,38 @@ type FieldElement struct {
 	Position FieldPosition
 }
 
-type FieldMatrix [][]FieldElement
-
-func (fm *FieldMatrix) MeasureY() int {
-	return len(*fm)
+type Field struct {
+	matrix [][]FieldElement
 }
 
-func (fm *FieldMatrix) MeasureX() int {
-	return len((*fm)[0])
+func (field *Field) MeasureY() int {
+	return len(field.matrix)
 }
 
-func (fm *FieldMatrix) At(fp FieldPosition) (*FieldElement, error) {
+func (field *Field) MeasureX() int {
+	return len(field.matrix[0])
+}
+
+func (field *Field) At(position FieldPosition) (*FieldElement, error) {
 	// TODO: Is it correct? Should it return nil?
 	notFound := FieldElement{}
-	if fp.Y < 0 || fp.Y > fm.MeasureY() {
-		return &notFound, fmt.Errorf("That position (Y=%d) does not exist on the field-matrix.", fp.Y)
-	} else if fp.X < 0 || fp.X > fm.MeasureX() {
-		return &notFound, fmt.Errorf("That position (X=%d) does not exist on the field-matrix.", fp.X)
+	if position.Y < 0 || position.Y > field.MeasureY() {
+		return &notFound, fmt.Errorf("That position (Y=%d) does not exist on the field-matrix.", position.Y)
+	} else if position.X < 0 || position.X > field.MeasureX() {
+		return &notFound, fmt.Errorf("That position (X=%d) does not exist on the field-matrix.", position.X)
 	}
-	return &((*fm)[fp.Y][fp.X]), nil
+	return &(field.matrix[position.Y][position.X]), nil
 }
 
-func (fm *FieldMatrix) MoveObject(from FieldPosition, to FieldPosition) error {
-	fromElement, fromErr := fm.At(from)
+func (field *Field) MoveObject(from FieldPosition, to FieldPosition) error {
+	fromElement, fromErr := field.At(from)
 	if fromErr != nil {
 		return fromErr
 	}
 	if fromElement.Object.IsEmpty() {
 		return fmt.Errorf("The object to be moved does not exist.")
 	}
-	toElement, toErr := fm.At(to)
+	toElement, toErr := field.At(to)
 	if toErr != nil {
 		return toErr
 	}
@@ -78,11 +80,11 @@ func (fm *FieldMatrix) MoveObject(from FieldPosition, to FieldPosition) error {
 }
 
 type State struct {
-	fieldMatrix FieldMatrix
+	field Field
 }
 
-func createFieldMatrix(y int, x int) FieldMatrix {
-	matrix := make(FieldMatrix, y)
+func createField(y int, x int) Field {
+	matrix := make([][]FieldElement, y)
 	for rowIndex := 0; rowIndex < y; rowIndex++ {
 		row := make([]FieldElement, x)
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
@@ -101,7 +103,9 @@ func createFieldMatrix(y int, x int) FieldMatrix {
 		}
 		matrix[rowIndex] = row
 	}
-	return matrix
+	return Field{
+		matrix: matrix,
+	}
 }
 
 // View
@@ -167,9 +171,9 @@ func (s *Screen) At(position ScreenPosition) (*ScreenElement, error) {
 	return &(s.matrix[position.Y][position.X]), nil
 }
 
-func (s *Screen) renderWithFieldMatrix(startPosition ScreenPosition, fieldMatrix FieldMatrix) {
-	rowLength := fieldMatrix.MeasureY()
-	columnLength := fieldMatrix.MeasureX()
+func (s *Screen) renderField(startPosition ScreenPosition, field Field) {
+	rowLength := field.MeasureY()
+	columnLength := field.MeasureX()
 	for y := 0; y < rowLength; y++ {
 		for x := 0; x < columnLength; x++ {
 			position := ScreenPosition{
@@ -178,7 +182,9 @@ func (s *Screen) renderWithFieldMatrix(startPosition ScreenPosition, fieldMatrix
 			}
 			// TODO: Error handling.
 			element, _ := s.At(position)
-			element.renderWithFieldElement(&(fieldMatrix[y][x]))
+			// TODO: Error handling.
+			fieldElement, _ := field.At(FieldPosition{Y: y, X: x})
+			element.renderWithFieldElement(fieldElement)
 		}
 	}
 }
@@ -187,7 +193,7 @@ func (s *Screen) render(state *State) {
 	rowLength := s.MeasureRowLength()
 	columnLength := s.MeasureColumnLength()
 
-	// Set borders on the screen.
+	// Set borders.
 	for y := 0; y < rowLength; y++ {
 		for x := 0; x < columnLength; x++ {
 			isTopOrBottomEdge := y == 0 || y == rowLength - 1
@@ -206,7 +212,7 @@ func (s *Screen) render(state *State) {
 	}
 
 	// Place the field.
-	s.renderWithFieldMatrix(ScreenPosition{Y: 1, X: 1}, state.fieldMatrix)
+	s.renderField(ScreenPosition{Y: 1, X: 1}, state.field)
 }
 
 func (s *Screen) AsText() string {
@@ -271,15 +277,10 @@ func main() {
 	}
 
 	state := State{
-		fieldMatrix: createFieldMatrix(12, 20),
-	}
-	state.fieldMatrix[1][2].Object = FieldObject{
-		Class: "hero",
+		field: createField(12, 20),
 	}
 
 	screen := createScreen(24 + 2, 80 + 2)
-
-	state.fieldMatrix.MoveObject(FieldPosition{Y: 1, X: 2}, FieldPosition{Y: 1, X: 5})
 
 	screen.render(&state)
 
