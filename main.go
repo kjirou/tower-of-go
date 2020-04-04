@@ -113,8 +113,14 @@ const sharpRune rune = 0x0023  // "#"
 const plusRune rune = 0x002b  // "+"
 const hyphenRune rune = 0x002d  // "-"
 const dotRune rune = 0x002e  // "."
+const questionRune rune = 0x003f  // "?"
 const atRune rune = 0x0040  // "@"
 const virticalBarRune rune = 0x007C  // "|"
+
+type ScreenPosition struct {
+	X int
+	Y int
+}
 
 type ScreenElement struct {
 	character rune
@@ -133,6 +139,17 @@ func (s *Screen) MeasureRowLength() int {
 
 func (s *Screen) MeasureColumnLength() int {
 	return len(s.matrix[0])
+}
+
+func (s *Screen) At(position ScreenPosition) (*ScreenElement, error) {
+	// TODO: Is it correct? Should it return nil?
+	notFound := ScreenElement{}
+	if position.Y < 0 || position.Y > s.MeasureRowLength() - 1 {
+		return &notFound, fmt.Errorf("That position (Y=%d) does not exist on the screen-matrix.", position.Y)
+	} else if position.X < 0 || position.X > s.MeasureColumnLength() - 1 {
+		return &notFound, fmt.Errorf("That position (X=%d) does not exist on the screen-matrix.", position.X)
+	}
+	return &(s.matrix[position.Y][position.X]), nil
 }
 
 func (s *Screen) AsText() string {
@@ -156,7 +173,7 @@ func createScreen(rowLength int, columnLength int) Screen {
 		row := make([]ScreenElement, columnLength)
 		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
 			row[columnIndex] = ScreenElement{
-				character: dotRune,
+				character: questionRune,
 			}
 		}
 		matrix[rowIndex] = row
@@ -166,37 +183,35 @@ func createScreen(rowLength int, columnLength int) Screen {
 	}
 }
 
-func renderFieldObject(fo *FieldObject) string {
-	switch fo.Class {
-		case "hero":
-			return "@"
-		case "wall":
-			return "#"
-		default:
-			return "?"
-	}
-}
-
-func renderFieldElement(fe *FieldElement) string {
-	if fe.Object.IsEmpty() {
-		return "."
-	}
-	return renderFieldObject(&fe.Object)
-}
-
-func renderFieldMatrix(fieldMatrix FieldMatrix) string {
-	y := fieldMatrix.MeasureY()
-	x := fieldMatrix.MeasureX()
-	lines := make([]string, y)
-	for rowIndex := 0; rowIndex < y; rowIndex++ {
-		line := ""
-		// TODO: Use mapping method
-		for columnIndex := 0; columnIndex < x; columnIndex++ {
-			line += renderFieldElement(&(fieldMatrix[rowIndex][columnIndex]))
+func renderFieldElement(screenElement *ScreenElement, fieldElement *FieldElement) {
+	symbol := dotRune
+	if !fieldElement.Object.IsEmpty() {
+		switch fieldElement.Object.Class {
+			case "hero":
+				symbol = atRune
+			case "wall":
+				symbol = sharpRune
+			default:
+				symbol = questionRune
 		}
-		lines[rowIndex] = line
 	}
-	return strings.Join(lines, "\n")
+	screenElement.character = symbol
+}
+
+func renderFieldMatrix(screen *Screen, startPosition ScreenPosition, fieldMatrix FieldMatrix) {
+	rowLength := fieldMatrix.MeasureY()
+	columnLength := fieldMatrix.MeasureX()
+	for y := 0; y < rowLength; y++ {
+		for x := 0; x < columnLength; x++ {
+			position := ScreenPosition{
+				Y: startPosition.Y + y,
+				X: startPosition.X + x,
+			}
+			// TODO: Error handling.
+			element, _ := screen.At(position)
+			renderFieldElement(element, &(fieldMatrix[y][x]))
+		}
+	}
 }
 
 func render(screen *Screen, state *State) error {
@@ -220,6 +235,9 @@ func render(screen *Screen, state *State) error {
 			screen.matrix[y][x].character = character
 		}
 	}
+
+	// Place the field.
+	renderFieldMatrix(screen, ScreenPosition{Y: 1, X: 1}, state.fieldMatrix)
 
 	return nil
 }
