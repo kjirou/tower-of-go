@@ -255,6 +255,20 @@ func initializeTermbox(screen *Screen) error {
 	return nil
 }
 
+func handleTermboxEvents(state *State, screen *Screen) {
+	didQuitApplication := false
+
+	for !didQuitApplication {
+		event := termbox.PollEvent()
+		switch event.Type {
+		case termbox.EventKey:
+			if event.Key == termbox.KeyCtrlC || event.Key == termbox.KeyCtrlQ {
+				didQuitApplication = true
+			}
+		}
+	}
+}
+
 func main() {
 	// TODO: Look for a tiny CLI argument parser like the "minimist" of Node.js.
 	commandLineArgs := os.Args[1:]
@@ -270,7 +284,6 @@ func main() {
 	}
 
 	screen := createScreen(24 + 2, 80 + 2)
-
 	screen.render(&state)
 
 	if doesRunTermbox {
@@ -279,20 +292,8 @@ func main() {
 			panic(termboxErr)
 		}
 		defer termbox.Close()
-
 		drawTerminal(&screen)
-
-		// TODO: Can it move into the initializeTermbox?
-		didQuitApplication := false
-		for didQuitApplication == false {
-			event := termbox.PollEvent()
-			switch event.Type {
-			case termbox.EventKey:
-				if event.Key == termbox.KeyCtrlC || event.Key == termbox.KeyCtrlQ {
-					didQuitApplication = true
-				}
-			}
-		}
+		handleTermboxEvents(&state, &screen)
 	} else {
 		fmt.Println(screen.AsText())
 	}
