@@ -20,6 +20,13 @@ type FieldPosition struct {
 	Y int
 }
 
+func (fieldPosition *FieldPosition) Validate(rowLength int, columnLength int) bool {
+	return fieldPosition.Y >= 0 &&
+		fieldPosition.Y < rowLength &&
+		fieldPosition.X >= 0 &&
+		fieldPosition.X < columnLength
+}
+
 type FieldObject struct {
 	// TODO: Enumerize
 	Class string
@@ -61,7 +68,8 @@ func (field *Field) FindElementsByObjectClass(objectClass string) []*FieldElemen
 	for _, row := range field.matrix {
 		for _, element := range row {
 			if element.Object.Class == objectClass {
-				elements = append(elements, &element)
+				element_ := element
+				elements = append(elements, &element_)
 			}
 		}
 	}
@@ -90,6 +98,28 @@ func (field *Field) MoveObject(from FieldPosition, to FieldPosition) error {
 	toElement.Object = fromElement.Object
 	fromElement.Object = FieldObject{
 		Class: "empty",
+	}
+	return nil
+}
+
+// TODO: Enumerize
+func (field *Field) WalkHero(direction string) error {
+	element := field.GetElementOfHero()
+	nextPosition := element.Position
+	switch direction {
+	case "up":
+		nextPosition.Y -= 1
+	case "right":
+		nextPosition.X += 1
+	case "down":
+		nextPosition.Y += 1
+	case "left":
+		nextPosition.X -= 1
+	}
+	if nextPosition.Validate(field.MeasureRowLength(), field.MeasureColumnLength()) {
+		if field.At(nextPosition).Object.IsEmpty() {
+			return field.MoveObject(element.Position, nextPosition)
+		}
 	}
 	return nil
 }
@@ -127,6 +157,7 @@ func createField(y int, x int) Field {
 // ----
 
 // TODO: Combine them into one `map[string]rune`.
+// TODO: Use 'aRune' literal.
 const blankRune rune = 0x0020  // " "
 const sharpRune rune = 0x0023  // "#"
 const plusRune rune = 0x002b  // "+"
@@ -278,6 +309,41 @@ func initializeTermbox(screen *Screen) error {
 	return nil
 }
 
+// It may need to make the following processes:
+//   https://github.com/nsf/termbox-go/blob/4d2b513ad8bee47a9a5a65b0dee0182049a31916/_demos/keyboard.go#L669
+//   (However, details cannot be read...)
+// TODO: Use termbox's types
+func handleKeyPress(state *State, screen *Screen, ch rune, key termbox.Key) {
+	var err error
+	field := &state.Field
+	stateChanged := false
+
+	// Move the hero.
+	// TODO: Consider arrow keys.
+	if (ch == 'k') {
+		err = field.WalkHero("up")
+		stateChanged = true
+	} else if (ch == 'l') {
+		err = field.WalkHero("right")
+		stateChanged = true
+	} else if (ch == 'j') {
+		err = field.WalkHero("down")
+		stateChanged = true
+	} else if (ch == 'h') {
+		err = field.WalkHero("left")
+		stateChanged = true
+	}
+
+	if err != nil {
+		panic(err)
+	}
+
+	if stateChanged {
+		screen.render(state)
+		drawTerminal(screen)
+	}
+}
+
 func handleTermboxEvents(state *State, screen *Screen) {
 	didQuitApplication := false
 
@@ -285,9 +351,13 @@ func handleTermboxEvents(state *State, screen *Screen) {
 		event := termbox.PollEvent()
 		switch event.Type {
 		case termbox.EventKey:
+			// Quit the application. Only this operation is resolved with priority.
 			if event.Key == termbox.KeyCtrlC || event.Key == termbox.KeyCtrlQ {
 				didQuitApplication = true
+				break
 			}
+
+			handleKeyPress(state, screen, event.Ch, event.Key)
 		}
 	}
 }
