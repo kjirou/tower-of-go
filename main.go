@@ -283,6 +283,24 @@ func main() {
 		field: createField(12, 20),
 	}
 
+	// Dummy data
+	state.field.At(FieldPosition{Y: 2, X: 5}).Object = FieldObject{
+		Class: "hero",
+	}
+	fieldRowLength := state.field.MeasureRowLength()
+	fieldColumnLength := state.field.MeasureColumnLength()
+	for y := 0; y < fieldRowLength; y++ {
+		for x := 0; x < fieldColumnLength; x++ {
+			isTopOrBottomEdge := y == 0 || y == fieldRowLength - 1
+			isLeftOrRightEdge := x == 0 || x == fieldColumnLength - 1
+			if isTopOrBottomEdge || isLeftOrRightEdge {
+				state.field.At(FieldPosition{Y: y, X: x}).Object = FieldObject{
+					Class: "wall",
+				}
+			}
+		}
+	}
+
 	screen := createScreen(24 + 2, 80 + 2)
 	screen.render(&state)
 
