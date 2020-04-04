@@ -1,2 +1,1 @@
-# go_playground
-Goooooooooooooooo!
+# tower_of_go
