@@ -1,3 +1,5 @@
+github.com/doronbehar/termbox-go v0.0.0-20190817171036-93860e161317 h1:mdOm+1RdYwVwC4Wjb53M5L96fRwWJ8gI7YXwwiCsHTk=
+github.com/doronbehar/termbox-go v0.0.0-20190817171036-93860e161317/go.mod h1:cHYbFQiZNC8LPG6clYoLMKAl0xx7KR75RPsHtG/f1Hk=
 github.com/doronbehar/termbox-go v0.0.0-20191006141301-8c9470559e05 h1:pmXx7j8+mmkFJB2+qoB1C/Mz8SWvMlHTxSWOptJrr7E=
 github.com/doronbehar/termbox-go v0.0.0-20191006141301-8c9470559e05/go.mod h1:cHYbFQiZNC8LPG6clYoLMKAl0xx7KR75RPsHtG/f1Hk=
 github.com/mattn/go-runewidth v0.0.9 h1:Lm995f3rfxdpd6TSmuVCHVb/QhupuXlYr8sCI/QdE+0=

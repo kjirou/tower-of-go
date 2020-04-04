@@ -1,12 +1,15 @@
 package main
 
 // TODO:
-// - gofmt
+// - go fmt
 // - Separate to modules
+// - Why did diffs in the go.mod/go.sub have increased? Probably only `go run` was executed.
 
 import (
 	"fmt"
+	"os"
 	"strings"
+	"github.com/doronbehar/termbox-go"
 )
 
 // Model
@@ -144,7 +147,35 @@ func render(state *State) string {
 // Main Process
 // ------------
 
+const plusRune rune = 0x002b  // "+"
+
+func runTermbox(initialOutput string) error {
+	termboxErr := termbox.Init()
+	if termboxErr != nil {
+		return termboxErr
+	}
+
+	termbox.SetInputMode(termbox.InputEsc)
+
+	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
+
+	termbox.SetCell(0, 0, plusRune, termbox.ColorWhite, termbox.ColorBlack)
+
+	termbox.Flush()
+
+	return nil
+}
+
 func main() {
+	// TODO: Look for a tiny CLI argument parser like the "minimist" of Node.js.
+	commandLineArgs := os.Args[1:]
+	doesRunTermbox := false
+	for _, arg := range commandLineArgs {
+		if arg == "-t" {
+			doesRunTermbox = true
+		}
+	}
+
 	state := State{
 		fieldMatrix: createFieldMatrix(12, 20),
 	}
@@ -155,4 +186,24 @@ func main() {
 	fmt.Println(moveErr)
 	output := render(&state)
 	fmt.Println(output)
+
+	if doesRunTermbox {
+		termboxErr := runTermbox(output)
+		if termboxErr != nil {
+			panic(termboxErr)
+		}
+		// TODO: Can it move into the runTermbox?
+		didQuitApplication := false
+		for didQuitApplication == false {
+			event := termbox.PollEvent()
+			fmt.Println(event.Type)
+			switch event.Type {
+			case termbox.EventKey:
+				if event.Key == termbox.KeyCtrlC || event.Key == termbox.KeyCtrlQ {
+					didQuitApplication = true
+				}
+			}
+		}
+		defer termbox.Close()
+	}
 }
