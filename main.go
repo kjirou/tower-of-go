@@ -139,7 +139,7 @@ func (se *ScreenElement) renderFieldElement(fieldElement *FieldElement) {
 	se.character = symbol
 }
 
-// A layer that avoid to write logics tightly coupled with "termbox".
+// A layer that avoids to write logics tightly coupled with "termbox".
 type Screen struct {
 	matrix [][]ScreenElement
 }
