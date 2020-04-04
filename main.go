@@ -222,7 +222,7 @@ func (s *Screen) At(position ScreenPosition) *ScreenElement {
 	return &(s.matrix[position.Y][position.X])
 }
 
-func (s *Screen) renderField(startPosition ScreenPosition, field Field) {
+func (s *Screen) renderField(startPosition ScreenPosition, field *Field) {
 	rowLength := field.MeasureRowLength()
 	columnLength := field.MeasureColumnLength()
 	for y := 0; y < rowLength; y++ {
@@ -260,7 +260,7 @@ func (s *Screen) render(state *State) {
 	}
 
 	// Place the field.
-	s.renderField(ScreenPosition{Y: 1, X: 1}, state.Field)
+	s.renderField(ScreenPosition{Y: 1, X: 1}, &state.Field)
 }
 
 func (s *Screen) AsText() string {
