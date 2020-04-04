@@ -157,15 +157,16 @@ func createField(y int, x int) Field {
 // ----
 
 // TODO: Combine them into one `map[string]rune`.
-// TODO: Use 'aRune' literal.
-const blankRune rune = 0x0020  // " "
-const sharpRune rune = 0x0023  // "#"
-const plusRune rune = 0x002b  // "+"
-const hyphenRune rune = 0x002d  // "-"
-const dotRune rune = 0x002e  // "."
-const questionRune rune = 0x003f  // "?"
-const atRune rune = 0x0040  // "@"
-const virticalBarRune rune = 0x007C  // "|"
+const (
+	atRune rune = '@'
+	blankRune rune = ' '
+	dotRune rune = '.'
+	hyphenRune rune = '-'
+	plusRune rune = '+'
+	questionRune rune = '?'
+	sharpRune rune = '#'
+	virticalBarRune rune = '|'
+)
 
 type ScreenPosition struct {
 	X int
