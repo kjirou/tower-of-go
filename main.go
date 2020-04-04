@@ -205,24 +205,24 @@ type Screen struct {
 	matrix [][]ScreenElement
 }
 
-func (s *Screen) MeasureRowLength() int {
-	return len(s.matrix)
+func (screen *Screen) MeasureRowLength() int {
+	return len(screen.matrix)
 }
 
-func (s *Screen) MeasureColumnLength() int {
-	return len(s.matrix[0])
+func (screen *Screen) MeasureColumnLength() int {
+	return len(screen.matrix[0])
 }
 
-func (s *Screen) At(position ScreenPosition) *ScreenElement {
-	if position.Y < 0 || position.Y > s.MeasureRowLength() {
+func (screen *Screen) At(position ScreenPosition) *ScreenElement {
+	if position.Y < 0 || position.Y > screen.MeasureRowLength() {
 		panic(fmt.Sprintf("That position (Y=%d) does not exist on the screen.", position.Y))
-	} else if position.X < 0 || position.X > s.MeasureColumnLength() {
+	} else if position.X < 0 || position.X > screen.MeasureColumnLength() {
 		panic(fmt.Sprintf("That position (X=%d) does not exist on the screen.", position.X))
 	}
-	return &(s.matrix[position.Y][position.X])
+	return &(screen.matrix[position.Y][position.X])
 }
 
-func (s *Screen) renderField(startPosition ScreenPosition, field *Field) {
+func (screen *Screen) renderField(startPosition ScreenPosition, field *Field) {
 	rowLength := field.MeasureRowLength()
 	columnLength := field.MeasureColumnLength()
 	for y := 0; y < rowLength; y++ {
@@ -231,15 +231,15 @@ func (s *Screen) renderField(startPosition ScreenPosition, field *Field) {
 				Y: startPosition.Y + y,
 				X: startPosition.X + x,
 			}
-			element := s.At(position)
+			element := screen.At(position)
 			element.renderFieldElement(field.At(FieldPosition{Y: y, X: x}))
 		}
 	}
 }
 
-func (s *Screen) render(state *State) {
-	rowLength := s.MeasureRowLength()
-	columnLength := s.MeasureColumnLength()
+func (screen *Screen) render(state *State) {
+	rowLength := screen.MeasureRowLength()
+	columnLength := screen.MeasureColumnLength()
 
 	// Set borders.
 	for y := 0; y < rowLength; y++ {
@@ -255,23 +255,23 @@ func (s *Screen) render(state *State) {
 			case !isTopOrBottomEdge && isLeftOrRightEdge:
 				symbol = virticalBarRune
 			}
-			s.matrix[y][x].Symbol = symbol
+			screen.matrix[y][x].Symbol = symbol
 		}
 	}
 
 	// Place the field.
-	s.renderField(ScreenPosition{Y: 1, X: 1}, &state.Field)
+	screen.renderField(ScreenPosition{Y: 1, X: 1}, &state.Field)
 }
 
-func (s *Screen) AsText() string {
-	rowLength := s.MeasureRowLength()
-	columnLength := s.MeasureColumnLength()
+func (screen *Screen) AsText() string {
+	rowLength := screen.MeasureRowLength()
+	columnLength := screen.MeasureColumnLength()
 	lines := make([]string, rowLength)
 	for rowIndex := 0; rowIndex < rowLength; rowIndex++ {
 		line := make([]rune, columnLength)
 		// TODO: Use mapping method
 		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
-			line[columnIndex] = s.matrix[rowIndex][columnIndex].Symbol
+			line[columnIndex] = screen.matrix[rowIndex][columnIndex].Symbol
 		}
 		lines[rowIndex] = string(line)
 	}
