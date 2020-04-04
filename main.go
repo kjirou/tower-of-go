@@ -174,23 +174,29 @@ type ScreenPosition struct {
 
 type ScreenElement struct {
 	Symbol rune
-	//foregroundColor
-	//backgroundColor
+	ForegroundColor termbox.Attribute
+	BackgroundColor termbox.Attribute
 }
 
-func (se *ScreenElement) renderFieldElement(fieldElement *FieldElement) {
+func (screenElement *ScreenElement) renderFieldElement(fieldElement *FieldElement) {
 	symbol := dotRune
+	fg := termbox.ColorWhite
+	bg := termbox.ColorBlack
 	if !fieldElement.Object.IsEmpty() {
 		switch fieldElement.Object.Class {
 			case "hero":
 				symbol = atRune
+				fg = termbox.ColorMagenta
 			case "wall":
 				symbol = sharpRune
+				fg = termbox.ColorYellow
 			default:
 				symbol = questionRune
 		}
 	}
-	se.Symbol = symbol
+	screenElement.Symbol = symbol
+	screenElement.ForegroundColor = fg
+	screenElement.BackgroundColor = bg
 }
 
 // A layer that avoids to write logics tightly coupled with "termbox".
@@ -278,6 +284,8 @@ func createScreen(rowLength int, columnLength int) Screen {
 		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
 			row[columnIndex] = ScreenElement{
 				Symbol: questionRune,
+				ForegroundColor: termbox.ColorWhite,
+				BackgroundColor: termbox.ColorBlack,
 			}
 		}
 		matrix[rowIndex] = row
@@ -292,8 +300,8 @@ func createScreen(rowLength int, columnLength int) Screen {
 
 func drawTerminal(screen *Screen) {
 	for y, row := range screen.matrix {
-		for x, screenElement := range row {
-			termbox.SetCell(x, y, screenElement.Symbol, termbox.ColorWhite, termbox.ColorBlack)
+		for x, element := range row {
+			termbox.SetCell(x, y, element.Symbol, element.ForegroundColor, element.BackgroundColor)
 		}
 	}
 	termbox.Flush()
