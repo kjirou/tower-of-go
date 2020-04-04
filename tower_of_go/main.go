@@ -104,7 +104,7 @@ func createFieldMatrix(y int, x int) FieldMatrix {
 // View
 // ----
 
-func renderFieldObject(fo FieldObject) string {
+func renderFieldObject(fo *FieldObject) string {
 	switch fo.Class {
 		case "hero":
 			return "@"
@@ -115,11 +115,11 @@ func renderFieldObject(fo FieldObject) string {
 	}
 }
 
-func renderFieldElement(fe FieldElement) string {
+func renderFieldElement(fe *FieldElement) string {
 	if fe.Object.IsEmpty() {
 		return "."
 	}
-	return renderFieldObject(fe.Object)
+	return renderFieldObject(&fe.Object)
 }
 
 func renderFieldMatrix(fieldMatrix FieldMatrix) string {
@@ -130,14 +130,14 @@ func renderFieldMatrix(fieldMatrix FieldMatrix) string {
 		line := ""
 		// TODO: Use mapping method
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
-			line += renderFieldElement(fieldMatrix[rowIndex][columnIndex])
+			line += renderFieldElement(&(fieldMatrix[rowIndex][columnIndex]))
 		}
 		lines[rowIndex] = line
 	}
 	return strings.Join(lines, "\n")
 }
 
-func render(state State) string {
+func render(state *State) string {
 	return renderFieldMatrix(state.fieldMatrix)
 }
 
@@ -153,6 +153,6 @@ func main() {
 	}
 	moveErr := state.fieldMatrix.MoveObject(FieldPosition{Y: 1, X: 2}, FieldPosition{Y: 1, X: 5})
 	fmt.Println(moveErr)
-	output := render(state)
+	output := render(&state)
 	fmt.Println(output)
 }
