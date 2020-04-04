@@ -46,29 +46,21 @@ func (field *Field) MeasureColumnLength() int {
 	return len(field.matrix[0])
 }
 
-func (field *Field) At(position FieldPosition) (*FieldElement, error) {
-	// TODO: Is it correct? Should it return nil?
-	notFound := FieldElement{}
+func (field *Field) At(position FieldPosition) *FieldElement {
 	if position.Y < 0 || position.Y > field.MeasureRowLength() {
-		return &notFound, fmt.Errorf("That position (Y=%d) does not exist on the field-matrix.", position.Y)
+		panic(fmt.Sprintf("That position (Y=%d) does not exist on the field.", position.Y))
 	} else if position.X < 0 || position.X > field.MeasureColumnLength() {
-		return &notFound, fmt.Errorf("That position (X=%d) does not exist on the field-matrix.", position.X)
+		panic(fmt.Sprintf("That position (X=%d) does not exist on the field.", position.X))
 	}
-	return &(field.matrix[position.Y][position.X]), nil
+	return &(field.matrix[position.Y][position.X])
 }
 
 func (field *Field) MoveObject(from FieldPosition, to FieldPosition) error {
-	fromElement, fromErr := field.At(from)
-	if fromErr != nil {
-		return fromErr
-	}
+	fromElement := field.At(from)
 	if fromElement.Object.IsEmpty() {
 		return fmt.Errorf("The object to be moved does not exist.")
 	}
-	toElement, toErr := field.At(to)
-	if toErr != nil {
-		return toErr
-	}
+	toElement := field.At(to)
 	if toElement.Object.IsEmpty() == false {
 		return fmt.Errorf("An object exists at the destination.")
 	}
@@ -132,7 +124,7 @@ type ScreenElement struct {
 	//backgroundColor
 }
 
-func (se *ScreenElement) renderWithFieldElement(fieldElement *FieldElement) {
+func (se *ScreenElement) renderFieldElement(fieldElement *FieldElement) {
 	symbol := dotRune
 	if !fieldElement.Object.IsEmpty() {
 		switch fieldElement.Object.Class {
@@ -160,15 +152,13 @@ func (s *Screen) MeasureColumnLength() int {
 	return len(s.matrix[0])
 }
 
-func (s *Screen) At(position ScreenPosition) (*ScreenElement, error) {
-	// TODO: Is it correct? Should it return nil?
-	notFound := ScreenElement{}
+func (s *Screen) At(position ScreenPosition) *ScreenElement {
 	if position.Y < 0 || position.Y > s.MeasureRowLength() - 1 {
-		return &notFound, fmt.Errorf("That position (Y=%d) does not exist on the screen-matrix.", position.Y)
+		panic(fmt.Sprintf("That position (Y=%d) does not exist on the screen.", position.Y))
 	} else if position.X < 0 || position.X > s.MeasureColumnLength() - 1 {
-		return &notFound, fmt.Errorf("That position (X=%d) does not exist on the screen-matrix.", position.X)
+		panic(fmt.Sprintf("That position (X=%d) does not exist on the screen.", position.X))
 	}
-	return &(s.matrix[position.Y][position.X]), nil
+	return &(s.matrix[position.Y][position.X])
 }
 
 func (s *Screen) renderField(startPosition ScreenPosition, field Field) {
@@ -180,11 +170,8 @@ func (s *Screen) renderField(startPosition ScreenPosition, field Field) {
 				Y: startPosition.Y + y,
 				X: startPosition.X + x,
 			}
-			// TODO: Error handling.
-			element, _ := s.At(position)
-			// TODO: Error handling.
-			fieldElement, _ := field.At(FieldPosition{Y: y, X: x})
-			element.renderWithFieldElement(fieldElement)
+			element := s.At(position)
+			element.renderFieldElement(field.At(FieldPosition{Y: y, X: x}))
 		}
 	}
 }
