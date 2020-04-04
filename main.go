@@ -153,9 +153,9 @@ func (s *Screen) MeasureColumnLength() int {
 }
 
 func (s *Screen) At(position ScreenPosition) *ScreenElement {
-	if position.Y < 0 || position.Y > s.MeasureRowLength() - 1 {
+	if position.Y < 0 || position.Y > s.MeasureRowLength() {
 		panic(fmt.Sprintf("That position (Y=%d) does not exist on the screen.", position.Y))
-	} else if position.X < 0 || position.X > s.MeasureColumnLength() - 1 {
+	} else if position.X < 0 || position.X > s.MeasureColumnLength() {
 		panic(fmt.Sprintf("That position (X=%d) does not exist on the screen.", position.X))
 	}
 	return &(s.matrix[position.Y][position.X])
