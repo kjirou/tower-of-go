@@ -156,18 +156,6 @@ func createField(y int, x int) Field {
 // View
 // ----
 
-// TODO: Combine them into one `map[string]rune`.
-const (
-	atRune rune = '@'
-	blankRune rune = ' '
-	dotRune rune = '.'
-	hyphenRune rune = '-'
-	plusRune rune = '+'
-	questionRune rune = '?'
-	sharpRune rune = '#'
-	virticalBarRune rune = '|'
-)
-
 type ScreenPosition struct {
 	X int
 	Y int
@@ -180,19 +168,19 @@ type ScreenElement struct {
 }
 
 func (screenElement *ScreenElement) renderFieldElement(fieldElement *FieldElement) {
-	symbol := dotRune
+	symbol := '.'
 	fg := termbox.ColorWhite
 	bg := termbox.ColorBlack
 	if !fieldElement.Object.IsEmpty() {
 		switch fieldElement.Object.Class {
 			case "hero":
-				symbol = atRune
+				symbol = '@'
 				fg = termbox.ColorMagenta
 			case "wall":
-				symbol = sharpRune
+				symbol = '#'
 				fg = termbox.ColorYellow
 			default:
-				symbol = questionRune
+				symbol = '?'
 		}
 	}
 	screenElement.Symbol = symbol
@@ -246,14 +234,14 @@ func (screen *Screen) render(state *State) {
 		for x := 0; x < columnLength; x++ {
 			isTopOrBottomEdge := y == 0 || y == rowLength - 1
 			isLeftOrRightEdge := x == 0 || x == columnLength - 1
-			symbol := blankRune
+			symbol := ' '
 			switch {
 			case isTopOrBottomEdge && isLeftOrRightEdge:
-				symbol = plusRune
+				symbol = '+'
 			case isTopOrBottomEdge && !isLeftOrRightEdge:
-				symbol = hyphenRune
+				symbol = '-'
 			case !isTopOrBottomEdge && isLeftOrRightEdge:
-				symbol = virticalBarRune
+				symbol = '|'
 			}
 			screen.matrix[y][x].Symbol = symbol
 		}
@@ -284,7 +272,7 @@ func createScreen(rowLength int, columnLength int) Screen {
 		row := make([]ScreenElement, columnLength)
 		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
 			row[columnIndex] = ScreenElement{
-				Symbol: questionRune,
+				Symbol: '_',
 				ForegroundColor: termbox.ColorWhite,
 				BackgroundColor: termbox.ColorBlack,
 			}
