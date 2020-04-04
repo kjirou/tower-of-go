@@ -173,7 +173,7 @@ type ScreenPosition struct {
 }
 
 type ScreenElement struct {
-	character rune
+	Symbol rune
 	//foregroundColor
 	//backgroundColor
 }
@@ -190,7 +190,7 @@ func (se *ScreenElement) renderFieldElement(fieldElement *FieldElement) {
 				symbol = questionRune
 		}
 	}
-	se.character = symbol
+	se.Symbol = symbol
 }
 
 // A layer that avoids to write logics tightly coupled with "termbox".
@@ -239,16 +239,16 @@ func (s *Screen) render(state *State) {
 		for x := 0; x < columnLength; x++ {
 			isTopOrBottomEdge := y == 0 || y == rowLength - 1
 			isLeftOrRightEdge := x == 0 || x == columnLength - 1
-			character := blankRune
+			symbol := blankRune
 			switch {
 			case isTopOrBottomEdge && isLeftOrRightEdge:
-				character = plusRune
+				symbol = plusRune
 			case isTopOrBottomEdge && !isLeftOrRightEdge:
-				character = hyphenRune
+				symbol = hyphenRune
 			case !isTopOrBottomEdge && isLeftOrRightEdge:
-				character = virticalBarRune
+				symbol = virticalBarRune
 			}
-			s.matrix[y][x].character = character
+			s.matrix[y][x].Symbol = symbol
 		}
 	}
 
@@ -264,7 +264,7 @@ func (s *Screen) AsText() string {
 		line := make([]rune, columnLength)
 		// TODO: Use mapping method
 		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
-			line[columnIndex] = s.matrix[rowIndex][columnIndex].character
+			line[columnIndex] = s.matrix[rowIndex][columnIndex].Symbol
 		}
 		lines[rowIndex] = string(line)
 	}
@@ -277,7 +277,7 @@ func createScreen(rowLength int, columnLength int) Screen {
 		row := make([]ScreenElement, columnLength)
 		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
 			row[columnIndex] = ScreenElement{
-				character: questionRune,
+				Symbol: questionRune,
 			}
 		}
 		matrix[rowIndex] = row
@@ -293,7 +293,7 @@ func createScreen(rowLength int, columnLength int) Screen {
 func drawTerminal(screen *Screen) {
 	for y, row := range screen.matrix {
 		for x, screenElement := range row {
-			termbox.SetCell(x, y, screenElement.character, termbox.ColorWhite, termbox.ColorBlack)
+			termbox.SetCell(x, y, screenElement.Symbol, termbox.ColorWhite, termbox.ColorBlack)
 		}
 	}
 	termbox.Flush()
