@@ -55,6 +55,29 @@ func (field *Field) At(position FieldPosition) *FieldElement {
 	return &(field.matrix[position.Y][position.X])
 }
 
+// TODO: Refer `FieldObject.Class` type.
+func (field *Field) FindElementsByObjectClass(objectClass string) []*FieldElement {
+	elements := make([]*FieldElement, 0)
+	for _, row := range field.matrix {
+		for _, element := range row {
+			if element.Object.Class == objectClass {
+				elements = append(elements, &element)
+			}
+		}
+	}
+	return elements
+}
+
+func (field *Field) GetElementOfHero() *FieldElement {
+	elements := field.FindElementsByObjectClass("hero")
+	if len(elements) == 0 {
+		panic("The hero does not exist.")
+	} else if len(elements) > 1 {
+		panic("There are multiple heroes.")
+	}
+	return elements[0]
+}
+
 func (field *Field) MoveObject(from FieldPosition, to FieldPosition) error {
 	fromElement := field.At(from)
 	if fromElement.Object.IsEmpty() {
