@@ -262,7 +262,6 @@ func (screen *Screen) AsText() string {
 	lines := make([]string, rowLength)
 	for y := 0; y < rowLength; y++ {
 		line := make([]rune, columnLength)
-		// TODO: Use mapping method
 		for x := 0; x < columnLength; x++ {
 			line[x] = screen.matrix[y][x].Symbol
 		}
