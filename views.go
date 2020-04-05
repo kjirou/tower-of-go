@@ -7,25 +7,6 @@ import (
 	"strings"
 )
 
-type ScreenPosition struct {
-	x int
-	y int
-}
-
-func (screenPosition *ScreenPosition) GetY() int {
-	return screenPosition.y
-}
-
-func (screenPosition *ScreenPosition) GetX() int {
-	return screenPosition.x
-}
-
-func (screenPosition *ScreenPosition) Validate(rowLength int, columnLength int) bool {
-	y := screenPosition.GetY()
-	x := screenPosition.GetX()
-	return y >= 0 && y < rowLength && x >= 0 && x < columnLength
-}
-
 type ScreenElement struct {
 	Symbol          rune
 	ForegroundColor termbox.Attribute
@@ -85,12 +66,12 @@ func (screen *Screen) renderField(startPosition utils.IMatrixPosition, field uti
 	columnLength := field.MeasureColumnLength()
 	for y := 0; y < rowLength; y++ {
 		for x := 0; x < columnLength; x++ {
-			var screenElementPosition utils.IMatrixPosition = &ScreenPosition{
-				y: startPosition.GetY() + y,
-				x: startPosition.GetX() + x,
+			var screenElementPosition utils.IMatrixPosition = &utils.MatrixPosition{
+				Y: startPosition.GetY() + y,
+				X: startPosition.GetX() + x,
 			}
 			element := screen.At(screenElementPosition)
-			var fieldElementPosition utils.IMatrixPosition = &FieldPosition{y: y, x: x}
+			var fieldElementPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
 			var fieldElement utils.IFieldElement = field.At(fieldElementPosition)
 			element.renderWithFieldElement(fieldElement)
 		}
@@ -120,7 +101,7 @@ func (screen *Screen) render(state utils.IState) {
 	}
 
 	// Place the field.
-	var fieldPosition utils.IMatrixPosition = &ScreenPosition{y: 1, x: 1}
+	var fieldPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 1}
 	screen.renderField(fieldPosition, state.GetField())
 }
 

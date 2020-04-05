@@ -5,25 +5,6 @@ import (
 	"github.com/kjirou/tower_of_go/utils"
 )
 
-type FieldPosition struct {
-	x int
-	y int
-}
-
-func (fieldPosition *FieldPosition) GetY() int {
-	return fieldPosition.y
-}
-
-func (fieldPosition *FieldPosition) GetX() int {
-	return fieldPosition.x
-}
-
-func (fieldPosition *FieldPosition) Validate(rowLength int, columnLength int) bool {
-	y := fieldPosition.GetY()
-	x := fieldPosition.GetX()
-	return y >= 0 && y < rowLength && x >= 0 && x < columnLength
-}
-
 type FieldObject struct {
 	Class string
 }
@@ -34,7 +15,7 @@ func (fieldObject *FieldObject) IsEmpty() bool {
 
 type FieldElement struct {
 	Object   FieldObject
-	Position FieldPosition
+	Position utils.MatrixPosition
 }
 
 func (fieldElement *FieldElement) GetObjectClass() string {
@@ -126,9 +107,9 @@ func (field *Field) WalkHero(direction utils.FourDirection) error {
 		nextX -= 1
 	}
 	var position utils.IMatrixPosition = &element.Position
-	var nextPosition utils.IMatrixPosition = &FieldPosition{
-		y: nextY,
-		x: nextX,
+	var nextPosition utils.IMatrixPosition = &utils.MatrixPosition{
+		Y: nextY,
+		X: nextX,
 	}
 	// TODO: Error handling.
 	if nextPosition.Validate(field.MeasureRowLength(), field.MeasureColumnLength()) {
@@ -154,9 +135,9 @@ func createField(y int, x int) Field {
 		row := make([]FieldElement, x)
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
 			// TODO: Embed into the following FieldElement initialization
-			fieldPosition := FieldPosition{
-				y: rowIndex,
-				x: columnIndex,
+			fieldPosition := utils.MatrixPosition{
+				Y: rowIndex,
+				X: columnIndex,
 			}
 			fieldObject := FieldObject{
 				Class: "empty",
