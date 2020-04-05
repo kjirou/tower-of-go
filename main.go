@@ -2,11 +2,10 @@ package main
 
 // TODO:
 // - Separate to modules
-// - Why did diffs in the go.mod/go.sub have increased? Probably only `go run` was executed.
 
 import (
 	"fmt"
-	"github.com/doronbehar/termbox-go"
+	"github.com/nsf/termbox-go"
 	"os"
 	"strings"
 )
