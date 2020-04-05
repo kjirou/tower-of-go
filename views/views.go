@@ -76,7 +76,8 @@ func (screen *Screen) renderField(startPosition utils.IMatrixPosition, field uti
 			}
 			element := screen.At(screenElementPosition)
 			var fieldElementPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
-			var fieldElement utils.IFieldElement = field.At(fieldElementPosition)
+			// TODO: Error handling.
+			var fieldElement, _ = field.At(fieldElementPosition)
 			element.renderWithFieldElement(fieldElement)
 		}
 	}

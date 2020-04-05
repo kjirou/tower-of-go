@@ -11,11 +11,12 @@ func TestField(t *testing.T) {
 
 		t.Run("指定した位置の要素を取得できる", func(t *testing.T) {
 			var position utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 2}
-			positionResult := field.At(position).GetPosition()
-			if positionResult.GetY() != 1 {
+			element, err := field.At(position)
+			if err != nil {
+				t.Error(err)
+			} else if element.GetPosition().GetY() != 1 {
 				t.Error("Y が違う")
-			}
-			if positionResult.GetX() != 2 {
+			} else if element.GetPosition().GetX() != 2 {
 				t.Error("X が違う")
 			}
 		})

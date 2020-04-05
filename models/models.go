@@ -47,16 +47,15 @@ func (field *Field) MeasureColumnLength() int {
 	return len(field.matrix[0])
 }
 
-func (field *Field) At(position utils.IMatrixPosition) utils.IFieldElement {
+func (field *Field) At(position utils.IMatrixPosition) (utils.IFieldElement, error) {
 	y := position.GetY()
 	x := position.GetX()
-	// TODO: Error handling.
 	if y < 0 || y > field.MeasureRowLength() {
-		panic(fmt.Sprintf("That position (Y=%d) does not exist on the field.", y))
+		return &FieldElement{}, fmt.Errorf("That position (Y=%d) does not exist on the field.", y)
 	} else if x < 0 || x > field.MeasureColumnLength() {
-		panic(fmt.Sprintf("That position (X=%d) does not exist on the field.", x))
+		return &FieldElement{}, fmt.Errorf("That position (X=%d) does not exist on the field.", x)
 	}
-	return &(field.matrix[y][x])
+	return &(field.matrix[y][x]), nil
 }
 
 // TODO: Refer `FieldObject.Class` type.
@@ -84,12 +83,16 @@ func (field *Field) GetElementOfHero() *FieldElement {
 }
 
 func (field *Field) MoveObject(from utils.IMatrixPosition, to utils.IMatrixPosition) error {
-	fromElement := field.At(from)
-	if fromElement.IsObjectEmpty() {
+	fromElement, err := field.At(from)
+	if err != nil {
+		return err
+	} else if fromElement.IsObjectEmpty() {
 		return fmt.Errorf("The object to be moved does not exist.")
 	}
-	toElement := field.At(to)
-	if toElement.IsObjectEmpty() == false {
+	toElement, err := field.At(to)
+	if err != nil {
+		return err
+	} else if toElement.IsObjectEmpty() == false {
 		return fmt.Errorf("An object exists at the destination.")
 	}
 	toElement.UpdateObjectClass(fromElement.GetObjectClass())
@@ -116,9 +119,11 @@ func (field *Field) WalkHero(direction utils.FourDirection) error {
 		Y: nextY,
 		X: nextX,
 	}
-	// TODO: Error handling.
 	if nextPosition.Validate(field.MeasureRowLength(), field.MeasureColumnLength()) {
-		if field.At(nextPosition).IsObjectEmpty() {
+		element, err := field.At(nextPosition)
+		if err != nil {
+			return err
+		} else if element.IsObjectEmpty() {
 			return field.MoveObject(position, nextPosition)
 		}
 	}

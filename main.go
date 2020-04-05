@@ -99,7 +99,8 @@ func main() {
 
 	// Dummy data
 	var heroPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 2, X: 5}
-	field.At(heroPosition).UpdateObjectClass("hero")
+	var elem, _ = field.At(heroPosition)
+	elem.UpdateObjectClass("hero")
 	fieldRowLength := field.MeasureRowLength()
 	fieldColumnLength := field.MeasureColumnLength()
 	for y := 0; y < fieldRowLength; y++ {
@@ -108,7 +109,8 @@ func main() {
 			isLeftOrRightEdge := x == 0 || x == fieldColumnLength-1
 			if isTopOrBottomEdge || isLeftOrRightEdge {
 				var wallPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
-				field.At(wallPosition).UpdateObjectClass("wall")
+				var elem, _ = field.At(wallPosition)
+				elem.UpdateObjectClass("wall")
 			}
 		}
 	}
