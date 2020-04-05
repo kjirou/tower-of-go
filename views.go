@@ -8,8 +8,22 @@ import (
 )
 
 type ScreenPosition struct {
-	X int
-	Y int
+	x int
+	y int
+}
+
+func (screenPosition *ScreenPosition) GetY() int {
+	return screenPosition.y
+}
+
+func (screenPosition *ScreenPosition) GetX() int {
+	return screenPosition.x
+}
+
+func (screenPosition *ScreenPosition) Validate(rowLength int, columnLength int) bool {
+	y := screenPosition.GetY()
+	x := screenPosition.GetX()
+	return y >= 0 && y < rowLength && x >= 0 && x < columnLength
 }
 
 type ScreenElement struct {
@@ -54,27 +68,30 @@ func (screen *Screen) MeasureColumnLength() int {
 	return len(screen.matrix[0])
 }
 
-func (screen *Screen) At(position ScreenPosition) *ScreenElement {
-	if position.Y < 0 || position.Y > screen.MeasureRowLength() {
-		panic(fmt.Sprintf("That position (Y=%d) does not exist on the screen.", position.Y))
-	} else if position.X < 0 || position.X > screen.MeasureColumnLength() {
-		panic(fmt.Sprintf("That position (X=%d) does not exist on the screen.", position.X))
+func (screen *Screen) At(position utils.MatrixPosition) *ScreenElement {
+	y := position.GetY()
+	x := position.GetX()
+	// TODO: Error handling.
+	if y < 0 || y > screen.MeasureRowLength() {
+		panic(fmt.Sprintf("That position (Y=%d) does not exist on the screen.", y))
+	} else if x < 0 || x > screen.MeasureColumnLength() {
+		panic(fmt.Sprintf("That position (X=%d) does not exist on the screen.", x))
 	}
-	return &(screen.matrix[position.Y][position.X])
+	return &(screen.matrix[y][x])
 }
 
-func (screen *Screen) renderField(startPosition ScreenPosition, field *Field) {
+func (screen *Screen) renderField(startPosition utils.MatrixPosition, field *Field) {
 	rowLength := field.MeasureRowLength()
 	columnLength := field.MeasureColumnLength()
 	for y := 0; y < rowLength; y++ {
 		for x := 0; x < columnLength; x++ {
-			position := ScreenPosition{
-				Y: startPosition.Y + y,
-				X: startPosition.X + x,
+			var screenElementPosition utils.MatrixPosition = &ScreenPosition{
+				y: startPosition.GetY() + y,
+				x: startPosition.GetX() + x,
 			}
-			element := screen.At(position)
-			var position_ utils.MatrixPosition = &FieldPosition{y: y, x: x}
-			element.renderFieldElement(field.At(position_))
+			element := screen.At(screenElementPosition)
+			var fieldElementPosition utils.MatrixPosition = &FieldPosition{y: y, x: x}
+			element.renderFieldElement(field.At(fieldElementPosition))
 		}
 	}
 }
@@ -102,7 +119,8 @@ func (screen *Screen) render(state *State) {
 	}
 
 	// Place the field.
-	screen.renderField(ScreenPosition{Y: 1, X: 1}, &state.Field)
+	var fieldPosition utils.MatrixPosition = &ScreenPosition{y: 1, x: 1}
+	screen.renderField(fieldPosition, &state.Field)
 }
 
 func (screen *Screen) AsText() string {
