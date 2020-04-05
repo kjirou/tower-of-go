@@ -26,7 +26,6 @@ func (fieldPosition *FieldPosition) Validate(rowLength int, columnLength int) bo
 }
 
 type FieldObject struct {
-	// TODO: Enumerize
 	Class string
 }
 
