@@ -2,18 +2,26 @@ package main
 
 import (
 	"fmt"
+	"github.com/kjirou/tower_of_go/utils"
 )
 
 type FieldPosition struct {
-	X int
-	Y int
+	x int
+	y int
+}
+
+func (fieldPosition *FieldPosition) GetY() int {
+	return fieldPosition.y
+}
+
+func (fieldPosition *FieldPosition) GetX() int {
+	return fieldPosition.x
 }
 
 func (fieldPosition *FieldPosition) Validate(rowLength int, columnLength int) bool {
-	return fieldPosition.Y >= 0 &&
-		fieldPosition.Y < rowLength &&
-		fieldPosition.X >= 0 &&
-		fieldPosition.X < columnLength
+	y := fieldPosition.GetY()
+	x := fieldPosition.GetX()
+	return y >= 0 && y < rowLength && x >= 0 && x < columnLength
 }
 
 type FieldObject struct {
@@ -41,13 +49,16 @@ func (field *Field) MeasureColumnLength() int {
 	return len(field.matrix[0])
 }
 
-func (field *Field) At(position FieldPosition) *FieldElement {
-	if position.Y < 0 || position.Y > field.MeasureRowLength() {
-		panic(fmt.Sprintf("That position (Y=%d) does not exist on the field.", position.Y))
-	} else if position.X < 0 || position.X > field.MeasureColumnLength() {
-		panic(fmt.Sprintf("That position (X=%d) does not exist on the field.", position.X))
+func (field *Field) At(position utils.MatrixPosition) *FieldElement {
+	y := position.GetY()
+	x := position.GetX()
+	// TODO: Error handling.
+	if y < 0 || y > field.MeasureRowLength() {
+		panic(fmt.Sprintf("That position (Y=%d) does not exist on the field.", y))
+	} else if x < 0 || x > field.MeasureColumnLength() {
+		panic(fmt.Sprintf("That position (X=%d) does not exist on the field.", x))
 	}
-	return &(field.matrix[position.Y][position.X])
+	return &(field.matrix[y][x])
 }
 
 // TODO: Refer `FieldObject.Class` type.
@@ -74,7 +85,7 @@ func (field *Field) GetElementOfHero() *FieldElement {
 	return elements[0]
 }
 
-func (field *Field) MoveObject(from FieldPosition, to FieldPosition) error {
+func (field *Field) MoveObject(from utils.MatrixPosition, to utils.MatrixPosition) error {
 	fromElement := field.At(from)
 	if fromElement.Object.IsEmpty() {
 		return fmt.Errorf("The object to be moved does not exist.")
@@ -100,21 +111,27 @@ const (
 
 func (field *Field) WalkHero(direction FourDirection) error {
 	element := field.GetElementOfHero()
-	nextPosition := element.Position
+	nextY := element.Position.GetY()
+	nextX := element.Position.GetX()
 	switch direction {
 	case FourDirectionUp:
-		nextPosition.Y -= 1
+		nextY -= 1
 	case FourDirectionRight:
-		nextPosition.X += 1
+		nextX += 1
 	case FourDirectionDown:
-		nextPosition.Y += 1
+		nextY += 1
 	case FourDirectionLeft:
-		nextPosition.X -= 1
+		nextX -= 1
+	}
+	var position utils.MatrixPosition = &element.Position
+	var nextPosition utils.MatrixPosition = &FieldPosition{
+		y: nextY,
+		x: nextX,
 	}
 	// TODO: Error handling.
 	if nextPosition.Validate(field.MeasureRowLength(), field.MeasureColumnLength()) {
 		if field.At(nextPosition).Object.IsEmpty() {
-			return field.MoveObject(element.Position, nextPosition)
+			return field.MoveObject(position, nextPosition)
 		}
 	}
 	return nil
@@ -131,8 +148,8 @@ func createField(y int, x int) Field {
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
 			// TODO: Embed into the following FieldElement initialization
 			fieldPosition := FieldPosition{
-				Y: rowIndex,
-				X: columnIndex,
+				y: rowIndex,
+				x: columnIndex,
 			}
 			fieldObject := FieldObject{
 				Class: "empty",

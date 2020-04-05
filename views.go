@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/kjirou/tower_of_go/utils"
 	"github.com/nsf/termbox-go"
 	"strings"
 )
@@ -72,7 +73,8 @@ func (screen *Screen) renderField(startPosition ScreenPosition, field *Field) {
 				X: startPosition.X + x,
 			}
 			element := screen.At(position)
-			element.renderFieldElement(field.At(FieldPosition{Y: y, X: x}))
+			var position_ utils.MatrixPosition = &FieldPosition{y: y, x: x}
+			element.renderFieldElement(field.At(position_))
 		}
 	}
 }

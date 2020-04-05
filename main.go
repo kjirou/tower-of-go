@@ -7,6 +7,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/kjirou/tower_of_go/utils"
 	"github.com/nsf/termbox-go"
 	"os"
 )
@@ -98,7 +99,8 @@ func main() {
 	}
 
 	// Dummy data
-	state.Field.At(FieldPosition{Y: 2, X: 5}).Object = FieldObject{
+	var heroPosition utils.MatrixPosition = &FieldPosition{y: 2, x: 5}
+	state.Field.At(heroPosition).Object = FieldObject{
 		Class: "hero",
 	}
 	fieldRowLength := state.Field.MeasureRowLength()
@@ -108,7 +110,8 @@ func main() {
 			isTopOrBottomEdge := y == 0 || y == fieldRowLength-1
 			isLeftOrRightEdge := x == 0 || x == fieldColumnLength-1
 			if isTopOrBottomEdge || isLeftOrRightEdge {
-				state.Field.At(FieldPosition{Y: y, X: x}).Object = FieldObject{
+				var wallPosition utils.MatrixPosition = &FieldPosition{y: y, x: x}
+				state.Field.At(wallPosition).Object = FieldObject{
 					Class: "wall",
 				}
 			}
