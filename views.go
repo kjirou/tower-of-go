@@ -97,7 +97,7 @@ func (screen *Screen) renderField(startPosition utils.MatrixPosition, field util
 	}
 }
 
-func (screen *Screen) render(state *State) {
+func (screen *Screen) render(state utils.IState) {
 	rowLength := screen.MeasureRowLength()
 	columnLength := screen.MeasureColumnLength()
 
@@ -121,8 +121,7 @@ func (screen *Screen) render(state *State) {
 
 	// Place the field.
 	var fieldPosition utils.MatrixPosition = &ScreenPosition{y: 1, x: 1}
-	var field utils.IField = &state.Field
-	screen.renderField(fieldPosition, field)
+	screen.renderField(fieldPosition, state.GetField())
 }
 
 func (screen *Screen) AsText() string {

@@ -37,22 +37,22 @@ func initializeTermbox(screen *Screen) error {
 // TODO: Replace `ch` type with termbox's `Cell.Ch` type.
 func handleKeyPress(state *State, screen *Screen, ch rune, key termbox.Key) {
 	var err error
-	field := &state.Field
+	field := state.GetField()
 	stateChanged := false
 
 	// Move the hero.
 	// TODO: Consider arrow keys.
 	if ch == 'k' {
-		err = field.WalkHero(FourDirectionUp)
+		err = field.WalkHero(utils.FourDirectionUp)
 		stateChanged = true
 	} else if ch == 'l' {
-		err = field.WalkHero(FourDirectionRight)
+		err = field.WalkHero(utils.FourDirectionRight)
 		stateChanged = true
 	} else if ch == 'j' {
-		err = field.WalkHero(FourDirectionDown)
+		err = field.WalkHero(utils.FourDirectionDown)
 		stateChanged = true
 	} else if ch == 'h' {
-		err = field.WalkHero(FourDirectionLeft)
+		err = field.WalkHero(utils.FourDirectionLeft)
 		stateChanged = true
 	}
 
@@ -95,21 +95,22 @@ func main() {
 	}
 
 	state := State{
-		Field: createField(12, 20),
+		field: createField(12, 20),
 	}
+	field := state.GetField()
 
 	// Dummy data
 	var heroPosition utils.MatrixPosition = &FieldPosition{y: 2, x: 5}
-	state.Field.At(heroPosition).UpdateObjectClass("hero")
-	fieldRowLength := state.Field.MeasureRowLength()
-	fieldColumnLength := state.Field.MeasureColumnLength()
+	field.At(heroPosition).UpdateObjectClass("hero")
+	fieldRowLength := field.MeasureRowLength()
+	fieldColumnLength := field.MeasureColumnLength()
 	for y := 0; y < fieldRowLength; y++ {
 		for x := 0; x < fieldColumnLength; x++ {
 			isTopOrBottomEdge := y == 0 || y == fieldRowLength-1
 			isLeftOrRightEdge := x == 0 || x == fieldColumnLength-1
 			if isTopOrBottomEdge || isLeftOrRightEdge {
 				var wallPosition utils.MatrixPosition = &FieldPosition{y: y, x: x}
-				state.Field.At(wallPosition).UpdateObjectClass("wall")
+				field.At(wallPosition).UpdateObjectClass("wall")
 			}
 		}
 	}

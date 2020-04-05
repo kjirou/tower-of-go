@@ -111,26 +111,18 @@ func (field *Field) MoveObject(from utils.MatrixPosition, to utils.MatrixPositio
 	return nil
 }
 
-type FourDirection int
-const (
-	FourDirectionUp FourDirection = iota
-	FourDirectionRight
-	FourDirectionDown
-	FourDirectionLeft
-)
-
-func (field *Field) WalkHero(direction FourDirection) error {
+func (field *Field) WalkHero(direction utils.FourDirection) error {
 	element := field.GetElementOfHero()
 	nextY := element.Position.GetY()
 	nextX := element.Position.GetX()
 	switch direction {
-	case FourDirectionUp:
+	case utils.FourDirectionUp:
 		nextY -= 1
-	case FourDirectionRight:
+	case utils.FourDirectionRight:
 		nextX += 1
-	case FourDirectionDown:
+	case utils.FourDirectionDown:
 		nextY += 1
-	case FourDirectionLeft:
+	case utils.FourDirectionLeft:
 		nextX -= 1
 	}
 	var position utils.MatrixPosition = &element.Position
@@ -148,7 +140,12 @@ func (field *Field) WalkHero(direction FourDirection) error {
 }
 
 type State struct {
-	Field Field
+	field Field
+}
+
+func (state *State) GetField() utils.IField {
+	var field utils.IField = &state.field
+	return field
 }
 
 func createField(y int, x int) Field {

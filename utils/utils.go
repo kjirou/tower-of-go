@@ -1,5 +1,13 @@
 package utils
 
+type FourDirection int
+const (
+	FourDirectionUp FourDirection = iota
+	FourDirectionRight
+	FourDirectionDown
+	FourDirectionLeft
+)
+
 type MatrixPosition interface {
 	GetX() int
 	GetY() int
@@ -16,4 +24,9 @@ type IField interface {
 	At(position MatrixPosition) IFieldElement
 	MeasureColumnLength() int
 	MeasureRowLength() int
+	WalkHero(direction FourDirection) error
+}
+
+type IState interface {
+	GetField() IField
 }
