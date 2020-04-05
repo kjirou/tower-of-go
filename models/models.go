@@ -139,6 +139,35 @@ func (state *State) GetField() utils.IField {
 	return field
 }
 
+func (state *State) InitializeDummyData() error {
+	field := state.GetField()
+
+	// Hero
+	var heroPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 2, X: 5}
+	heroFieldElement, err := field.At(heroPosition)
+	if err != nil {
+		return err
+	}
+	heroFieldElement.UpdateObjectClass("hero")
+
+	// Walls
+	fieldRowLength := field.MeasureRowLength()
+	fieldColumnLength := field.MeasureColumnLength()
+	for y := 0; y < fieldRowLength; y++ {
+		for x := 0; x < fieldColumnLength; x++ {
+			isTopOrBottomEdge := y == 0 || y == fieldRowLength-1
+			isLeftOrRightEdge := x == 0 || x == fieldColumnLength-1
+			if isTopOrBottomEdge || isLeftOrRightEdge {
+				var wallPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
+				var elem, _ = field.At(wallPosition)
+				elem.UpdateObjectClass("wall")
+			}
+		}
+	}
+
+	return nil
+}
+
 func createField(y int, x int) Field {
 	matrix := make([][]FieldElement, y)
 	for rowIndex := 0; rowIndex < y; rowIndex++ {

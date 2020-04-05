@@ -95,24 +95,9 @@ func main() {
 	}
 
 	state := models.CreateState()
-	field := state.GetField()
-
-	// Dummy data
-	var heroPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 2, X: 5}
-	var elem, _ = field.At(heroPosition)
-	elem.UpdateObjectClass("hero")
-	fieldRowLength := field.MeasureRowLength()
-	fieldColumnLength := field.MeasureColumnLength()
-	for y := 0; y < fieldRowLength; y++ {
-		for x := 0; x < fieldColumnLength; x++ {
-			isTopOrBottomEdge := y == 0 || y == fieldRowLength-1
-			isLeftOrRightEdge := x == 0 || x == fieldColumnLength-1
-			if isTopOrBottomEdge || isLeftOrRightEdge {
-				var wallPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
-				var elem, _ = field.At(wallPosition)
-				elem.UpdateObjectClass("wall")
-			}
-		}
+	err := state.InitializeDummyData()
+	if err != nil {
+		panic(err)
 	}
 
 	screen := views.CreateScreen(24+2, 80+2)
