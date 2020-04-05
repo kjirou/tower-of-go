@@ -6,6 +6,7 @@ package main
 import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/models"
+	"github.com/kjirou/tower_of_go/reducers"
 	"github.com/kjirou/tower_of_go/utils"
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
@@ -55,34 +56,28 @@ func initializeTermbox() error {
 // TODO: Replace `ch` type with termbox's `Cell.Ch` type.
 func handleKeyPress(controller *Controller, ch rune, key termbox.Key) {
 	var err error
+	var newState *models.State
 	state := controller.GetState()
-	screen := controller.GetScreen()
-	field := state.GetField()
-	stateChanged := false
 
 	// Move the hero.
 	// TODO: Consider arrow keys.
 	if ch == 'k' {
-		err = field.WalkHero(utils.FourDirectionUp)
-		stateChanged = true
+		newState, err = reducers.WalkHero(*state, utils.FourDirectionUp)
 	} else if ch == 'l' {
-		err = field.WalkHero(utils.FourDirectionRight)
-		stateChanged = true
+		newState, err = reducers.WalkHero(*state, utils.FourDirectionRight)
 	} else if ch == 'j' {
-		err = field.WalkHero(utils.FourDirectionDown)
-		stateChanged = true
+		newState, err = reducers.WalkHero(*state, utils.FourDirectionDown)
 	} else if ch == 'h' {
-		err = field.WalkHero(utils.FourDirectionLeft)
-		stateChanged = true
+		newState, err = reducers.WalkHero(*state, utils.FourDirectionLeft)
 	}
 
 	if err != nil {
 		panic(err)
 	}
 
-	if stateChanged {
-		screen.Render(state)
-		drawTerminal(screen)
+	if newState != nil {
+		controller.Dispatch(newState)
+		drawTerminal(controller.GetScreen())
 	}
 }
 
@@ -121,12 +116,13 @@ func main() {
 	}
 
 	screen := views.CreateScreen(24+2, 80+2)
-	screen.Render(&state)
 
 	controller := Controller{
 		state: &state,
 		screen: &screen,
 	}
+
+	controller.Dispatch(&state)
 
 	if doesRunTermbox {
 		termboxErr := initializeTermbox()

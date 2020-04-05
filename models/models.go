@@ -72,8 +72,9 @@ func (field *Field) FindElementsByObjectClass(objectClass string) []*FieldElemen
 	return elements
 }
 
-func (field *Field) GetElementOfHero() *FieldElement {
+func (field *Field) GetElementOfHero() utils.IFieldElement {
 	elements := field.FindElementsByObjectClass("hero")
+	// TODO: Error handling.
 	if len(elements) == 0 {
 		panic("The hero does not exist.")
 	} else if len(elements) > 1 {
@@ -97,36 +98,6 @@ func (field *Field) MoveObject(from utils.IMatrixPosition, to utils.IMatrixPosit
 	}
 	toElement.UpdateObjectClass(fromElement.GetObjectClass())
 	fromElement.UpdateObjectClass("empty")
-	return nil
-}
-
-func (field *Field) WalkHero(direction utils.FourDirection) error {
-	element := field.GetElementOfHero()
-	nextY := element.Position.GetY()
-	nextX := element.Position.GetX()
-	switch direction {
-	case utils.FourDirectionUp:
-		nextY -= 1
-	case utils.FourDirectionRight:
-		nextX += 1
-	case utils.FourDirectionDown:
-		nextY += 1
-	case utils.FourDirectionLeft:
-		nextX -= 1
-	}
-	var position utils.IMatrixPosition = &element.Position
-	var nextPosition utils.IMatrixPosition = &utils.MatrixPosition{
-		Y: nextY,
-		X: nextX,
-	}
-	if nextPosition.Validate(field.MeasureRowLength(), field.MeasureColumnLength()) {
-		element, err := field.At(nextPosition)
-		if err != nil {
-			return err
-		} else if element.IsObjectEmpty() {
-			return field.MoveObject(position, nextPosition)
-		}
-	}
 	return nil
 }
 
