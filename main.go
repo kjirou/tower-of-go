@@ -99,20 +99,28 @@ func (field *Field) MoveObject(from FieldPosition, to FieldPosition) error {
 	return nil
 }
 
-// TODO: Enumerize
-func (field *Field) WalkHero(direction string) error {
+type FourDirection int
+const (
+	FourDirectionUp FourDirection = iota
+	FourDirectionRight
+	FourDirectionDown
+	FourDirectionLeft
+)
+
+func (field *Field) WalkHero(direction FourDirection) error {
 	element := field.GetElementOfHero()
 	nextPosition := element.Position
 	switch direction {
-	case "up":
+	case FourDirectionUp:
 		nextPosition.Y -= 1
-	case "right":
+	case FourDirectionRight:
 		nextPosition.X += 1
-	case "down":
+	case FourDirectionDown:
 		nextPosition.Y += 1
-	case "left":
+	case FourDirectionLeft:
 		nextPosition.X -= 1
 	}
+	// TODO: Error handling.
 	if nextPosition.Validate(field.MeasureRowLength(), field.MeasureColumnLength()) {
 		if field.At(nextPosition).Object.IsEmpty() {
 			return field.MoveObject(element.Position, nextPosition)
@@ -315,16 +323,16 @@ func handleKeyPress(state *State, screen *Screen, ch rune, key termbox.Key) {
 	// Move the hero.
 	// TODO: Consider arrow keys.
 	if ch == 'k' {
-		err = field.WalkHero("up")
+		err = field.WalkHero(FourDirectionUp)
 		stateChanged = true
 	} else if ch == 'l' {
-		err = field.WalkHero("right")
+		err = field.WalkHero(FourDirectionRight)
 		stateChanged = true
 	} else if ch == 'j' {
-		err = field.WalkHero("down")
+		err = field.WalkHero(FourDirectionDown)
 		stateChanged = true
 	} else if ch == 'h' {
-		err = field.WalkHero("left")
+		err = field.WalkHero(FourDirectionLeft)
 		stateChanged = true
 	}
 
