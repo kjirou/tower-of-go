@@ -260,13 +260,13 @@ func (screen *Screen) AsText() string {
 	rowLength := screen.MeasureRowLength()
 	columnLength := screen.MeasureColumnLength()
 	lines := make([]string, rowLength)
-	for rowIndex := 0; rowIndex < rowLength; rowIndex++ {
+	for y := 0; y < rowLength; y++ {
 		line := make([]rune, columnLength)
 		// TODO: Use mapping method
-		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
-			line[columnIndex] = screen.matrix[rowIndex][columnIndex].Symbol
+		for x := 0; x < columnLength; x++ {
+			line[x] = screen.matrix[y][x].Symbol
 		}
-		lines[rowIndex] = string(line)
+		lines[y] = string(line)
 	}
 	return strings.Join(lines, "\n")
 }
