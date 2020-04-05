@@ -18,6 +18,11 @@ type FieldElement struct {
 	Position utils.MatrixPosition
 }
 
+func (fieldElement *FieldElement) GetPosition() utils.IMatrixPosition {
+	var position utils.IMatrixPosition = &fieldElement.Position
+	return position
+}
+
 func (fieldElement *FieldElement) GetObjectClass() string {
 	return fieldElement.Object.Class
 }
