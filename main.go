@@ -100,9 +100,7 @@ func main() {
 
 	// Dummy data
 	var heroPosition utils.MatrixPosition = &FieldPosition{y: 2, x: 5}
-	state.Field.At(heroPosition).Object = FieldObject{
-		Class: "hero",
-	}
+	state.Field.At(heroPosition).UpdateObjectClass("hero")
 	fieldRowLength := state.Field.MeasureRowLength()
 	fieldColumnLength := state.Field.MeasureColumnLength()
 	for y := 0; y < fieldRowLength; y++ {
@@ -111,9 +109,7 @@ func main() {
 			isLeftOrRightEdge := x == 0 || x == fieldColumnLength-1
 			if isTopOrBottomEdge || isLeftOrRightEdge {
 				var wallPosition utils.MatrixPosition = &FieldPosition{y: y, x: x}
-				state.Field.At(wallPosition).Object = FieldObject{
-					Class: "wall",
-				}
+				state.Field.At(wallPosition).UpdateObjectClass("wall")
 			}
 		}
 	}

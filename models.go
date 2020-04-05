@@ -45,6 +45,10 @@ func (fieldElement *FieldElement) IsObjectEmpty() bool {
 	return fieldElement.Object.IsEmpty()
 }
 
+func (fieldElement *FieldElement) UpdateObjectClass(class string) {
+	fieldElement.Object.Class = class
+}
+
 type Field struct {
 	matrix [][]FieldElement
 }
@@ -57,7 +61,7 @@ func (field *Field) MeasureColumnLength() int {
 	return len(field.matrix[0])
 }
 
-func (field *Field) At(position utils.MatrixPosition) *FieldElement {
+func (field *Field) At(position utils.MatrixPosition) utils.IFieldElement {
 	y := position.GetY()
 	x := position.GetX()
 	// TODO: Error handling.
@@ -102,10 +106,8 @@ func (field *Field) MoveObject(from utils.MatrixPosition, to utils.MatrixPositio
 	if toElement.IsObjectEmpty() == false {
 		return fmt.Errorf("An object exists at the destination.")
 	}
-	toElement.Object = fromElement.Object
-	fromElement.Object = FieldObject{
-		Class: "empty",
-	}
+	toElement.UpdateObjectClass(fromElement.GetObjectClass())
+	fromElement.UpdateObjectClass("empty")
 	return nil
 }
 

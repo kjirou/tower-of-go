@@ -6,7 +6,14 @@ type MatrixPosition interface {
 	Validate(rowLength int, columnLength int) bool
 }
 
-type RpgFieldElement interface {
+type IFieldElement interface {
 	GetObjectClass() string
 	IsObjectEmpty() bool
+	UpdateObjectClass(class string)
+}
+
+type IField interface {
+	At(position MatrixPosition) IFieldElement
+	MeasureColumnLength() int
+	MeasureRowLength() int
 }

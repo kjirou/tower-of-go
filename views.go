@@ -32,7 +32,7 @@ type ScreenElement struct {
 	BackgroundColor termbox.Attribute
 }
 
-func (screenElement *ScreenElement) renderWithRpgFieldElement(fieldElement utils.RpgFieldElement) {
+func (screenElement *ScreenElement) renderWithFieldElement(fieldElement utils.IFieldElement) {
 	symbol := '.'
 	fg := termbox.ColorWhite
 	bg := termbox.ColorBlack
@@ -80,7 +80,7 @@ func (screen *Screen) At(position utils.MatrixPosition) *ScreenElement {
 	return &(screen.matrix[y][x])
 }
 
-func (screen *Screen) renderField(startPosition utils.MatrixPosition, field *Field) {
+func (screen *Screen) renderField(startPosition utils.MatrixPosition, field utils.IField) {
 	rowLength := field.MeasureRowLength()
 	columnLength := field.MeasureColumnLength()
 	for y := 0; y < rowLength; y++ {
@@ -91,8 +91,8 @@ func (screen *Screen) renderField(startPosition utils.MatrixPosition, field *Fie
 			}
 			element := screen.At(screenElementPosition)
 			var fieldElementPosition utils.MatrixPosition = &FieldPosition{y: y, x: x}
-			var fieldElement utils.RpgFieldElement = field.At(fieldElementPosition)
-			element.renderWithRpgFieldElement(fieldElement)
+			var fieldElement utils.IFieldElement = field.At(fieldElementPosition)
+			element.renderWithFieldElement(fieldElement)
 		}
 	}
 }
@@ -121,7 +121,8 @@ func (screen *Screen) render(state *State) {
 
 	// Place the field.
 	var fieldPosition utils.MatrixPosition = &ScreenPosition{y: 1, x: 1}
-	screen.renderField(fieldPosition, &state.Field)
+	var field utils.IField = &state.Field
+	screen.renderField(fieldPosition, field)
 }
 
 func (screen *Screen) AsText() string {
