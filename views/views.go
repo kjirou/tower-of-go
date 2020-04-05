@@ -1,4 +1,4 @@
-package main
+package views
 
 import (
 	"fmt"
@@ -41,6 +41,10 @@ type Screen struct {
 	matrix [][]ScreenElement
 }
 
+func (screen *Screen) GetMatrix() [][]ScreenElement {
+	return screen.matrix
+}
+
 func (screen *Screen) MeasureRowLength() int {
 	return len(screen.matrix)
 }
@@ -78,7 +82,7 @@ func (screen *Screen) renderField(startPosition utils.IMatrixPosition, field uti
 	}
 }
 
-func (screen *Screen) render(state utils.IState) {
+func (screen *Screen) Render(state utils.IState) {
 	rowLength := screen.MeasureRowLength()
 	columnLength := screen.MeasureColumnLength()
 
@@ -119,7 +123,7 @@ func (screen *Screen) AsText() string {
 	return strings.Join(lines, "\n")
 }
 
-func createScreen(rowLength int, columnLength int) Screen {
+func CreateScreen(rowLength int, columnLength int) Screen {
 	matrix := make([][]ScreenElement, rowLength)
 	for rowIndex := 0; rowIndex < rowLength; rowIndex++ {
 		row := make([]ScreenElement, columnLength)

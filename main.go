@@ -1,19 +1,18 @@
 package main
 
 // TODO:
-// - Separate the main package to sub local packages.
-//   e.g.) Screeen -> views.Screen
-// - Summarize "go run a.go b.go (...more local files!)" into "go run (--option) main.go".
+// - Write unit test for each packages.
 
 import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/utils"
+	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
 	"os"
 )
 
-func drawTerminal(screen *Screen) {
-	for y, row := range screen.matrix {
+func drawTerminal(screen *views.Screen) {
+	for y, row := range screen.GetMatrix() {
 		for x, element := range row {
 			termbox.SetCell(x, y, element.Symbol, element.ForegroundColor, element.BackgroundColor)
 		}
@@ -21,7 +20,7 @@ func drawTerminal(screen *Screen) {
 	termbox.Flush()
 }
 
-func initializeTermbox(screen *Screen) error {
+func initializeTermbox(screen *views.Screen) error {
 	termboxErr := termbox.Init()
 	if termboxErr != nil {
 		return termboxErr
@@ -35,7 +34,7 @@ func initializeTermbox(screen *Screen) error {
 //   https://github.com/nsf/termbox-go/blob/4d2b513ad8bee47a9a5a65b0dee0182049a31916/_demos/keyboard.go#L669
 //   (However, details cannot be read...)
 // TODO: Replace `ch` type with termbox's `Cell.Ch` type.
-func handleKeyPress(state *State, screen *Screen, ch rune, key termbox.Key) {
+func handleKeyPress(state *State, screen *views.Screen, ch rune, key termbox.Key) {
 	var err error
 	field := state.GetField()
 	stateChanged := false
@@ -61,12 +60,12 @@ func handleKeyPress(state *State, screen *Screen, ch rune, key termbox.Key) {
 	}
 
 	if stateChanged {
-		screen.render(state)
+		screen.Render(state)
 		drawTerminal(screen)
 	}
 }
 
-func handleTermboxEvents(state *State, screen *Screen) {
+func handleTermboxEvents(state *State, screen *views.Screen) {
 	didQuitApplication := false
 
 	for !didQuitApplication {
@@ -115,8 +114,8 @@ func main() {
 		}
 	}
 
-	screen := createScreen(24+2, 80+2)
-	screen.render(&state)
+	screen := views.CreateScreen(24+2, 80+2)
+	screen.Render(&state)
 
 	if doesRunTermbox {
 		termboxErr := initializeTermbox(&screen)
