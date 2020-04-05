@@ -30,8 +30,8 @@ type FieldObject struct {
 	Class string
 }
 
-func (fo *FieldObject) IsEmpty() bool {
-	return fo.Class == "empty"
+func (fieldObject *FieldObject) IsEmpty() bool {
+	return fieldObject.Class == "empty"
 }
 
 type FieldElement struct {
