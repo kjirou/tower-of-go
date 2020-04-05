@@ -1,5 +1,5 @@
 run:
-	go run views.go main.go
+	go run models.go views.go main.go
 
 run-with-term-mode:
-	go run views.go main.go -t
+	go run models.go views.go main.go -t
