@@ -50,9 +50,9 @@ func (field *Field) MeasureColumnLength() int {
 func (field *Field) At(position utils.IMatrixPosition) (utils.IFieldElement, error) {
 	y := position.GetY()
 	x := position.GetX()
-	if y < 0 || y > field.MeasureRowLength() {
+	if y < 0 || y > field.MeasureRowLength()-1 {
 		return &FieldElement{}, fmt.Errorf("That position (Y=%d) does not exist on the field.", y)
-	} else if x < 0 || x > field.MeasureColumnLength() {
+	} else if x < 0 || x > field.MeasureColumnLength()-1 {
 		return &FieldElement{}, fmt.Errorf("That position (X=%d) does not exist on the field.", x)
 	}
 	return &(field.matrix[y][x]), nil
