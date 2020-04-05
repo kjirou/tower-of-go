@@ -5,6 +5,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/kjirou/tower_of_go/models"
 	"github.com/kjirou/tower_of_go/utils"
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
@@ -34,7 +35,7 @@ func initializeTermbox(screen *views.Screen) error {
 //   https://github.com/nsf/termbox-go/blob/4d2b513ad8bee47a9a5a65b0dee0182049a31916/_demos/keyboard.go#L669
 //   (However, details cannot be read...)
 // TODO: Replace `ch` type with termbox's `Cell.Ch` type.
-func handleKeyPress(state *State, screen *views.Screen, ch rune, key termbox.Key) {
+func handleKeyPress(state *models.State, screen *views.Screen, ch rune, key termbox.Key) {
 	var err error
 	field := state.GetField()
 	stateChanged := false
@@ -65,7 +66,7 @@ func handleKeyPress(state *State, screen *views.Screen, ch rune, key termbox.Key
 	}
 }
 
-func handleTermboxEvents(state *State, screen *views.Screen) {
+func handleTermboxEvents(state *models.State, screen *views.Screen) {
 	didQuitApplication := false
 
 	for !didQuitApplication {
@@ -93,9 +94,7 @@ func main() {
 		}
 	}
 
-	state := State{
-		field: createField(12, 20),
-	}
+	state := models.CreateState()
 	field := state.GetField()
 
 	// Dummy data

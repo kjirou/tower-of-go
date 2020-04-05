@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"fmt"
@@ -154,3 +154,9 @@ func createField(y int, x int) Field {
 	}
 }
 
+func CreateState() State {
+	state := State{
+		field: createField(12, 20),
+	}
+	return state
+}
