@@ -39,9 +39,10 @@ type IFieldElement interface {
 
 type IField interface {
 	At(position IMatrixPosition) (IFieldElement, error)
+	GetElementOfHero() IFieldElement
 	MeasureColumnLength() int
 	MeasureRowLength() int
-	WalkHero(direction FourDirection) error
+	MoveObject(from IMatrixPosition, to IMatrixPosition) error
 }
 
 type IState interface {

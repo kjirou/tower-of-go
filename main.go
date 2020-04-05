@@ -6,11 +6,30 @@ package main
 import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/models"
+	"github.com/kjirou/tower_of_go/reducers"
 	"github.com/kjirou/tower_of_go/utils"
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
 	"os"
 )
+
+type Controller struct {
+	state *models.State
+	screen *views.Screen
+}
+
+func (controller *Controller) GetState() *models.State {
+	return controller.state
+}
+
+func (controller *Controller) GetScreen() *views.Screen {
+	return controller.screen
+}
+
+func (controller *Controller) Dispatch(newState *models.State) {
+	controller.state = newState
+	controller.screen.Render(controller.state)
+}
 
 func drawTerminal(screen *views.Screen) {
 	for y, row := range screen.GetMatrix() {
@@ -21,7 +40,7 @@ func drawTerminal(screen *views.Screen) {
 	termbox.Flush()
 }
 
-func initializeTermbox(screen *views.Screen) error {
+func initializeTermbox() error {
 	termboxErr := termbox.Init()
 	if termboxErr != nil {
 		return termboxErr
@@ -35,38 +54,34 @@ func initializeTermbox(screen *views.Screen) error {
 //   https://github.com/nsf/termbox-go/blob/4d2b513ad8bee47a9a5a65b0dee0182049a31916/_demos/keyboard.go#L669
 //   (However, details cannot be read...)
 // TODO: Replace `ch` type with termbox's `Cell.Ch` type.
-func handleKeyPress(state *models.State, screen *views.Screen, ch rune, key termbox.Key) {
+func handleKeyPress(controller *Controller, ch rune, key termbox.Key) {
 	var err error
-	field := state.GetField()
-	stateChanged := false
+	var newState *models.State
+	state := controller.GetState()
 
 	// Move the hero.
 	// TODO: Consider arrow keys.
 	if ch == 'k' {
-		err = field.WalkHero(utils.FourDirectionUp)
-		stateChanged = true
+		newState, err = reducers.WalkHero(*state, utils.FourDirectionUp)
 	} else if ch == 'l' {
-		err = field.WalkHero(utils.FourDirectionRight)
-		stateChanged = true
+		newState, err = reducers.WalkHero(*state, utils.FourDirectionRight)
 	} else if ch == 'j' {
-		err = field.WalkHero(utils.FourDirectionDown)
-		stateChanged = true
+		newState, err = reducers.WalkHero(*state, utils.FourDirectionDown)
 	} else if ch == 'h' {
-		err = field.WalkHero(utils.FourDirectionLeft)
-		stateChanged = true
+		newState, err = reducers.WalkHero(*state, utils.FourDirectionLeft)
 	}
 
 	if err != nil {
 		panic(err)
 	}
 
-	if stateChanged {
-		screen.Render(state)
-		drawTerminal(screen)
+	if newState != nil {
+		controller.Dispatch(newState)
+		drawTerminal(controller.GetScreen())
 	}
 }
 
-func handleTermboxEvents(state *models.State, screen *views.Screen) {
+func handleTermboxEvents(controller *Controller) {
 	didQuitApplication := false
 
 	for !didQuitApplication {
@@ -79,7 +94,7 @@ func handleTermboxEvents(state *models.State, screen *views.Screen) {
 				break
 			}
 
-			handleKeyPress(state, screen, event.Ch, event.Key)
+			handleKeyPress(controller, event.Ch, event.Key)
 		}
 	}
 }
@@ -101,16 +116,22 @@ func main() {
 	}
 
 	screen := views.CreateScreen(24+2, 80+2)
-	screen.Render(&state)
+
+	controller := Controller{
+		state: &state,
+		screen: &screen,
+	}
+
+	controller.Dispatch(&state)
 
 	if doesRunTermbox {
-		termboxErr := initializeTermbox(&screen)
+		termboxErr := initializeTermbox()
 		if termboxErr != nil {
 			panic(termboxErr)
 		}
 		defer termbox.Close()
 		drawTerminal(&screen)
-		handleTermboxEvents(&state, &screen)
+		handleTermboxEvents(&controller)
 	} else {
 		fmt.Println(screen.AsText())
 	}
