@@ -68,7 +68,7 @@ func (screen *Screen) MeasureColumnLength() int {
 	return len(screen.matrix[0])
 }
 
-func (screen *Screen) At(position utils.MatrixPosition) *ScreenElement {
+func (screen *Screen) At(position utils.IMatrixPosition) *ScreenElement {
 	y := position.GetY()
 	x := position.GetX()
 	// TODO: Error handling.
@@ -80,17 +80,17 @@ func (screen *Screen) At(position utils.MatrixPosition) *ScreenElement {
 	return &(screen.matrix[y][x])
 }
 
-func (screen *Screen) renderField(startPosition utils.MatrixPosition, field utils.IField) {
+func (screen *Screen) renderField(startPosition utils.IMatrixPosition, field utils.IField) {
 	rowLength := field.MeasureRowLength()
 	columnLength := field.MeasureColumnLength()
 	for y := 0; y < rowLength; y++ {
 		for x := 0; x < columnLength; x++ {
-			var screenElementPosition utils.MatrixPosition = &ScreenPosition{
+			var screenElementPosition utils.IMatrixPosition = &ScreenPosition{
 				y: startPosition.GetY() + y,
 				x: startPosition.GetX() + x,
 			}
 			element := screen.At(screenElementPosition)
-			var fieldElementPosition utils.MatrixPosition = &FieldPosition{y: y, x: x}
+			var fieldElementPosition utils.IMatrixPosition = &FieldPosition{y: y, x: x}
 			var fieldElement utils.IFieldElement = field.At(fieldElementPosition)
 			element.renderWithFieldElement(fieldElement)
 		}
@@ -120,7 +120,7 @@ func (screen *Screen) render(state utils.IState) {
 	}
 
 	// Place the field.
-	var fieldPosition utils.MatrixPosition = &ScreenPosition{y: 1, x: 1}
+	var fieldPosition utils.IMatrixPosition = &ScreenPosition{y: 1, x: 1}
 	screen.renderField(fieldPosition, state.GetField())
 }
 

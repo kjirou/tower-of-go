@@ -61,7 +61,7 @@ func (field *Field) MeasureColumnLength() int {
 	return len(field.matrix[0])
 }
 
-func (field *Field) At(position utils.MatrixPosition) utils.IFieldElement {
+func (field *Field) At(position utils.IMatrixPosition) utils.IFieldElement {
 	y := position.GetY()
 	x := position.GetX()
 	// TODO: Error handling.
@@ -97,7 +97,7 @@ func (field *Field) GetElementOfHero() *FieldElement {
 	return elements[0]
 }
 
-func (field *Field) MoveObject(from utils.MatrixPosition, to utils.MatrixPosition) error {
+func (field *Field) MoveObject(from utils.IMatrixPosition, to utils.IMatrixPosition) error {
 	fromElement := field.At(from)
 	if fromElement.IsObjectEmpty() {
 		return fmt.Errorf("The object to be moved does not exist.")
@@ -125,8 +125,8 @@ func (field *Field) WalkHero(direction utils.FourDirection) error {
 	case utils.FourDirectionLeft:
 		nextX -= 1
 	}
-	var position utils.MatrixPosition = &element.Position
-	var nextPosition utils.MatrixPosition = &FieldPosition{
+	var position utils.IMatrixPosition = &element.Position
+	var nextPosition utils.IMatrixPosition = &FieldPosition{
 		y: nextY,
 		x: nextX,
 	}

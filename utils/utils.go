@@ -8,7 +8,7 @@ const (
 	FourDirectionLeft
 )
 
-type MatrixPosition interface {
+type IMatrixPosition interface {
 	GetX() int
 	GetY() int
 	Validate(rowLength int, columnLength int) bool
@@ -21,7 +21,7 @@ type IFieldElement interface {
 }
 
 type IField interface {
-	At(position MatrixPosition) IFieldElement
+	At(position IMatrixPosition) IFieldElement
 	MeasureColumnLength() int
 	MeasureRowLength() int
 	WalkHero(direction FourDirection) error
