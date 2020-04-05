@@ -37,6 +37,14 @@ type FieldElement struct {
 	Position FieldPosition
 }
 
+func (fieldElement *FieldElement) GetObjectClass() string {
+	return fieldElement.Object.Class
+}
+
+func (fieldElement *FieldElement) IsObjectEmpty() bool {
+	return fieldElement.Object.IsEmpty()
+}
+
 type Field struct {
 	matrix [][]FieldElement
 }
@@ -87,11 +95,11 @@ func (field *Field) GetElementOfHero() *FieldElement {
 
 func (field *Field) MoveObject(from utils.MatrixPosition, to utils.MatrixPosition) error {
 	fromElement := field.At(from)
-	if fromElement.Object.IsEmpty() {
+	if fromElement.IsObjectEmpty() {
 		return fmt.Errorf("The object to be moved does not exist.")
 	}
 	toElement := field.At(to)
-	if toElement.Object.IsEmpty() == false {
+	if toElement.IsObjectEmpty() == false {
 		return fmt.Errorf("An object exists at the destination.")
 	}
 	toElement.Object = fromElement.Object
@@ -130,7 +138,7 @@ func (field *Field) WalkHero(direction FourDirection) error {
 	}
 	// TODO: Error handling.
 	if nextPosition.Validate(field.MeasureRowLength(), field.MeasureColumnLength()) {
-		if field.At(nextPosition).Object.IsEmpty() {
+		if field.At(nextPosition).IsObjectEmpty() {
 			return field.MoveObject(position, nextPosition)
 		}
 	}

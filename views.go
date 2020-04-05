@@ -32,12 +32,12 @@ type ScreenElement struct {
 	BackgroundColor termbox.Attribute
 }
 
-func (screenElement *ScreenElement) renderFieldElement(fieldElement *FieldElement) {
+func (screenElement *ScreenElement) renderWithRpgFieldElement(fieldElement utils.RpgFieldElement) {
 	symbol := '.'
 	fg := termbox.ColorWhite
 	bg := termbox.ColorBlack
-	if !fieldElement.Object.IsEmpty() {
-		switch fieldElement.Object.Class {
+	if !fieldElement.IsObjectEmpty() {
+		switch fieldElement.GetObjectClass() {
 		case "hero":
 			symbol = '@'
 			fg = termbox.ColorMagenta
@@ -91,7 +91,8 @@ func (screen *Screen) renderField(startPosition utils.MatrixPosition, field *Fie
 			}
 			element := screen.At(screenElementPosition)
 			var fieldElementPosition utils.MatrixPosition = &FieldPosition{y: y, x: x}
-			element.renderFieldElement(field.At(fieldElementPosition))
+			var fieldElement utils.RpgFieldElement = field.At(fieldElementPosition)
+			element.renderWithRpgFieldElement(fieldElement)
 		}
 	}
 }
