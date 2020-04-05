@@ -1,15 +1,14 @@
 package main
 
 // TODO:
-// - go fmt
 // - Separate to modules
 // - Why did diffs in the go.mod/go.sub have increased? Probably only `go run` was executed.
 
 import (
 	"fmt"
+	"github.com/doronbehar/termbox-go"
 	"os"
 	"strings"
-	"github.com/doronbehar/termbox-go"
 )
 
 // Model
@@ -37,7 +36,7 @@ func (fo *FieldObject) IsEmpty() bool {
 }
 
 type FieldElement struct {
-	Object FieldObject
+	Object   FieldObject
 	Position FieldPosition
 }
 
@@ -143,7 +142,7 @@ func createField(y int, x int) Field {
 			}
 			row[columnIndex] = FieldElement{
 				Position: fieldPosition,
-				Object: fieldObject,
+				Object:   fieldObject,
 			}
 		}
 		matrix[rowIndex] = row
@@ -162,7 +161,7 @@ type ScreenPosition struct {
 }
 
 type ScreenElement struct {
-	Symbol rune
+	Symbol          rune
 	ForegroundColor termbox.Attribute
 	BackgroundColor termbox.Attribute
 }
@@ -173,14 +172,14 @@ func (screenElement *ScreenElement) renderFieldElement(fieldElement *FieldElemen
 	bg := termbox.ColorBlack
 	if !fieldElement.Object.IsEmpty() {
 		switch fieldElement.Object.Class {
-			case "hero":
-				symbol = '@'
-				fg = termbox.ColorMagenta
-			case "wall":
-				symbol = '#'
-				fg = termbox.ColorYellow
-			default:
-				symbol = '?'
+		case "hero":
+			symbol = '@'
+			fg = termbox.ColorMagenta
+		case "wall":
+			symbol = '#'
+			fg = termbox.ColorYellow
+		default:
+			symbol = '?'
 		}
 	}
 	screenElement.Symbol = symbol
@@ -232,8 +231,8 @@ func (screen *Screen) render(state *State) {
 	// Set borders.
 	for y := 0; y < rowLength; y++ {
 		for x := 0; x < columnLength; x++ {
-			isTopOrBottomEdge := y == 0 || y == rowLength - 1
-			isLeftOrRightEdge := x == 0 || x == columnLength - 1
+			isTopOrBottomEdge := y == 0 || y == rowLength-1
+			isLeftOrRightEdge := x == 0 || x == columnLength-1
 			symbol := ' '
 			switch {
 			case isTopOrBottomEdge && isLeftOrRightEdge:
@@ -272,7 +271,7 @@ func createScreen(rowLength int, columnLength int) Screen {
 		row := make([]ScreenElement, columnLength)
 		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
 			row[columnIndex] = ScreenElement{
-				Symbol: '_',
+				Symbol:          '_',
 				ForegroundColor: termbox.ColorWhite,
 				BackgroundColor: termbox.ColorBlack,
 			}
@@ -317,16 +316,16 @@ func handleKeyPress(state *State, screen *Screen, ch rune, key termbox.Key) {
 
 	// Move the hero.
 	// TODO: Consider arrow keys.
-	if (ch == 'k') {
+	if ch == 'k' {
 		err = field.WalkHero("up")
 		stateChanged = true
-	} else if (ch == 'l') {
+	} else if ch == 'l' {
 		err = field.WalkHero("right")
 		stateChanged = true
-	} else if (ch == 'j') {
+	} else if ch == 'j' {
 		err = field.WalkHero("down")
 		stateChanged = true
-	} else if (ch == 'h') {
+	} else if ch == 'h' {
 		err = field.WalkHero("left")
 		stateChanged = true
 	}
@@ -381,8 +380,8 @@ func main() {
 	fieldColumnLength := state.Field.MeasureColumnLength()
 	for y := 0; y < fieldRowLength; y++ {
 		for x := 0; x < fieldColumnLength; x++ {
-			isTopOrBottomEdge := y == 0 || y == fieldRowLength - 1
-			isLeftOrRightEdge := x == 0 || x == fieldColumnLength - 1
+			isTopOrBottomEdge := y == 0 || y == fieldRowLength-1
+			isLeftOrRightEdge := x == 0 || x == fieldColumnLength-1
 			if isTopOrBottomEdge || isLeftOrRightEdge {
 				state.Field.At(FieldPosition{Y: y, X: x}).Object = FieldObject{
 					Class: "wall",
@@ -391,7 +390,7 @@ func main() {
 		}
 	}
 
-	screen := createScreen(24 + 2, 80 + 2)
+	screen := createScreen(24+2, 80+2)
 	screen.render(&state)
 
 	if doesRunTermbox {
