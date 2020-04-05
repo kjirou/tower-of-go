@@ -314,7 +314,7 @@ func initializeTermbox(screen *Screen) error {
 // It may need to make the following processes:
 //   https://github.com/nsf/termbox-go/blob/4d2b513ad8bee47a9a5a65b0dee0182049a31916/_demos/keyboard.go#L669
 //   (However, details cannot be read...)
-// TODO: Use termbox's types
+// TODO: Replace `ch` type with termbox's `Cell.Ch` type.
 func handleKeyPress(state *State, screen *Screen, ch rune, key termbox.Key) {
 	var err error
 	field := &state.Field
