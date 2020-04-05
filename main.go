@@ -1,7 +1,7 @@
 package main
 
 // TODO:
-// - Separate to modules
+// - Separate the main package to sub local packages.
 
 import (
 	"fmt"
