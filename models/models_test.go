@@ -35,11 +35,11 @@ func TestField(t *testing.T) {
 			for _, tc := range testCases {
 				tc := tc
 				t.Run(fmt.Sprintf("Y=%d,X=%dはエラーを返す", tc.Y, tc.X), func(t *testing.T) {
-						var position utils.IMatrixPosition = &utils.MatrixPosition{Y: tc.Y, X: tc.X}
-						_, err := field.At(position)
-						if err == nil {
-							t.Error("エラーを返さない")
-						}
+					var position utils.IMatrixPosition = &utils.MatrixPosition{Y: tc.Y, X: tc.X}
+					_, err := field.At(position)
+					if err == nil {
+						t.Error("エラーを返さない")
+					}
 				})
 			}
 		})
