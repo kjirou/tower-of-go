@@ -114,7 +114,7 @@ func main() {
 		panic(err)
 	}
 
-	screen := views.CreateScreen(24+2, 80+2)
+	screen := views.CreateScreen(24, 80)
 
 	controller := Controller{
 		state: &state,
