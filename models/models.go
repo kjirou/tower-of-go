@@ -221,7 +221,7 @@ func CreateState() State {
 	executionTime, _ := time.ParseDuration("0")
 	state := State{
 		executionTime: executionTime,
-		field: createField(12, 20),
+		field: createField(13, 21),
 		game: game,
 	}
 	game.Reset()

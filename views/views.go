@@ -215,7 +215,7 @@ func CreateScreen(rowLength int, columnLength int) Screen {
 	}
 	staticTexts = append(staticTexts, &urlText)
 
-	var sKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 15, X: 2}
+	var sKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 16, X: 2}
 	var sKeyHelpTextParts = make([]*ScreenText, 0)
 	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "\""})
 	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "s", Foreground: termbox.ColorYellow})
@@ -223,7 +223,7 @@ func CreateScreen(rowLength int, columnLength int) Screen {
 	sKeyHelpTexts := createSequentialScreenTexts(sKeyHelpTextPosition, sKeyHelpTextParts)
 	staticTexts = append(staticTexts, sKeyHelpTexts...)
 
-	var rKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 16, X: 2}
+	var rKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 17, X: 2}
 	var rKeyHelpTextParts = make([]*ScreenText, 0)
 	rKeyHelpTextParts = append(rKeyHelpTextParts, &ScreenText{Text: "\""})
 	rKeyHelpTextParts = append(rKeyHelpTextParts, &ScreenText{Text: "r", Foreground: termbox.ColorYellow})
@@ -231,7 +231,7 @@ func CreateScreen(rowLength int, columnLength int) Screen {
 	rKeyHelpTexts := createSequentialScreenTexts(rKeyHelpTextPosition, rKeyHelpTextParts)
 	staticTexts = append(staticTexts, rKeyHelpTexts...)
 
-	var moveKeysHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 17, X: 2}
+	var moveKeysHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 18, X: 2}
 	var moveKeysHelpTextParts = make([]*ScreenText, 0)
 	moveKeysHelpTextParts =
 		append(moveKeysHelpTextParts, &ScreenText{Text: "Arrow keys", Foreground: termbox.ColorYellow})
