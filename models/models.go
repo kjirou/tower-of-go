@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/utils"
+	"time"
 )
 
 type FieldObject struct {
@@ -101,13 +102,89 @@ func (field *Field) MoveObject(from utils.IMatrixPosition, to utils.IMatrixPosit
 	return nil
 }
 
+func createField(y int, x int) Field {
+	matrix := make([][]FieldElement, y)
+	for rowIndex := 0; rowIndex < y; rowIndex++ {
+		row := make([]FieldElement, x)
+		for columnIndex := 0; columnIndex < x; columnIndex++ {
+			row[columnIndex] = FieldElement{
+				Position: utils.MatrixPosition{
+					Y: rowIndex,
+					X: columnIndex,
+				},
+				Object: FieldObject{
+					Class: "empty",
+				},
+			}
+		}
+		matrix[rowIndex] = row
+	}
+	return Field{
+		matrix: matrix,
+	}
+}
+
+type Game struct {
+	// A snapshot of `state.executionTime` when a game has started.
+	startedAt time.Duration
+	isFinished bool
+}
+
+func (game *Game) Reset() {
+	zeroDuration, _ := time.ParseDuration("0s")
+	game.startedAt = zeroDuration
+	game.isFinished = false
+}
+
+func (game *Game) IsStarted() bool {
+	zeroDuration, _ := time.ParseDuration("0s")
+	return game.startedAt != zeroDuration
+}
+
+func (game *Game) IsFinished() bool {
+	return game.isFinished
+}
+
+func (game *Game) CalculatePlaytime(executionTime time.Duration) time.Duration {
+	if !game.IsStarted() {
+		duration, _ := time.ParseDuration("-1s")
+		return duration
+	}
+	return executionTime - game.startedAt
+}
+
+func (game *Game) Start(executionTime time.Duration) {
+	game.startedAt = executionTime
+	game.isFinished = false
+}
+
+func (game *Game) Finish() {
+	game.isFinished = true
+}
+
 type State struct {
+	// This is the total of main loop intervals.
+	// It is different from the real time.
+	executionTime time.Duration
 	field Field
+	game utils.IGame
+}
+
+func (state *State) GetExecutionTime() time.Duration {
+	return state.executionTime
 }
 
 func (state *State) GetField() utils.IField {
 	var field utils.IField = &state.field
 	return field
+}
+
+func (state *State) GetGame() utils.IGame {
+	return state.game
+}
+
+func (state *State) AlterExecutionTime(delta time.Duration) {
+	state.executionTime = state.executionTime + delta
 }
 
 func (state *State) InitializeDummyData() error {
@@ -139,31 +216,14 @@ func (state *State) InitializeDummyData() error {
 	return nil
 }
 
-func createField(y int, x int) Field {
-	matrix := make([][]FieldElement, y)
-	for rowIndex := 0; rowIndex < y; rowIndex++ {
-		row := make([]FieldElement, x)
-		for columnIndex := 0; columnIndex < x; columnIndex++ {
-			row[columnIndex] = FieldElement{
-				Position: utils.MatrixPosition{
-					Y: rowIndex,
-					X: columnIndex,
-				},
-				Object: FieldObject{
-					Class: "empty",
-				},
-			}
-		}
-		matrix[rowIndex] = row
-	}
-	return Field{
-		matrix: matrix,
-	}
-}
-
 func CreateState() State {
+	var game utils.IGame = &Game{}
+	executionTime, _ := time.ParseDuration("0")
 	state := State{
+		executionTime: executionTime,
 		field: createField(12, 20),
+		game: game,
 	}
+	game.Reset()
 	return state
 }

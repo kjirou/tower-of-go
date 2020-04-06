@@ -3,10 +3,22 @@ package reducers
 import(
 	"github.com/kjirou/tower_of_go/models"
 	"github.com/kjirou/tower_of_go/utils"
+	"time"
 )
 
-// TODO: Generalize the interface between functions
-func WalkHero(state models.State, direction utils.FourDirection) (*models.State, error) {
+// TODO: Generalize the interface between reducer functions.
+
+func StartGame(state models.State) (*models.State, bool, error) {
+	state.GetGame().Start(state.GetExecutionTime())
+	return &state, true, nil
+}
+
+func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, error) {
+	state.AlterExecutionTime(delta)
+	return &state, true, nil
+}
+
+func WalkHero(state models.State, direction utils.FourDirection) (*models.State, bool, error) {
 	field := state.GetField()
 	element := field.GetElementOfHero()
 	nextY := element.GetPosition().GetY()
@@ -29,11 +41,11 @@ func WalkHero(state models.State, direction utils.FourDirection) (*models.State,
 	if nextPosition.Validate(field.MeasureRowLength(), field.MeasureColumnLength()) {
 		element, err := field.At(nextPosition)
 		if err != nil {
-			return &state, err
+			return &state, false, err
 		} else if element.IsObjectEmpty() {
 			err := field.MoveObject(position, nextPosition)
-			return &state, err
+			return &state, err == nil, err
 		}
 	}
-	return &state, nil
+	return &state, true, nil
 }

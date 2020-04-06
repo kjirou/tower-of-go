@@ -11,6 +11,7 @@ import (
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
 	"os"
+	"time"
 )
 
 type Controller struct {
@@ -55,26 +56,29 @@ func initializeTermbox() error {
 //   (However, details cannot be read...)
 // TODO: Replace `ch` type with termbox's `Cell.Ch` type.
 func handleKeyPress(controller *Controller, ch rune, key termbox.Key) {
-	var err error
 	var newState *models.State
+	var stateChanged bool = false
+	var err error
 	state := controller.GetState()
 
+	switch {
+	// Start a game.
+	case ch == 's':
+		newState, stateChanged, err = reducers.StartGame(*state)
 	// Move the hero.
-	if key == termbox.KeyArrowUp || ch == 'k' {
-		newState, err = reducers.WalkHero(*state, utils.FourDirectionUp)
-	} else if key == termbox.KeyArrowRight || ch == 'l' {
-		newState, err = reducers.WalkHero(*state, utils.FourDirectionRight)
-	} else if key == termbox.KeyArrowDown || ch == 'j' {
-		newState, err = reducers.WalkHero(*state, utils.FourDirectionDown)
-	} else if key == termbox.KeyArrowLeft || ch == 'h' {
-		newState, err = reducers.WalkHero(*state, utils.FourDirectionLeft)
+	case key == termbox.KeyArrowUp || ch == 'k':
+		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionUp)
+	case key == termbox.KeyArrowRight || ch == 'l':
+		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionRight)
+	case key == termbox.KeyArrowDown || ch == 'j':
+		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionDown)
+	case key == termbox.KeyArrowLeft || ch == 'h':
+		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionLeft)
 	}
 
 	if err != nil {
 		panic(err)
-	}
-
-	if newState != nil {
+	} else if newState != nil && stateChanged {
 		controller.Dispatch(newState)
 		drawTerminal(controller.GetScreen())
 	}
@@ -94,6 +98,27 @@ func handleTermboxEvents(controller *Controller) {
 			}
 
 			handleKeyPress(controller, event.Ch, event.Key)
+		}
+	}
+}
+
+func runMainLoop(controller *Controller) {
+	interval := time.Millisecond * 17  // About 60fps.
+	for {
+		var newState *models.State
+		var stateChanged bool = false
+		var err error
+		state := controller.GetState()
+
+		time.Sleep(interval)
+
+		newState, stateChanged, err = reducers.AdvanceTime(*state, interval)
+
+		if err != nil {
+			panic(err)
+		} else if newState != nil && stateChanged {
+			controller.Dispatch(newState)
+			drawTerminal(controller.GetScreen())
 		}
 	}
 }
@@ -130,6 +155,7 @@ func main() {
 		}
 		defer termbox.Close()
 		drawTerminal(&screen)
+		go runMainLoop(&controller)
 		handleTermboxEvents(&controller)
 	} else {
 		fmt.Println(screen.AsText())

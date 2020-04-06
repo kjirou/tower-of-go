@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/utils"
 	"testing"
+	"time"
 	"strings"
 )
 
@@ -78,6 +79,36 @@ func TestField(t *testing.T) {
 				t.Fatal("エラーを返さない")
 			} else if !strings.Contains(err.Error(), "does not exist") {
 				t.Fatal("意図したエラーメッセージではない")
+			}
+		})
+	})
+}
+
+func TestGame(t *testing.T) {
+	t.Run("CalculatePlaytime", func(t *testing.T) {
+		game := &Game{}
+
+		t.Run("リセット直後は-1を返す", func(t *testing.T) {
+			game.Reset()
+			executionTime, _ := time.ParseDuration("2s")
+			playtime := game.CalculatePlaytime(executionTime)
+			if playtime.Seconds() != -1 {
+				t.Fatal("-1ではない")
+			}
+		})
+	})
+
+	t.Run("Start", func(t *testing.T) {
+		game := &Game{}
+
+		t.Run("It works", func(t *testing.T) {
+			executionTime, _ := time.ParseDuration("0s")
+			game.Start(executionTime)
+			if game.IsStarted() {
+				t.Fatal("開始している")
+			}
+			if game.IsFinished() {
+				t.Fatal("終了している")
 			}
 		})
 	})
