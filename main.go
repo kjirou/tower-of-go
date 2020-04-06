@@ -56,29 +56,28 @@ func initializeTermbox() error {
 //   (However, details cannot be read...)
 // TODO: Replace `ch` type with termbox's `Cell.Ch` type.
 func handleKeyPress(controller *Controller, ch rune, key termbox.Key) {
-	var err error
 	var newState *models.State
+	var err error
 	state := controller.GetState()
 
+	switch {
 	// Start a game.
-	if (ch == 's') {
+	case ch == 's':
 		newState, err = reducers.StartGame(*state)
 	// Move the hero.
-	} else if key == termbox.KeyArrowUp || ch == 'k' {
+	case key == termbox.KeyArrowUp || ch == 'k':
 		newState, err = reducers.WalkHero(*state, utils.FourDirectionUp)
-	} else if key == termbox.KeyArrowRight || ch == 'l' {
+	case key == termbox.KeyArrowRight || ch == 'l':
 		newState, err = reducers.WalkHero(*state, utils.FourDirectionRight)
-	} else if key == termbox.KeyArrowDown || ch == 'j' {
+	case key == termbox.KeyArrowDown || ch == 'j':
 		newState, err = reducers.WalkHero(*state, utils.FourDirectionDown)
-	} else if key == termbox.KeyArrowLeft || ch == 'h' {
+	case key == termbox.KeyArrowLeft || ch == 'h':
 		newState, err = reducers.WalkHero(*state, utils.FourDirectionLeft)
 	}
 
 	if err != nil {
 		panic(err)
-	}
-
-	if newState != nil {
+	} else if newState != nil {
 		controller.Dispatch(newState)
 		drawTerminal(controller.GetScreen())
 	}
