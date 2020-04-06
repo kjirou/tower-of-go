@@ -144,17 +144,14 @@ func createField(y int, x int) Field {
 	for rowIndex := 0; rowIndex < y; rowIndex++ {
 		row := make([]FieldElement, x)
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
-			// TODO: Embed into the following FieldElement initialization
-			fieldPosition := utils.MatrixPosition{
-				Y: rowIndex,
-				X: columnIndex,
-			}
-			fieldObject := FieldObject{
-				Class: "empty",
-			}
 			row[columnIndex] = FieldElement{
-				Position: fieldPosition,
-				Object:   fieldObject,
+				Position: utils.MatrixPosition{
+					Y: rowIndex,
+					X: columnIndex,
+				},
+				Object: FieldObject{
+					Class: "empty",
+				},
 			}
 		}
 		matrix[rowIndex] = row
