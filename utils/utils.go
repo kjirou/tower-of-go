@@ -35,9 +35,11 @@ func (matrixPosition *MatrixPosition) Validate(rowLength int, columnLength int) 
 }
 
 type IFieldElement interface {
+	GetFloorObjectClass() string
 	GetObjectClass() string
 	GetPosition() IMatrixPosition
 	IsObjectEmpty() bool
+	UpdateFloorObjectClass(class string)
 	UpdateObjectClass(class string)
 }
 

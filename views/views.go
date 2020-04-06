@@ -28,6 +28,12 @@ func (screenElement *ScreenElement) renderWithFieldElement(fieldElement utils.IF
 		default:
 			symbol = '?'
 		}
+	} else {
+		switch fieldElement.GetFloorObjectClass() {
+		case "upstairs":
+			symbol = '<'
+			fg = termbox.ColorGreen
+		}
 	}
 	screenElement.Symbol = symbol
 	screenElement.ForegroundColor = fg

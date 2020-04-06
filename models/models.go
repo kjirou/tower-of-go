@@ -10,12 +10,17 @@ type FieldObject struct {
 	Class string
 }
 
+type FieldFloorObject struct {
+	Class string
+}
+
 func (fieldObject *FieldObject) IsEmpty() bool {
 	return fieldObject.Class == "empty"
 }
 
 type FieldElement struct {
 	Object   FieldObject
+	FloorObject   FieldFloorObject
 	Position utils.MatrixPosition
 }
 
@@ -28,12 +33,20 @@ func (fieldElement *FieldElement) GetObjectClass() string {
 	return fieldElement.Object.Class
 }
 
+func (fieldElement *FieldElement) GetFloorObjectClass() string {
+	return fieldElement.FloorObject.Class
+}
+
 func (fieldElement *FieldElement) IsObjectEmpty() bool {
 	return fieldElement.Object.IsEmpty()
 }
 
 func (fieldElement *FieldElement) UpdateObjectClass(class string) {
 	fieldElement.Object.Class = class
+}
+
+func (fieldElement *FieldElement) UpdateFloorObjectClass(class string) {
+	fieldElement.FloorObject.Class = class
 }
 
 type Field struct {
@@ -113,6 +126,9 @@ func createField(y int, x int) Field {
 					X: columnIndex,
 				},
 				Object: FieldObject{
+					Class: "empty",
+				},
+				FloorObject: FieldFloorObject{
 					Class: "empty",
 				},
 			}
@@ -197,6 +213,14 @@ func (state *State) SetWelcomeData() error {
 		return err
 	}
 	heroFieldElement.UpdateObjectClass("hero")
+
+	// Place an upstairs.
+	var upstairsPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 11, X: 19}
+	upstairsFieldElement, err := field.At(upstairsPosition)
+	if err != nil {
+		return err
+	}
+	upstairsFieldElement.UpdateFloorObjectClass("upstairs")
 
 	// Place walls.
 	fieldRowLength := field.MeasureRowLength()
