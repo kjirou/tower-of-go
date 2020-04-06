@@ -1,11 +1,30 @@
 package reducers
 
 import(
+	"fmt"
 	"github.com/kjirou/tower_of_go/models"
 	"github.com/kjirou/tower_of_go/utils"
+	"time"
 )
 
-// TODO: Generalize the interface between functions
+// TODO: Generalize the interface between reducer functions.
+
+func StartGame(state models.State) (*models.State, error) {
+	state.GetGame().Start()
+	return &state, nil
+}
+
+func AlterPlaytime(state models.State, delta time.Duration) (*models.State, error) {
+	game := state.GetGame()
+	if !game.IsStarted() {
+		return &state, fmt.Errorf("The game has not started.")
+	} else if game.IsFinished() {
+		return &state, fmt.Errorf("The game is over.")
+	}
+	game.AlterPlaytime(delta)
+	return &state, nil
+}
+
 func WalkHero(state models.State, direction utils.FourDirection) (*models.State, error) {
 	field := state.GetField()
 	element := field.GetElementOfHero()

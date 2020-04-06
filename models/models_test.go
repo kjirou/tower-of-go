@@ -105,4 +105,18 @@ func TestGame(t *testing.T) {
 			}
 		})
 	})
+
+	t.Run("Start", func(t *testing.T) {
+		game := &Game{}
+
+		t.Run("It works", func(t *testing.T) {
+			game.Start()
+			if game.IsStarted() != true {
+				t.Fatal("開始していない")
+			}
+			if game.IsFinished() != false {
+				t.Fatal("終了していない")
+			}
+		})
+	})
 }

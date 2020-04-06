@@ -56,9 +56,8 @@ type IGame interface {
 	Initialize()
 	IsStarted() bool
 	IsFinished() bool
+	Start()
 //	Finish()
-//	GetTime() int
-//	Start()
 }
 
 type IState interface {

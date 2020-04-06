@@ -155,6 +155,11 @@ func (game *Game) GetPlaytimeAsString() string {
 	return fmt.Sprintf("%d", game.GetPlaytimeAsSeconds())
 }
 
+func (game *Game) Start() {
+	game.isStarted = true
+	game.isFinished = false
+}
+
 func (game *Game) AlterPlaytime(duration time.Duration) {
 	game.playtime = game.playtime + duration
 }

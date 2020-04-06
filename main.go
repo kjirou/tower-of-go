@@ -60,8 +60,11 @@ func handleKeyPress(controller *Controller, ch rune, key termbox.Key) {
 	var newState *models.State
 	state := controller.GetState()
 
+	// Start a game.
+	if (ch == 's') {
+		newState, err = reducers.StartGame(*state)
 	// Move the hero.
-	if key == termbox.KeyArrowUp || ch == 'k' {
+	} else if key == termbox.KeyArrowUp || ch == 'k' {
 		newState, err = reducers.WalkHero(*state, utils.FourDirectionUp)
 	} else if key == termbox.KeyArrowRight || ch == 'l' {
 		newState, err = reducers.WalkHero(*state, utils.FourDirectionRight)
@@ -99,14 +102,26 @@ func handleTermboxEvents(controller *Controller) {
 	}
 }
 
+// TODO: 1fpsなのでループの周期によっては2秒待つことになり不自然。runGameLoopにして30fps程度にするのが楽そう。
 func runTimer(controller *Controller) {
 	interval := time.Second
 	for {
+		var newState *models.State
+		var err error
 		state := controller.GetState()
 		game := state.GetGame()
+
 		time.Sleep(interval)
+
 		if game.IsStarted() && !game.IsFinished() {
-			game.AlterPlaytime(interval)
+			newState, err = reducers.AlterPlaytime(*state, interval)
+		}
+
+		if err != nil {
+			panic(err)
+		} else if newState != nil {
+			controller.Dispatch(newState)
+			drawTerminal(controller.GetScreen())
 		}
 	}
 }
