@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/utils"
 	"testing"
+	"time"
 	"strings"
 )
 
@@ -84,24 +85,15 @@ func TestField(t *testing.T) {
 }
 
 func TestGame(t *testing.T) {
-	t.Run("GetPlaytimeAsSeconds", func(t *testing.T) {
+	t.Run("CalculatePlaytime", func(t *testing.T) {
 		game := &Game{}
 
-		t.Run("初期化直後は0を返す", func(t *testing.T) {
-			game.Initialize()
-			if game.GetPlaytimeAsSeconds() != 0 {
-				t.Fatal("0ではない")
-			}
-		})
-	})
-
-	t.Run("GetPlaytimeAsString", func(t *testing.T) {
-		game := &Game{}
-
-		t.Run("初期化直後は\"0\"を返す", func(t *testing.T) {
-			game.Initialize()
-			if game.GetPlaytimeAsString() != "0" {
-				t.Fatal("\"0\"ではない")
+		t.Run("リセット直後は-1を返す", func(t *testing.T) {
+			game.Reset()
+			executionTime, _ := time.ParseDuration("2s")
+			playtime := game.CalculatePlaytime(executionTime)
+			if playtime.Seconds() != -1 {
+				t.Fatal("-1ではない")
 			}
 		})
 	})
@@ -110,12 +102,13 @@ func TestGame(t *testing.T) {
 		game := &Game{}
 
 		t.Run("It works", func(t *testing.T) {
-			game.Start()
-			if game.IsStarted() != true {
-				t.Fatal("開始していない")
+			executionTime, _ := time.ParseDuration("0s")
+			game.Start(executionTime)
+			if game.IsStarted() {
+				t.Fatal("開始している")
 			}
-			if game.IsFinished() != false {
-				t.Fatal("終了していない")
+			if game.IsFinished() {
+				t.Fatal("終了している")
 			}
 		})
 	})

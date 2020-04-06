@@ -9,13 +9,12 @@ import(
 // TODO: Generalize the interface between reducer functions.
 
 func StartGame(state models.State) (*models.State, bool, error) {
-	state.GetGame().Start()
+	state.GetGame().Start(state.GetExecutionTime())
 	return &state, true, nil
 }
 
 func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, error) {
-	game := state.GetGame()
-	game.AlterPlaytime(delta)
+	state.AlterExecutionTime(delta)
 	return &state, true, nil
 }
 

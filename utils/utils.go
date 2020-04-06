@@ -50,17 +50,17 @@ type IField interface {
 }
 
 type IGame interface {
-	AlterPlaytime(delta time.Duration)
-	GetPlaytimeAsSeconds() int
-	GetPlaytimeAsString() string
-	Initialize()
-	IsStarted() bool
+	CalculatePlaytime(executionTime time.Duration) time.Duration
+	Finish()
 	IsFinished() bool
-	Start()
-//	Finish()
+	IsStarted() bool
+	Reset()
+	Start(executionTime time.Duration)
 }
 
 type IState interface {
+	AlterExecutionTime(delta time.Duration)
+	GetExecutionTime() time.Duration
 	GetField() IField
 	GetGame() IGame
 }
