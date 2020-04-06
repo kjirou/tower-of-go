@@ -60,14 +60,13 @@ func handleKeyPress(controller *Controller, ch rune, key termbox.Key) {
 	state := controller.GetState()
 
 	// Move the hero.
-	// TODO: Consider arrow keys.
-	if ch == 'k' {
+	if key == termbox.KeyArrowUp || ch == 'k' {
 		newState, err = reducers.WalkHero(*state, utils.FourDirectionUp)
-	} else if ch == 'l' {
+	} else if key == termbox.KeyArrowRight || ch == 'l' {
 		newState, err = reducers.WalkHero(*state, utils.FourDirectionRight)
-	} else if ch == 'j' {
+	} else if key == termbox.KeyArrowDown || ch == 'j' {
 		newState, err = reducers.WalkHero(*state, utils.FourDirectionDown)
-	} else if ch == 'h' {
+	} else if key == termbox.KeyArrowLeft || ch == 'h' {
 		newState, err = reducers.WalkHero(*state, utils.FourDirectionLeft)
 	}
 
