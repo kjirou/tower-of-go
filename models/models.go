@@ -93,7 +93,7 @@ func (field *Field) MoveObject(from utils.IMatrixPosition, to utils.IMatrixPosit
 	toElement, err := field.At(to)
 	if err != nil {
 		return err
-	} else if toElement.IsObjectEmpty() == false {
+	} else if !toElement.IsObjectEmpty() {
 		return fmt.Errorf("An object exists at the destination.")
 	}
 	toElement.UpdateObjectClass(fromElement.GetObjectClass())

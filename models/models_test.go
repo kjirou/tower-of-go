@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/utils"
 	"testing"
+	"strings"
 )
 
 func TestField(t *testing.T) {
@@ -65,6 +66,8 @@ func TestField(t *testing.T) {
 			err := field.MoveObject(fromPosition, toPosition)
 			if err == nil {
 				t.Fatal("エラーを返さない")
+			} else if !strings.Contains(err.Error(), "object exists") {
+				t.Fatal("意図したエラーメッセージではない")
 			}
 		})
 
@@ -73,6 +76,8 @@ func TestField(t *testing.T) {
 			err := field.MoveObject(fromPosition, toPosition)
 			if err == nil {
 				t.Fatal("エラーを返さない")
+			} else if !strings.Contains(err.Error(), "does not exist") {
+				t.Fatal("意図したエラーメッセージではない")
 			}
 		})
 	})
