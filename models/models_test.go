@@ -14,11 +14,11 @@ func TestField(t *testing.T) {
 			var position utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 2}
 			element, err := field.At(position)
 			if err != nil {
-				t.Error(err)
+				t.Fatal(err)
 			} else if element.GetPosition().GetY() != 1 {
-				t.Error("Y が違う")
+				t.Fatal("Y が違う")
 			} else if element.GetPosition().GetX() != 2 {
-				t.Error("X が違う")
+				t.Fatal("X が違う")
 			}
 		})
 
@@ -38,7 +38,7 @@ func TestField(t *testing.T) {
 					var position utils.IMatrixPosition = &utils.MatrixPosition{Y: tc.Y, X: tc.X}
 					_, err := field.At(position)
 					if err == nil {
-						t.Error("エラーを返さない")
+						t.Fatal("エラーを返さない")
 					}
 				})
 			}
@@ -57,7 +57,7 @@ func TestField(t *testing.T) {
 			toElement.UpdateObjectClass("empty")
 			field.MoveObject(fromPosition, toPosition)
 			if toElement.GetObjectClass() != "wall" {
-				t.Error("物体種別が移動していない")
+				t.Fatal("物体種別が移動していない")
 			}
 		})
 
@@ -66,7 +66,7 @@ func TestField(t *testing.T) {
 			toElement.UpdateObjectClass("wall")
 			err := field.MoveObject(fromPosition, toPosition)
 			if err == nil {
-				t.Error("エラーを返さない")
+				t.Fatal("エラーを返さない")
 			}
 		})
 
@@ -74,7 +74,7 @@ func TestField(t *testing.T) {
 			fromElement.UpdateObjectClass("empty")
 			err := field.MoveObject(fromPosition, toPosition)
 			if err == nil {
-				t.Error("エラーを返さない")
+				t.Fatal("エラーを返さない")
 			}
 		})
 	})
