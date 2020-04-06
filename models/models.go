@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/utils"
+	"time"
 )
 
 type FieldObject struct {
@@ -101,13 +102,75 @@ func (field *Field) MoveObject(from utils.IMatrixPosition, to utils.IMatrixPosit
 	return nil
 }
 
+func createField(y int, x int) Field {
+	matrix := make([][]FieldElement, y)
+	for rowIndex := 0; rowIndex < y; rowIndex++ {
+		row := make([]FieldElement, x)
+		for columnIndex := 0; columnIndex < x; columnIndex++ {
+			row[columnIndex] = FieldElement{
+				Position: utils.MatrixPosition{
+					Y: rowIndex,
+					X: columnIndex,
+				},
+				Object: FieldObject{
+					Class: "empty",
+				},
+			}
+		}
+		matrix[rowIndex] = row
+	}
+	return Field{
+		matrix: matrix,
+	}
+}
+
+type Game struct {
+	isFinished bool
+	isStarted bool
+	// This is a total of game loop intervals.
+	// It is different from the real time.
+	playtime time.Duration
+}
+
+func (game *Game) Initialize() {
+	game.isStarted = false
+	game.isFinished = false
+	duration, _ := time.ParseDuration("0")
+	game.playtime = duration
+}
+
+func (game *Game) IsStarted() bool {
+	return game.isStarted
+}
+
+func (game *Game) IsFinished() bool {
+	return game.isFinished
+}
+
+func (game *Game) GetPlaytimeAsSeconds() int {
+	return int(game.playtime.Seconds())
+}
+
+func (game *Game) GetPlaytimeAsString() string {
+	return fmt.Sprintf("%d", game.GetPlaytimeAsSeconds())
+}
+
+func (game *Game) AlterPlaytime(duration time.Duration) {
+	game.playtime = game.playtime + duration
+}
+
 type State struct {
 	field Field
+	game utils.IGame
 }
 
 func (state *State) GetField() utils.IField {
 	var field utils.IField = &state.field
 	return field
+}
+
+func (state *State) GetGame() utils.IGame {
+	return state.game
 }
 
 func (state *State) InitializeDummyData() error {
@@ -139,31 +202,12 @@ func (state *State) InitializeDummyData() error {
 	return nil
 }
 
-func createField(y int, x int) Field {
-	matrix := make([][]FieldElement, y)
-	for rowIndex := 0; rowIndex < y; rowIndex++ {
-		row := make([]FieldElement, x)
-		for columnIndex := 0; columnIndex < x; columnIndex++ {
-			row[columnIndex] = FieldElement{
-				Position: utils.MatrixPosition{
-					Y: rowIndex,
-					X: columnIndex,
-				},
-				Object: FieldObject{
-					Class: "empty",
-				},
-			}
-		}
-		matrix[rowIndex] = row
-	}
-	return Field{
-		matrix: matrix,
-	}
-}
-
 func CreateState() State {
+	var game utils.IGame = &Game{}
 	state := State{
 		field: createField(12, 20),
+		game: game,
 	}
+	game.Initialize()
 	return state
 }

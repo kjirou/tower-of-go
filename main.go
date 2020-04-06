@@ -11,6 +11,7 @@ import (
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
 	"os"
+	"time"
 )
 
 type Controller struct {
@@ -98,6 +99,18 @@ func handleTermboxEvents(controller *Controller) {
 	}
 }
 
+func runTimer(controller *Controller) {
+	interval := time.Second
+	for {
+		state := controller.GetState()
+		game := state.GetGame()
+		time.Sleep(interval)
+		if game.IsStarted() && !game.IsFinished() {
+			game.AlterPlaytime(interval)
+		}
+	}
+}
+
 func main() {
 	// TODO: Look for a tiny CLI argument parser like the "minimist" of Node.js.
 	commandLineArgs := os.Args[1:]
@@ -130,6 +143,7 @@ func main() {
 		}
 		defer termbox.Close()
 		drawTerminal(&screen)
+		go runTimer(&controller)
 		handleTermboxEvents(&controller)
 	} else {
 		fmt.Println(screen.AsText())

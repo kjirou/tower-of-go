@@ -82,3 +82,27 @@ func TestField(t *testing.T) {
 		})
 	})
 }
+
+func TestGame(t *testing.T) {
+	t.Run("GetPlaytimeAsSeconds", func(t *testing.T) {
+		game := &Game{}
+
+		t.Run("初期化直後は0を返す", func(t *testing.T) {
+			game.Initialize()
+			if game.GetPlaytimeAsSeconds() != 0 {
+				t.Fatal("0ではない")
+			}
+		})
+	})
+
+	t.Run("GetPlaytimeAsString", func(t *testing.T) {
+		game := &Game{}
+
+		t.Run("初期化直後は\"0\"を返す", func(t *testing.T) {
+			game.Initialize()
+			if game.GetPlaytimeAsString() != "0" {
+				t.Fatal("\"0\"ではない")
+			}
+		})
+	})
+}

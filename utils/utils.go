@@ -1,5 +1,9 @@
 package utils
 
+import(
+	"time"
+)
+
 type FourDirection int
 const (
 	FourDirectionUp FourDirection = iota
@@ -45,6 +49,19 @@ type IField interface {
 	MoveObject(from IMatrixPosition, to IMatrixPosition) error
 }
 
+type IGame interface {
+	AlterPlaytime(delta time.Duration)
+	GetPlaytimeAsSeconds() int
+	GetPlaytimeAsString() string
+	Initialize()
+	IsStarted() bool
+	IsFinished() bool
+//	Finish()
+//	GetTime() int
+//	Start()
+}
+
 type IState interface {
 	GetField() IField
+	GetGame() IGame
 }
