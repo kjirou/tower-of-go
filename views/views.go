@@ -34,11 +34,19 @@ func (screenElement *ScreenElement) renderWithFieldElement(fieldElement utils.IF
 	screenElement.BackgroundColor = bg
 }
 
+type ScreenText struct {
+	Position utils.IMatrixPosition
+	// ASCII only. Line breaks are not allowed.
+	Text string
+	Foreground termbox.Attribute
+}
+
 //
 // A layer that avoids to write logics tightly coupled with "termbox".
 //
 type Screen struct {
 	matrix [][]ScreenElement
+	staticTexts []*ScreenText
 }
 
 func (screen *Screen) GetMatrix() [][]ScreenElement {
@@ -87,6 +95,7 @@ func (screen *Screen) Render(state utils.IState) {
 	rowLength := screen.MeasureRowLength()
 	columnLength := screen.MeasureColumnLength()
 
+	// Pad elements with blanks.
 	// Set borders.
 	for y := 0; y < rowLength; y++ {
 		for x := 0; x < columnLength; x++ {
@@ -106,8 +115,21 @@ func (screen *Screen) Render(state utils.IState) {
 	}
 
 	// Place the field.
-	var fieldPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 1}
+	var fieldPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 2, X: 2}
 	screen.renderField(fieldPosition, state.GetField())
+
+	// Prepare texts.
+	texts := make([]*ScreenText, 0)
+	texts = append(texts, screen.staticTexts...)
+
+	// Place texts.
+	for _, textInstance := range texts {
+		for deltaX, character := range textInstance.Text {
+			element := &screen.matrix[textInstance.Position.GetY()][textInstance.Position.GetX() + deltaX]
+			element.Symbol = character
+			element.ForegroundColor = textInstance.Foreground
+		}
+	}
 }
 
 func (screen *Screen) AsText() string {
@@ -137,7 +159,25 @@ func CreateScreen(rowLength int, columnLength int) Screen {
 		}
 		matrix[rowIndex] = row
 	}
+
+	staticTexts := make([]*ScreenText, 0)
+	var titleTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 0, X: 2}
+	titleText := ScreenText{
+		Position: titleTextPosition,
+		Text: "[ A Tower of Go ]",
+		Foreground: termbox.ColorWhite,
+	}
+	var urlTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 22, X: 41}
+	urlText := ScreenText{
+		Position: urlTextPosition,
+		Text: "https://github.com/kjirou/tower_of_go",
+		Foreground: termbox.ColorWhite | termbox.AttrUnderline,
+	}
+	staticTexts = append(staticTexts, &titleText)
+	staticTexts = append(staticTexts, &urlText)
+
 	return Screen{
 		matrix: matrix,
+		staticTexts: staticTexts,
 	}
 }
