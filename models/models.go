@@ -187,18 +187,18 @@ func (state *State) AlterExecutionTime(delta time.Duration) {
 	state.executionTime = state.executionTime + delta
 }
 
-func (state *State) InitializeDummyData() error {
+func (state *State) SetWelcomeData() error {
 	field := state.GetField()
 
-	// Hero
-	var heroPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 2, X: 5}
+	// Place dummy player.
+	var heroPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 1}
 	heroFieldElement, err := field.At(heroPosition)
 	if err != nil {
 		return err
 	}
 	heroFieldElement.UpdateObjectClass("hero")
 
-	// Walls
+	// Place walls.
 	fieldRowLength := field.MeasureRowLength()
 	fieldColumnLength := field.MeasureColumnLength()
 	for y := 0; y < fieldRowLength; y++ {

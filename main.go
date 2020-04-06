@@ -134,7 +134,7 @@ func main() {
 	}
 
 	state := models.CreateState()
-	err := state.InitializeDummyData()
+	err := state.SetWelcomeData()
 	if err != nil {
 		panic(err)
 	}
