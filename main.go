@@ -102,21 +102,17 @@ func handleTermboxEvents(controller *Controller) {
 	}
 }
 
-// TODO: 1fpsなのでループの周期によっては2秒待つことになり不自然。runGameLoopにして30fps程度にするのが楽そう。
-func runTimer(controller *Controller) {
-	interval := time.Second
+func runMainLoop(controller *Controller) {
+	interval := time.Millisecond * 17  // About 60fps.
 	for {
 		var newState *models.State
 		var stateChanged bool = false
 		var err error
 		state := controller.GetState()
-		game := state.GetGame()
 
 		time.Sleep(interval)
 
-		if game.IsStarted() && !game.IsFinished() {
-			newState, stateChanged, err = reducers.AlterPlaytime(*state, interval)
-		}
+		newState, stateChanged, err = reducers.AdvanceTime(*state, interval)
 
 		if err != nil {
 			panic(err)
@@ -159,7 +155,7 @@ func main() {
 		}
 		defer termbox.Close()
 		drawTerminal(&screen)
-		go runTimer(&controller)
+		go runMainLoop(&controller)
 		handleTermboxEvents(&controller)
 	} else {
 		fmt.Println(screen.AsText())

@@ -127,7 +127,7 @@ func createField(y int, x int) Field {
 type Game struct {
 	isFinished bool
 	isStarted bool
-	// This is a total of game loop intervals.
+	// This is the total of main loop intervals.
 	// It is different from the real time.
 	playtime time.Duration
 }

@@ -1,7 +1,6 @@
 package reducers
 
 import(
-	"fmt"
 	"github.com/kjirou/tower_of_go/models"
 	"github.com/kjirou/tower_of_go/utils"
 	"time"
@@ -14,13 +13,8 @@ func StartGame(state models.State) (*models.State, bool, error) {
 	return &state, true, nil
 }
 
-func AlterPlaytime(state models.State, delta time.Duration) (*models.State, bool, error) {
+func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, error) {
 	game := state.GetGame()
-	if !game.IsStarted() {
-		return &state, false, fmt.Errorf("The game has not started.")
-	} else if game.IsFinished() {
-		return &state, false, fmt.Errorf("The game is over.")
-	}
 	game.AlterPlaytime(delta)
 	return &state, true, nil
 }
