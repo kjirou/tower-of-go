@@ -41,6 +41,29 @@ type ScreenText struct {
 	Foreground termbox.Attribute
 }
 
+func createSequentialScreenTexts(position utils.IMatrixPosition, parts []*ScreenText) []*ScreenText {
+	texts := make([]*ScreenText, 0)
+	deltaX := 0
+	for _, part := range parts {
+		var pos utils.IMatrixPosition = &utils.MatrixPosition{
+			Y: position.GetY(),
+			X: position.GetX() + deltaX,
+		}
+		deltaX += len(part.Text)
+		fg := termbox.ColorWhite
+		if part.Foreground != 0 {
+			fg = part.Foreground
+		}
+		text := ScreenText {
+			Position: pos,
+			Text: part.Text,
+			Foreground: fg,
+		}
+		texts = append(texts, &text)
+	}
+	return texts
+}
+
 //
 // A layer that avoids to write logics tightly coupled with "termbox".
 //
@@ -175,20 +198,51 @@ func CreateScreen(rowLength int, columnLength int) Screen {
 	}
 
 	staticTexts := make([]*ScreenText, 0)
+
 	var titleTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 0, X: 2}
 	titleText := ScreenText{
 		Position: titleTextPosition,
 		Text: "[ A Tower of Go ]",
 		Foreground: termbox.ColorWhite,
 	}
+	staticTexts = append(staticTexts, &titleText)
+
 	var urlTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 22, X: 41}
 	urlText := ScreenText{
 		Position: urlTextPosition,
 		Text: "https://github.com/kjirou/tower_of_go",
 		Foreground: termbox.ColorWhite | termbox.AttrUnderline,
 	}
-	staticTexts = append(staticTexts, &titleText)
 	staticTexts = append(staticTexts, &urlText)
+
+	var sKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 15, X: 2}
+	var sKeyHelpTextParts = make([]*ScreenText, 0)
+	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "\""})
+	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "s", Foreground: termbox.ColorYellow})
+	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "\" ... Start a new game."})
+	sKeyHelpTexts := createSequentialScreenTexts(sKeyHelpTextPosition, sKeyHelpTextParts)
+	staticTexts = append(staticTexts, sKeyHelpTexts...)
+
+	var rKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 16, X: 2}
+	var rKeyHelpTextParts = make([]*ScreenText, 0)
+	rKeyHelpTextParts = append(rKeyHelpTextParts, &ScreenText{Text: "\""})
+	rKeyHelpTextParts = append(rKeyHelpTextParts, &ScreenText{Text: "r", Foreground: termbox.ColorYellow})
+	rKeyHelpTextParts = append(rKeyHelpTextParts, &ScreenText{Text: "\" ... Reset the current game."})
+	rKeyHelpTexts := createSequentialScreenTexts(rKeyHelpTextPosition, rKeyHelpTextParts)
+	staticTexts = append(staticTexts, rKeyHelpTexts...)
+
+	var moveKeysHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 17, X: 2}
+	var moveKeysHelpTextParts = make([]*ScreenText, 0)
+	moveKeysHelpTextParts =
+		append(moveKeysHelpTextParts, &ScreenText{Text: "Arrow keys", Foreground: termbox.ColorYellow})
+	moveKeysHelpTextParts = append(moveKeysHelpTextParts, &ScreenText{Text: " or \""})
+	moveKeysHelpTextParts =
+		append(moveKeysHelpTextParts, &ScreenText{Text: "k,l,j,h", Foreground: termbox.ColorYellow})
+	moveKeysHelpTextParts = append(moveKeysHelpTextParts, &ScreenText{Text: "\" ... Move the player."})
+	staticTexts = append(
+		staticTexts,
+		createSequentialScreenTexts(moveKeysHelpTextPosition, moveKeysHelpTextParts)...
+	)
 
 	return Screen{
 		matrix: matrix,
