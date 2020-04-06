@@ -190,7 +190,7 @@ func (state *State) AlterExecutionTime(delta time.Duration) {
 func (state *State) SetWelcomeData() error {
 	field := state.GetField()
 
-	// Place dummy player.
+	// Place a hero to be the player's alter ego.
 	var heroPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 1}
 	heroFieldElement, err := field.At(heroPosition)
 	if err != nil {

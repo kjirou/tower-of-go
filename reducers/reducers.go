@@ -11,7 +11,7 @@ import(
 func StartGame(state models.State) (*models.State, bool, error) {
 	field := state.GetField()
 
-	// Replace the player.
+	// Replace the hero.
 	var heroFieldElement utils.IFieldElement = field.GetElementOfHero()
 	var heroPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 1}
 	field.MoveObject(heroFieldElement.GetPosition(), heroPosition)
