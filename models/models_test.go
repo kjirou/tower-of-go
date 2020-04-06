@@ -44,4 +44,38 @@ func TestField(t *testing.T) {
 			}
 		})
 	})
+
+	t.Run("MoveObject", func(t *testing.T) {
+		field := createField(2, 3)
+		var fromPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 0, X: 0}
+		var toPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 2}
+		fromElement, _ := field.At(fromPosition)
+		toElement, _ := field.At(toPosition)
+
+		t.Run("始点の物体が空ではなく、終点の物体が空のとき、物体種別が移動する", func(t *testing.T) {
+			fromElement.UpdateObjectClass("wall")
+			toElement.UpdateObjectClass("empty")
+			field.MoveObject(fromPosition, toPosition)
+			if toElement.GetObjectClass() != "wall" {
+				t.Error("物体種別が移動していない")
+			}
+		})
+
+		t.Run("始点の物体が空ではなく、終点の物体が空ではないとき、エラーを返す", func(t *testing.T) {
+			fromElement.UpdateObjectClass("wall")
+			toElement.UpdateObjectClass("wall")
+			err := field.MoveObject(fromPosition, toPosition)
+			if err == nil {
+				t.Error("エラーを返さない")
+			}
+		})
+
+		t.Run("始点の物体が空のとき、エラーを返す", func(t *testing.T) {
+			fromElement.UpdateObjectClass("empty")
+			err := field.MoveObject(fromPosition, toPosition)
+			if err == nil {
+				t.Error("エラーを返さない")
+			}
+		})
+	})
 }
