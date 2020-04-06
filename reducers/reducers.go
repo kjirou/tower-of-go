@@ -9,23 +9,23 @@ import(
 
 // TODO: Generalize the interface between reducer functions.
 
-func StartGame(state models.State) (*models.State, error) {
+func StartGame(state models.State) (*models.State, bool, error) {
 	state.GetGame().Start()
-	return &state, nil
+	return &state, true, nil
 }
 
-func AlterPlaytime(state models.State, delta time.Duration) (*models.State, error) {
+func AlterPlaytime(state models.State, delta time.Duration) (*models.State, bool, error) {
 	game := state.GetGame()
 	if !game.IsStarted() {
-		return &state, fmt.Errorf("The game has not started.")
+		return &state, false, fmt.Errorf("The game has not started.")
 	} else if game.IsFinished() {
-		return &state, fmt.Errorf("The game is over.")
+		return &state, false, fmt.Errorf("The game is over.")
 	}
 	game.AlterPlaytime(delta)
-	return &state, nil
+	return &state, true, nil
 }
 
-func WalkHero(state models.State, direction utils.FourDirection) (*models.State, error) {
+func WalkHero(state models.State, direction utils.FourDirection) (*models.State, bool, error) {
 	field := state.GetField()
 	element := field.GetElementOfHero()
 	nextY := element.GetPosition().GetY()
@@ -48,11 +48,11 @@ func WalkHero(state models.State, direction utils.FourDirection) (*models.State,
 	if nextPosition.Validate(field.MeasureRowLength(), field.MeasureColumnLength()) {
 		element, err := field.At(nextPosition)
 		if err != nil {
-			return &state, err
+			return &state, false, err
 		} else if element.IsObjectEmpty() {
 			err := field.MoveObject(position, nextPosition)
-			return &state, err
+			return &state, err == nil, err
 		}
 	}
-	return &state, nil
+	return &state, true, nil
 }

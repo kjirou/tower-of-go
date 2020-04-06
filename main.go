@@ -57,27 +57,28 @@ func initializeTermbox() error {
 // TODO: Replace `ch` type with termbox's `Cell.Ch` type.
 func handleKeyPress(controller *Controller, ch rune, key termbox.Key) {
 	var newState *models.State
+	var stateChanged bool = false
 	var err error
 	state := controller.GetState()
 
 	switch {
 	// Start a game.
 	case ch == 's':
-		newState, err = reducers.StartGame(*state)
+		newState, stateChanged, err = reducers.StartGame(*state)
 	// Move the hero.
 	case key == termbox.KeyArrowUp || ch == 'k':
-		newState, err = reducers.WalkHero(*state, utils.FourDirectionUp)
+		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionUp)
 	case key == termbox.KeyArrowRight || ch == 'l':
-		newState, err = reducers.WalkHero(*state, utils.FourDirectionRight)
+		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionRight)
 	case key == termbox.KeyArrowDown || ch == 'j':
-		newState, err = reducers.WalkHero(*state, utils.FourDirectionDown)
+		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionDown)
 	case key == termbox.KeyArrowLeft || ch == 'h':
-		newState, err = reducers.WalkHero(*state, utils.FourDirectionLeft)
+		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionLeft)
 	}
 
 	if err != nil {
 		panic(err)
-	} else if newState != nil {
+	} else if newState != nil && stateChanged {
 		controller.Dispatch(newState)
 		drawTerminal(controller.GetScreen())
 	}
@@ -106,6 +107,7 @@ func runTimer(controller *Controller) {
 	interval := time.Second
 	for {
 		var newState *models.State
+		var stateChanged bool = false
 		var err error
 		state := controller.GetState()
 		game := state.GetGame()
@@ -113,12 +115,12 @@ func runTimer(controller *Controller) {
 		time.Sleep(interval)
 
 		if game.IsStarted() && !game.IsFinished() {
-			newState, err = reducers.AlterPlaytime(*state, interval)
+			newState, stateChanged, err = reducers.AlterPlaytime(*state, interval)
 		}
 
 		if err != nil {
 			panic(err)
-		} else if newState != nil {
+		} else if newState != nil && stateChanged {
 			controller.Dispatch(newState)
 			drawTerminal(controller.GetScreen())
 		}
