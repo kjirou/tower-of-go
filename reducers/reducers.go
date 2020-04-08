@@ -23,11 +23,26 @@ func StartGame(state models.State) (*models.State, bool, error) {
 }
 
 func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, error) {
+	game := state.GetGame()
+
+	if game.IsStarted() && !game.IsFinished() {
+		remainingTime := game.CalculateRemainingTime(state.GetExecutionTime())
+		if remainingTime == 0 {
+			game.Finish()
+		}
+	}
+
 	state.AlterExecutionTime(delta)
+
 	return &state, true, nil
 }
 
 func WalkHero(state models.State, direction utils.FourDirection) (*models.State, bool, error) {
+	game := state.GetGame()
+	if game.IsFinished() {
+		return &state, true, nil
+	}
+
 	field := state.GetField()
 	element := field.GetElementOfHero()
 	nextY := element.GetPosition().GetY()
