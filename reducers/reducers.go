@@ -8,15 +8,17 @@ import(
 
 // TODO: Generalize the interface between reducer functions.
 
-func StartGame(state models.State) (*models.State, bool, error) {
+func StartOrRestartGame(state models.State) (*models.State, bool, error) {
+	game := state.GetGame()
 	field := state.GetField()
 
 	// Replace the hero.
 	var heroFieldElement utils.IFieldElement = field.GetElementOfHero()
 	field.MoveObject(heroFieldElement.GetPosition(), utils.HeroPosition)
 
-	// Start timer.
-	state.GetGame().Start(state.GetExecutionTime())
+	// Start the new game.
+	game.Reset()
+	game.Start(state.GetExecutionTime())
 
 	return &state, true, nil
 }

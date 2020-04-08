@@ -69,9 +69,9 @@ func handleKeyPress(controller *Controller, ch rune, key termbox.Key) {
 	state := controller.GetState()
 
 	switch {
-	// Start a game.
+	// Start or restart a game.
 	case ch == 's':
-		newState, stateChanged, err = reducers.StartGame(*state)
+		newState, stateChanged, err = reducers.StartOrRestartGame(*state)
 	// Move the hero.
 	case key == termbox.KeyArrowUp || ch == 'k':
 		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionUp)

@@ -225,29 +225,21 @@ func CreateScreen(rowLength int, columnLength int) Screen {
 	}
 	staticTexts = append(staticTexts, &urlText)
 
-	var operationTitleTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 10, X: 25}
+	var operationTitleTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 11, X: 25}
 	operationTitleText := ScreenText{
 		Position: operationTitleTextPosition,
-		Text: "[ Method of Operation ]",
+		Text: "[ Operations ]",
 		Foreground: termbox.ColorWhite,
 	}
 	staticTexts = append(staticTexts, &operationTitleText)
 
-	var sKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 11, X: 25}
+	var sKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 12, X: 25}
 	var sKeyHelpTextParts = make([]*ScreenText, 0)
 	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "\""})
 	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "s", Foreground: termbox.ColorYellow})
-	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "\" ... Start a new game."})
+	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "\" ... Start or restart a new game."})
 	sKeyHelpTexts := createSequentialScreenTexts(sKeyHelpTextPosition, sKeyHelpTextParts)
 	staticTexts = append(staticTexts, sKeyHelpTexts...)
-
-	var rKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 12, X: 25}
-	var rKeyHelpTextParts = make([]*ScreenText, 0)
-	rKeyHelpTextParts = append(rKeyHelpTextParts, &ScreenText{Text: "\""})
-	rKeyHelpTextParts = append(rKeyHelpTextParts, &ScreenText{Text: "r", Foreground: termbox.ColorYellow})
-	rKeyHelpTextParts = append(rKeyHelpTextParts, &ScreenText{Text: "\" ... Reset the current game."})
-	rKeyHelpTexts := createSequentialScreenTexts(rKeyHelpTextPosition, rKeyHelpTextParts)
-	staticTexts = append(staticTexts, rKeyHelpTexts...)
 
 	var moveKeysHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 13, X: 25}
 	var moveKeysHelpTextParts = make([]*ScreenText, 0)

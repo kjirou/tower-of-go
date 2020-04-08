@@ -187,7 +187,6 @@ func (game *Game) IncrementFloorNumber() {
 
 func (game *Game) Start(executionTime time.Duration) {
 	game.startedAt = executionTime
-	game.isFinished = false
 }
 
 func (game *Game) Finish() {
