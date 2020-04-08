@@ -52,7 +52,7 @@ type IField interface {
 }
 
 type IGame interface {
-	CalculatePlaytime(executionTime time.Duration) time.Duration
+	CalculateRemainingTime(executionTime time.Duration) time.Duration
 	Finish()
 	IsFinished() bool
 	IsStarted() bool

@@ -85,15 +85,26 @@ func TestField(t *testing.T) {
 }
 
 func TestGame(t *testing.T) {
-	t.Run("CalculatePlaytime", func(t *testing.T) {
+	t.Run("CalculateRemainingTime", func(t *testing.T) {
 		game := &Game{}
 
-		t.Run("リセット直後は-1を返す", func(t *testing.T) {
+		t.Run("リセット直後は30を返す", func(t *testing.T) {
 			game.Reset()
 			executionTime, _ := time.ParseDuration("2s")
-			playtime := game.CalculatePlaytime(executionTime)
-			if playtime.Seconds() != -1 {
-				t.Fatal("-1ではない")
+			remainingTime := game.CalculateRemainingTime(executionTime)
+			if remainingTime.Seconds() != 30 {
+				t.Fatal("30ではない")
+			}
+		})
+
+		t.Run("最小で0を返す", func(t *testing.T) {
+			game.Reset()
+			startTime, _ := time.ParseDuration("1s")
+			game.Start(startTime)
+			currentTime, _ := time.ParseDuration("999s")
+			remainingTime := game.CalculateRemainingTime(currentTime)
+			if remainingTime.Seconds() != 0 {
+				t.Fatal("0ではない")
 			}
 		})
 	})

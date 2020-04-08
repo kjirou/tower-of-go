@@ -161,12 +161,18 @@ func (game *Game) IsFinished() bool {
 	return game.isFinished
 }
 
-func (game *Game) CalculatePlaytime(executionTime time.Duration) time.Duration {
-	if !game.IsStarted() {
-		duration, _ := time.ParseDuration("-1s")
-		return duration
+func (game *Game) CalculateRemainingTime(executionTime time.Duration) time.Duration {
+	oneGameTime, _ := time.ParseDuration("30s")
+	if game.IsStarted() {
+		playtime := executionTime - game.startedAt
+		remainingTime := oneGameTime - playtime
+		if remainingTime < 0 {
+			zeroTime, _ := time.ParseDuration("0s")
+			return zeroTime
+		}
+		return remainingTime
 	}
-	return executionTime - game.startedAt
+	return oneGameTime
 }
 
 func (game *Game) Start(executionTime time.Duration) {

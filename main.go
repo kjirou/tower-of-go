@@ -103,7 +103,9 @@ func handleTermboxEvents(controller *Controller) {
 }
 
 func runMainLoop(controller *Controller) {
-	interval := time.Millisecond * 17  // About 60fps.
+	// About 60fps.
+	// TODO: Some delay from real time.
+	interval := time.Millisecond * 17
 	for {
 		var newState *models.State
 		var stateChanged bool = false
