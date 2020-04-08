@@ -168,6 +168,32 @@ func (screen *Screen) Render(state utils.IState) {
 		Foreground: termbox.ColorWhite,
 	}
 	texts = append(texts, &floorNumberText)
+	if game.IsFinished() {
+		score := game.GetFloorNumber()
+		var lankTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 5, X: 27}
+		message := "No good..."
+		fg := termbox.ColorWhite
+		switch {
+			case score == 3:
+				message = "Good!"
+				fg = termbox.ColorGreen
+			case score == 4:
+				message = "Excellent!"
+				fg = termbox.ColorGreen
+			case score == 5:
+				message = "Marvelous!"
+				fg = termbox.ColorGreen
+			case score >= 6:
+				message = "Gopher!!"
+				fg = termbox.ColorCyan
+		}
+		lankText := ScreenText{
+			Position: lankTextPosition,
+			Text: message,
+			Foreground: fg,
+		}
+		texts = append(texts, &lankText)
+	}
 
 	// Place texts.
 	for _, textInstance := range texts {
