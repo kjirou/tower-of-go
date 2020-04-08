@@ -10,12 +10,17 @@ type FieldObject struct {
 	Class string
 }
 
+type FieldFloorObject struct {
+	Class string
+}
+
 func (fieldObject *FieldObject) IsEmpty() bool {
 	return fieldObject.Class == "empty"
 }
 
 type FieldElement struct {
 	Object   FieldObject
+	FloorObject   FieldFloorObject
 	Position utils.MatrixPosition
 }
 
@@ -28,12 +33,20 @@ func (fieldElement *FieldElement) GetObjectClass() string {
 	return fieldElement.Object.Class
 }
 
+func (fieldElement *FieldElement) GetFloorObjectClass() string {
+	return fieldElement.FloorObject.Class
+}
+
 func (fieldElement *FieldElement) IsObjectEmpty() bool {
 	return fieldElement.Object.IsEmpty()
 }
 
 func (fieldElement *FieldElement) UpdateObjectClass(class string) {
 	fieldElement.Object.Class = class
+}
+
+func (fieldElement *FieldElement) UpdateFloorObjectClass(class string) {
+	fieldElement.FloorObject.Class = class
 }
 
 type Field struct {
@@ -115,6 +128,9 @@ func createField(y int, x int) Field {
 				Object: FieldObject{
 					Class: "empty",
 				},
+				FloorObject: FieldFloorObject{
+					Class: "empty",
+				},
 			}
 		}
 		matrix[rowIndex] = row
@@ -125,14 +141,16 @@ func createField(y int, x int) Field {
 }
 
 type Game struct {
+	floorNumber int
+	isFinished bool
 	// A snapshot of `state.executionTime` when a game has started.
 	startedAt time.Duration
-	isFinished bool
 }
 
 func (game *Game) Reset() {
 	zeroDuration, _ := time.ParseDuration("0s")
 	game.startedAt = zeroDuration
+	game.floorNumber = 1
 	game.isFinished = false
 }
 
@@ -145,17 +163,30 @@ func (game *Game) IsFinished() bool {
 	return game.isFinished
 }
 
-func (game *Game) CalculatePlaytime(executionTime time.Duration) time.Duration {
-	if !game.IsStarted() {
-		duration, _ := time.ParseDuration("-1s")
-		return duration
+func (game *Game) CalculateRemainingTime(executionTime time.Duration) time.Duration {
+	oneGameTime, _ := time.ParseDuration("30s")
+	if game.IsStarted() {
+		playtime := executionTime - game.startedAt
+		remainingTime := oneGameTime - playtime
+		if remainingTime < 0 {
+			zeroTime, _ := time.ParseDuration("0s")
+			return zeroTime
+		}
+		return remainingTime
 	}
-	return executionTime - game.startedAt
+	return oneGameTime
+}
+
+func (game *Game) GetFloorNumber() int{
+	return game.floorNumber
+}
+
+func (game *Game) IncrementFloorNumber() {
+	game.floorNumber += 1
 }
 
 func (game *Game) Start(executionTime time.Duration) {
 	game.startedAt = executionTime
-	game.isFinished = false
 }
 
 func (game *Game) Finish() {
@@ -187,18 +218,24 @@ func (state *State) AlterExecutionTime(delta time.Duration) {
 	state.executionTime = state.executionTime + delta
 }
 
-func (state *State) InitializeDummyData() error {
+func (state *State) SetWelcomeData() error {
 	field := state.GetField()
 
-	// Hero
-	var heroPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 2, X: 5}
-	heroFieldElement, err := field.At(heroPosition)
+	// Place a hero to be the player's alter ego.
+	heroFieldElement, err := field.At(utils.HeroPosition)
 	if err != nil {
 		return err
 	}
 	heroFieldElement.UpdateObjectClass("hero")
 
-	// Walls
+	// Place an upstairs.
+	upstairsFieldElement, err := field.At(utils.UpstairsPosition)
+	if err != nil {
+		return err
+	}
+	upstairsFieldElement.UpdateFloorObjectClass("upstairs")
+
+	// Place walls.
 	fieldRowLength := field.MeasureRowLength()
 	fieldColumnLength := field.MeasureColumnLength()
 	for y := 0; y < fieldRowLength; y++ {
@@ -221,7 +258,7 @@ func CreateState() State {
 	executionTime, _ := time.ParseDuration("0")
 	state := State{
 		executionTime: executionTime,
-		field: createField(12, 20),
+		field: createField(13, 21),
 		game: game,
 	}
 	game.Reset()

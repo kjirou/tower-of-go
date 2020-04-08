@@ -28,6 +28,12 @@ func (screenElement *ScreenElement) renderWithFieldElement(fieldElement utils.IF
 		default:
 			symbol = '?'
 		}
+	} else {
+		switch fieldElement.GetFloorObjectClass() {
+		case "upstairs":
+			symbol = '<'
+			fg = termbox.ColorGreen
+		}
 	}
 	screenElement.Symbol = symbol
 	screenElement.ForegroundColor = fg
@@ -146,18 +152,48 @@ func (screen *Screen) Render(state utils.IState) {
 	// Prepare texts.
 	texts := make([]*ScreenText, 0)
 	texts = append(texts, screen.staticTexts...)
-	var timeTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 3, X: 24}
-	playtimeAsInt := int(game.CalculatePlaytime(state.GetExecutionTime()).Seconds())
-	playtimeText := "-"
-	if playtimeAsInt != -1 {
-		playtimeText = fmt.Sprintf("%d", playtimeAsInt)
-	}
+	var timeTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 3, X: 25}
+	remainingTime := game.CalculateRemainingTime(state.GetExecutionTime()).Seconds()
+	remainingTimeText := fmt.Sprintf("%4.1f", remainingTime)
 	timeText := ScreenText{
 		Position: timeTextPosition,
-		Text: fmt.Sprintf("Time: %s", playtimeText),
+		Text: fmt.Sprintf("Time : %s", remainingTimeText),
 		Foreground: termbox.ColorWhite,
 	}
 	texts = append(texts, &timeText)
+	var floorNumberTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 4, X: 25}
+	floorNumberText := ScreenText{
+		Position: floorNumberTextPosition,
+		Text: fmt.Sprintf("Floor: %2d", game.GetFloorNumber()),
+		Foreground: termbox.ColorWhite,
+	}
+	texts = append(texts, &floorNumberText)
+	if game.IsFinished() {
+		score := game.GetFloorNumber()
+		var lankTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 5, X: 27}
+		message := "No good..."
+		fg := termbox.ColorWhite
+		switch {
+			case score == 3:
+				message = "Good!"
+				fg = termbox.ColorGreen
+			case score == 4:
+				message = "Excellent!"
+				fg = termbox.ColorGreen
+			case score == 5:
+				message = "Marvelous!"
+				fg = termbox.ColorGreen
+			case score >= 6:
+				message = "Gopher!!"
+				fg = termbox.ColorCyan
+		}
+		lankText := ScreenText{
+			Position: lankTextPosition,
+			Text: message,
+			Foreground: fg,
+		}
+		texts = append(texts, &lankText)
+	}
 
 	// Place texts.
 	for _, textInstance := range texts {
@@ -215,23 +251,23 @@ func CreateScreen(rowLength int, columnLength int) Screen {
 	}
 	staticTexts = append(staticTexts, &urlText)
 
-	var sKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 15, X: 2}
+	var operationTitleTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 11, X: 25}
+	operationTitleText := ScreenText{
+		Position: operationTitleTextPosition,
+		Text: "[ Operations ]",
+		Foreground: termbox.ColorWhite,
+	}
+	staticTexts = append(staticTexts, &operationTitleText)
+
+	var sKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 12, X: 25}
 	var sKeyHelpTextParts = make([]*ScreenText, 0)
 	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "\""})
 	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "s", Foreground: termbox.ColorYellow})
-	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "\" ... Start a new game."})
+	sKeyHelpTextParts = append(sKeyHelpTextParts, &ScreenText{Text: "\" ... Start or restart a new game."})
 	sKeyHelpTexts := createSequentialScreenTexts(sKeyHelpTextPosition, sKeyHelpTextParts)
 	staticTexts = append(staticTexts, sKeyHelpTexts...)
 
-	var rKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 16, X: 2}
-	var rKeyHelpTextParts = make([]*ScreenText, 0)
-	rKeyHelpTextParts = append(rKeyHelpTextParts, &ScreenText{Text: "\""})
-	rKeyHelpTextParts = append(rKeyHelpTextParts, &ScreenText{Text: "r", Foreground: termbox.ColorYellow})
-	rKeyHelpTextParts = append(rKeyHelpTextParts, &ScreenText{Text: "\" ... Reset the current game."})
-	rKeyHelpTexts := createSequentialScreenTexts(rKeyHelpTextPosition, rKeyHelpTextParts)
-	staticTexts = append(staticTexts, rKeyHelpTexts...)
-
-	var moveKeysHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 17, X: 2}
+	var moveKeysHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 13, X: 25}
 	var moveKeysHelpTextParts = make([]*ScreenText, 0)
 	moveKeysHelpTextParts =
 		append(moveKeysHelpTextParts, &ScreenText{Text: "Arrow keys", Foreground: termbox.ColorYellow})

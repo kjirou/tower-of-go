@@ -35,9 +35,11 @@ func (matrixPosition *MatrixPosition) Validate(rowLength int, columnLength int) 
 }
 
 type IFieldElement interface {
+	GetFloorObjectClass() string
 	GetObjectClass() string
 	GetPosition() IMatrixPosition
 	IsObjectEmpty() bool
+	UpdateFloorObjectClass(class string)
 	UpdateObjectClass(class string)
 }
 
@@ -50,8 +52,10 @@ type IField interface {
 }
 
 type IGame interface {
-	CalculatePlaytime(executionTime time.Duration) time.Duration
+	CalculateRemainingTime(executionTime time.Duration) time.Duration
 	Finish()
+	GetFloorNumber() int
+	IncrementFloorNumber()
 	IsFinished() bool
 	IsStarted() bool
 	Reset()
@@ -64,3 +68,6 @@ type IState interface {
 	GetField() IField
 	GetGame() IGame
 }
+
+var HeroPosition IMatrixPosition = &MatrixPosition{Y: 1, X: 1}
+var UpstairsPosition IMatrixPosition = &MatrixPosition{Y: 11, X: 19}
