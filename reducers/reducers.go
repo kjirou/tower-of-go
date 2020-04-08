@@ -23,8 +23,18 @@ func StartGame(state models.State) (*models.State, bool, error) {
 
 func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, error) {
 	game := state.GetGame()
+	field := state.GetField()
 
+	// In the game.
 	if game.IsStarted() && !game.IsFinished() {
+		// The hero climbs up the stairs.
+		var heroFieldElement utils.IFieldElement = field.GetElementOfHero()
+		if (heroFieldElement.GetFloorObjectClass() == "upstairs") {
+			game.IncrementFloorNumber()
+			field.MoveObject(heroFieldElement.GetPosition(), utils.HeroPosition)
+		}
+
+		// Time over of this game.
 		remainingTime := game.CalculateRemainingTime(state.GetExecutionTime())
 		if remainingTime == 0 {
 			game.Finish()
