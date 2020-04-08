@@ -54,6 +54,8 @@ type IField interface {
 type IGame interface {
 	CalculateRemainingTime(executionTime time.Duration) time.Duration
 	Finish()
+	GetFloorNumber() int
+	IncrementFloorNumber()
 	IsFinished() bool
 	IsStarted() bool
 	Reset()

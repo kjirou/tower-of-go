@@ -152,15 +152,22 @@ func (screen *Screen) Render(state utils.IState) {
 	// Prepare texts.
 	texts := make([]*ScreenText, 0)
 	texts = append(texts, screen.staticTexts...)
-	var timeTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 3, X: 24}
+	var timeTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 3, X: 25}
 	remainingTime := game.CalculateRemainingTime(state.GetExecutionTime()).Seconds()
-	remainingTimeText := fmt.Sprintf("%.1f", remainingTime)
+	remainingTimeText := fmt.Sprintf("%4.1f", remainingTime)
 	timeText := ScreenText{
 		Position: timeTextPosition,
-		Text: fmt.Sprintf("Time: %s", remainingTimeText),
+		Text: fmt.Sprintf("Time : %s", remainingTimeText),
 		Foreground: termbox.ColorWhite,
 	}
 	texts = append(texts, &timeText)
+	var floorNumberTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 4, X: 25}
+	floorNumberText := ScreenText{
+		Position: floorNumberTextPosition,
+		Text: fmt.Sprintf("Floor: %2d", game.GetFloorNumber()),
+		Foreground: termbox.ColorWhite,
+	}
+	texts = append(texts, &floorNumberText)
 
 	// Place texts.
 	for _, textInstance := range texts {

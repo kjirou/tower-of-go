@@ -141,14 +141,16 @@ func createField(y int, x int) Field {
 }
 
 type Game struct {
+	floorNumber int
+	isFinished bool
 	// A snapshot of `state.executionTime` when a game has started.
 	startedAt time.Duration
-	isFinished bool
 }
 
 func (game *Game) Reset() {
 	zeroDuration, _ := time.ParseDuration("0s")
 	game.startedAt = zeroDuration
+	game.floorNumber = 1
 	game.isFinished = false
 }
 
@@ -173,6 +175,14 @@ func (game *Game) CalculateRemainingTime(executionTime time.Duration) time.Durat
 		return remainingTime
 	}
 	return oneGameTime
+}
+
+func (game *Game) GetFloorNumber() int{
+	return game.floorNumber
+}
+
+func (game *Game) IncrementFloorNumber() {
+	game.floorNumber += 1
 }
 
 func (game *Game) Start(executionTime time.Duration) {
