@@ -223,16 +223,14 @@ func (state *State) SetWelcomeData() error {
 	field := state.GetField()
 
 	// Place a hero to be the player's alter ego.
-	var heroPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 1}
-	heroFieldElement, err := field.At(heroPosition)
+	heroFieldElement, err := field.At(utils.HeroPosition)
 	if err != nil {
 		return err
 	}
 	heroFieldElement.UpdateObjectClass("hero")
 
 	// Place an upstairs.
-	var upstairsPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 11, X: 19}
-	upstairsFieldElement, err := field.At(upstairsPosition)
+	upstairsFieldElement, err := field.At(utils.UpstairsPosition)
 	if err != nil {
 		return err
 	}

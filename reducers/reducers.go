@@ -13,8 +13,7 @@ func StartGame(state models.State) (*models.State, bool, error) {
 
 	// Replace the hero.
 	var heroFieldElement utils.IFieldElement = field.GetElementOfHero()
-	var heroPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 1}
-	field.MoveObject(heroFieldElement.GetPosition(), heroPosition)
+	field.MoveObject(heroFieldElement.GetPosition(), utils.HeroPosition)
 
 	// Start timer.
 	state.GetGame().Start(state.GetExecutionTime())
