@@ -25,7 +25,7 @@ func generateRawMazeMatrix(rowLength int, columnLength int) ([][]*mazeCell, erro
 	if rowLength < 3 || columnLength < 3 {
 		return cells, fmt.Errorf("The number of rows and columns must be at least 3.")
 	} else if (rowLength % 2 != 1 || columnLength % 2 != 1) {
-		return cells, fmt.Errorf("The number of rows and columns should be 2n + 1.")
+		return cells, fmt.Errorf("The number of rows and columns should be 2n+1.")
 	}
 
 	clusterIndex := 0
@@ -72,7 +72,6 @@ func GenerateMaze(rowLength int, columnLength int) ([][]*mazeCell, error) {
 		}
 	}
 
-	// TODO: Initialize seed in main function.
 	rand.Shuffle(len(breakableWalls), func (i, j int) {
 		breakableWalls[i], breakableWalls[j] = breakableWalls[j], breakableWalls[i]
 	})

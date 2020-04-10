@@ -10,6 +10,7 @@ import (
 	"github.com/kjirou/tower_of_go/utils"
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
+	"math/rand"
 	"os"
 	"time"
 )
@@ -141,6 +142,8 @@ func main() {
 			doesRunTermbox = true
 		}
 	}
+
+	rand.Seed(time.Now().UnixNano())
 
 	state := models.CreateState()
 	err := state.SetWelcomeData()
