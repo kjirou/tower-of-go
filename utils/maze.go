@@ -56,7 +56,16 @@ func generateRawMazeMatrix(rowLength int, columnLength int) ([][]*mazeCell, erro
 }
 
 // Generate a maze with the clustering method.
-// Ref) https://qiita.com/kaityo256/items/b2e504c100f4274deb42
+//
+// The maze generation algorithm referred to the following article.
+// https://qiita.com/kaityo256/items/b2e504c100f4274deb42
+//
+// For example, if set rowLength=5 and columnLength=7 then a maze of the following size is generated.
+// #######
+// #     #
+// #     #
+// #     #
+// #######
 func GenerateMaze(rowLength int, columnLength int) ([][]*mazeCell, error) {
 	cells, err := generateRawMazeMatrix(rowLength, columnLength)
 	if err != nil {
