@@ -133,9 +133,20 @@ func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) (*models.
 	return newState, stateChanged, err
 }
 
-func CreateController(state *models.State, screen *views.Screen) *Controller {
-	return &Controller{
-		state: state,
-		screen: screen,
+func CreateController() (*Controller, error) {
+	controller := &Controller{}
+
+	state := models.CreateState()
+	err := state.SetWelcomeData()
+	if err != nil {
+		return controller, err
 	}
+
+	screen := views.CreateScreen(24, 80)
+
+	controller.state = state
+	controller.screen = screen
+	controller.Dispatch(state)
+
+	return controller, nil
 }

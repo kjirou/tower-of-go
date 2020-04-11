@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/controller"
-	"github.com/kjirou/tower_of_go/models"
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
 	"math/rand"
@@ -105,24 +104,20 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	state := models.CreateState()
-	err := state.SetWelcomeData()
-	if err != nil {
-		panic(err)
+	controller, createControllerErr := controller.CreateController()
+	if createControllerErr != nil {
+		panic(createControllerErr)
 	}
-	screen := views.CreateScreen(24, 80)
-	controller := controller.CreateController(state, screen)
-	controller.Dispatch(state)
 
 	if debugMode {
-		fmt.Println(convertScreenToText(screen))
+		fmt.Println(convertScreenToText(controller.GetScreen()))
 	} else {
 		termboxErr := initializeTermbox()
 		if termboxErr != nil {
 			panic(termboxErr)
 		}
 		defer termbox.Close()
-		drawTerminal(screen)
+		drawTerminal(controller.GetScreen())
 		go runMainLoop(controller)
 		handleTermboxEvents(controller)
 	}
