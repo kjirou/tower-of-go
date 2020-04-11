@@ -90,28 +90,12 @@ func (screen *Screen) measureColumnLength() int {
 	return len(screen.matrix[0])
 }
 
-func (screen *Screen) At(position utils.IMatrixPosition) *ScreenElement {
-	y := position.GetY()
-	x := position.GetX()
-	// TODO: Error handling.
-	if y < 0 || y > screen.measureRowLength() {
-		panic(fmt.Sprintf("That position (Y=%d) does not exist on the screen.", y))
-	} else if x < 0 || x > screen.measureColumnLength() {
-		panic(fmt.Sprintf("That position (X=%d) does not exist on the screen.", x))
-	}
-	return &(screen.matrix[y][x])
-}
-
 func (screen *Screen) renderField(startPosition utils.IMatrixPosition, field utils.IField) {
 	rowLength := field.MeasureRowLength()
 	columnLength := field.MeasureColumnLength()
 	for y := 0; y < rowLength; y++ {
 		for x := 0; x < columnLength; x++ {
-			var screenElementPosition utils.IMatrixPosition = &utils.MatrixPosition{
-				Y: startPosition.GetY() + y,
-				X: startPosition.GetX() + x,
-			}
-			element := screen.At(screenElementPosition)
+			element := &(screen.matrix[y][x])
 			var fieldElementPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
 			// TODO: Error handling.
 			var fieldElement, _ = field.At(fieldElementPosition)
