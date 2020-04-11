@@ -18,16 +18,16 @@ type ScreenCellProps struct {
 
 // TODO: "ForegroundColor"->"Foreground"
 // TODO: Prevent public access.
-type ScreenElement struct {
+type ScreenCell struct {
 	Symbol          rune
 	ForegroundColor termbox.Attribute
 	BackgroundColor termbox.Attribute
 }
 
-func (screenElement *ScreenElement) render(props *ScreenCellProps) {
-	screenElement.Symbol = props.Symbol
-	screenElement.ForegroundColor = props.ForegroundColor
-	screenElement.BackgroundColor = props.BackgroundColor
+func (screenCell *ScreenCell) render(props *ScreenCellProps) {
+	screenCell.Symbol = props.Symbol
+	screenCell.ForegroundColor = props.ForegroundColor
+	screenCell.BackgroundColor = props.BackgroundColor
 }
 
 type ScreenText struct {
@@ -69,11 +69,11 @@ type ScreenProps struct {
 }
 
 type Screen struct {
-	matrix [][]ScreenElement
+	matrix [][]ScreenCell
 	staticTexts []*ScreenText
 }
 
-func (screen *Screen) GetMatrix() [][]ScreenElement {
+func (screen *Screen) GetMatrix() [][]ScreenCell {
 	return screen.matrix
 }
 
@@ -164,11 +164,11 @@ func (screen *Screen) Render(props *ScreenProps) {
 }
 
 func CreateScreen(rowLength int, columnLength int) Screen {
-	matrix := make([][]ScreenElement, rowLength)
+	matrix := make([][]ScreenCell, rowLength)
 	for rowIndex := 0; rowIndex < rowLength; rowIndex++ {
-		row := make([]ScreenElement, columnLength)
+		row := make([]ScreenCell, columnLength)
 		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
-			row[columnIndex] = ScreenElement{
+			row[columnIndex] = ScreenCell{
 				Symbol:          '_',
 				ForegroundColor: termbox.ColorWhite,
 				BackgroundColor: termbox.ColorBlack,
