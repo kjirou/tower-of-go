@@ -77,45 +77,6 @@ func (screen *Screen) measureColumnLength() int {
 	return len(screen.matrix[0])
 }
 
-func (screen *Screen) renderField(startPosition utils.IMatrixPosition, field utils.IField) {
-	rowLength := field.MeasureRowLength()
-	columnLength := field.MeasureColumnLength()
-	for y := 0; y < rowLength; y++ {
-		for x := 0; x < columnLength; x++ {
-			cell := &(screen.matrix[y][x])
-			var fieldElementPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
-			// TODO: Error handling.
-			var fieldElement, _ = field.At(fieldElementPosition)
-			symbol := '.'
-			fg := termbox.ColorWhite
-			bg := termbox.ColorBlack
-			if !fieldElement.IsObjectEmpty() {
-				switch fieldElement.GetObjectClass() {
-				case "hero":
-					symbol = '@'
-					fg = termbox.ColorMagenta
-				case "wall":
-					symbol = '#'
-					fg = termbox.ColorYellow
-				default:
-					symbol = '?'
-				}
-			} else {
-				switch fieldElement.GetFloorObjectClass() {
-				case "upstairs":
-					symbol = '<'
-					fg = termbox.ColorGreen
-				}
-			}
-			cell.render(&ScreenCellProps{
-				Symbol: symbol,
-				ForegroundColor: fg,
-				BackgroundColor: bg,
-			})
-		}
-	}
-}
-
 func (screen *Screen) Render(state utils.IState) {
 	game := state.GetGame()
 
@@ -143,7 +104,44 @@ func (screen *Screen) Render(state utils.IState) {
 
 	// Place the field.
 	var fieldPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 2, X: 2}
-	screen.renderField(fieldPosition, state.GetField())
+	field := state.GetField()
+	fieldRowLength := field.MeasureRowLength()
+	fieldColumnLength := field.MeasureColumnLength()
+	for y := 0; y < fieldRowLength; y++ {
+		for x := 0; x < fieldColumnLength; x++ {
+			var fieldElementPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
+			// TODO: Error handling.
+			var fieldElement, _ = field.At(fieldElementPosition)
+			symbol := '.'
+			fg := termbox.ColorWhite
+			bg := termbox.ColorBlack
+			if !fieldElement.IsObjectEmpty() {
+				switch fieldElement.GetObjectClass() {
+				case "hero":
+					symbol = '@'
+					fg = termbox.ColorMagenta
+				case "wall":
+					symbol = '#'
+					fg = termbox.ColorYellow
+				default:
+					symbol = '?'
+				}
+			} else {
+				switch fieldElement.GetFloorObjectClass() {
+				case "upstairs":
+					symbol = '<'
+					fg = termbox.ColorGreen
+				}
+			}
+
+			cell := &(screen.matrix[y + fieldPosition.GetY()][x + fieldPosition.GetX()])
+			cell.render(&ScreenCellProps{
+				Symbol: symbol,
+				ForegroundColor: fg,
+				BackgroundColor: bg,
+			})
+		}
+	}
 
 	// Prepare texts.
 	texts := make([]*ScreenText, 0)
