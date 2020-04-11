@@ -32,17 +32,17 @@ func (screenCell_ *screenCell) render(props *ScreenCellProps) {
 }
 
 type screenText struct {
-	Position utils.IMatrixPosition
+	Position *utils.MatrixPosition
 	// ASCII only. Line breaks are not allowed.
 	Text string
 	Foreground termbox.Attribute
 }
 
-func createSequentialScreenTexts(position utils.IMatrixPosition, parts []*screenText) []*screenText {
+func createSequentialScreenTexts(position *utils.MatrixPosition, parts []*screenText) []*screenText {
 	texts := make([]*screenText, 0)
 	deltaX := 0
 	for _, part := range parts {
-		var pos utils.IMatrixPosition = &utils.MatrixPosition{
+		pos := &utils.MatrixPosition{
 			Y: position.GetY(),
 			X: position.GetX() + deltaX,
 		}
@@ -115,7 +115,7 @@ func (screen *Screen) Render(props *ScreenProps) {
 	}
 
 	// Place the field.
-	var fieldPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 2, X: 2}
+	fieldPosition := &utils.MatrixPosition{Y: 2, X: 2}
 	for y, rowProps := range props.FieldCells {
 		for x, cellProps := range rowProps {
 			cell := screen.matrix[y + fieldPosition.GetY()][x + fieldPosition.GetX()]
@@ -126,25 +126,22 @@ func (screen *Screen) Render(props *ScreenProps) {
 	// Prepare texts.
 	texts := make([]*screenText, 0)
 	texts = append(texts, screen.staticTexts...)
-	var timeTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 3, X: 25}
 	remainingTimeText := fmt.Sprintf("%4.1f", props.RemainingTime)
 	timeText := screenText{
-		Position: timeTextPosition,
+		Position: &utils.MatrixPosition{Y: 3, X: 25},
 		Text: fmt.Sprintf("Time : %s", remainingTimeText),
 		Foreground: termbox.ColorWhite,
 	}
 	texts = append(texts, &timeText)
-	var floorNumberTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 4, X: 25}
 	floorNumberText := screenText{
-		Position: floorNumberTextPosition,
+		Position: &utils.MatrixPosition{Y: 4, X: 25},
 		Text: fmt.Sprintf("Floor: %2d", props.FloorNumber),
 		Foreground: termbox.ColorWhite,
 	}
 	texts = append(texts, &floorNumberText)
 	if props.LankMessage != "" {
-		var lankTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 5, X: 27}
 		lankText := screenText{
-			Position: lankTextPosition,
+			Position: &utils.MatrixPosition{Y: 5, X: 27},
 			Text: props.LankMessage,
 			Foreground: props.LankMessageForeground,
 		}
@@ -180,39 +177,34 @@ func CreateScreen(rowLength int, columnLength int) *Screen {
 
 	staticTexts := make([]*screenText, 0)
 
-	var titleTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 0, X: 2}
 	titleText := screenText{
-		Position: titleTextPosition,
+		Position: &utils.MatrixPosition{Y: 0, X: 2},
 		Text: "[ A Tower of Go ]",
 		Foreground: termbox.ColorWhite,
 	}
 	staticTexts = append(staticTexts, &titleText)
 
-	var urlTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 22, X: 41}
 	urlText := screenText{
-		Position: urlTextPosition,
+		Position: &utils.MatrixPosition{Y: 22, X: 41},
 		Text: "https://github.com/kjirou/tower_of_go",
 		Foreground: termbox.ColorWhite | termbox.AttrUnderline,
 	}
 	staticTexts = append(staticTexts, &urlText)
 
-	var operationTitleTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 11, X: 25}
 	operationTitleText := screenText{
-		Position: operationTitleTextPosition,
+		Position: &utils.MatrixPosition{Y: 11, X: 25},
 		Text: "[ Operations ]",
 		Foreground: termbox.ColorWhite,
 	}
 	staticTexts = append(staticTexts, &operationTitleText)
 
-	var sKeyHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 12, X: 25}
 	var sKeyHelpTextParts = make([]*screenText, 0)
 	sKeyHelpTextParts = append(sKeyHelpTextParts, &screenText{Text: "\""})
 	sKeyHelpTextParts = append(sKeyHelpTextParts, &screenText{Text: "s", Foreground: termbox.ColorYellow})
 	sKeyHelpTextParts = append(sKeyHelpTextParts, &screenText{Text: "\" ... Start or restart a new game."})
-	sKeyHelpTexts := createSequentialScreenTexts(sKeyHelpTextPosition, sKeyHelpTextParts)
+	sKeyHelpTexts := createSequentialScreenTexts(&utils.MatrixPosition{Y: 12, X: 25}, sKeyHelpTextParts)
 	staticTexts = append(staticTexts, sKeyHelpTexts...)
 
-	var moveKeysHelpTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 13, X: 25}
 	var moveKeysHelpTextParts = make([]*screenText, 0)
 	moveKeysHelpTextParts =
 		append(moveKeysHelpTextParts, &screenText{Text: "Arrow keys", Foreground: termbox.ColorYellow})
@@ -222,20 +214,18 @@ func CreateScreen(rowLength int, columnLength int) *Screen {
 	moveKeysHelpTextParts = append(moveKeysHelpTextParts, &screenText{Text: "\" ... Move the player."})
 	staticTexts = append(
 		staticTexts,
-		createSequentialScreenTexts(moveKeysHelpTextPosition, moveKeysHelpTextParts)...
+		createSequentialScreenTexts(&utils.MatrixPosition{Y: 13, X: 25}, moveKeysHelpTextParts)...
 	)
 
-	var description1TextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 17, X: 3}
 	description1Text := screenText{
-		Position: description1TextPosition,
+		Position: &utils.MatrixPosition{Y: 17, X: 3},
 		Text: "Move the player in the upper left to reach the stairs in the lower right.",
 		Foreground: termbox.ColorWhite,
 	}
 	staticTexts = append(staticTexts, &description1Text)
 
-	var description2TextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 18, X: 3}
 	description2Text := screenText{
-		Position: description2TextPosition,
+		Position: &utils.MatrixPosition{Y: 18, X: 3},
 		Text: "The score is the number of floors that can be reached within 30 seconds.",
 		Foreground: termbox.ColorWhite,
 	}
