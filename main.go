@@ -5,7 +5,6 @@ import (
 	"github.com/kjirou/tower_of_go/controller"
 	"github.com/kjirou/tower_of_go/models"
 	"github.com/kjirou/tower_of_go/reducers"
-	"github.com/kjirou/tower_of_go/utils"
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
 	"math/rand"
@@ -52,36 +51,6 @@ func initializeTermbox() error {
 	return nil
 }
 
-// TODO: Replace `ch` type with termbox's `Cell.Ch` type.
-func handleKeyPress(controller *controller.Controller, ch rune, key termbox.Key) {
-	var newState *models.State
-	var stateChanged bool = false
-	var err error
-	state := controller.GetState()
-
-	switch {
-	// Start or restart a game.
-	case ch == 's':
-		newState, stateChanged, err = reducers.StartOrRestartGame(*state)
-	// Move the hero.
-	case key == termbox.KeyArrowUp || ch == 'k':
-		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionUp)
-	case key == termbox.KeyArrowRight || ch == 'l':
-		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionRight)
-	case key == termbox.KeyArrowDown || ch == 'j':
-		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionDown)
-	case key == termbox.KeyArrowLeft || ch == 'h':
-		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionLeft)
-	}
-
-	if err != nil {
-		panic(err)
-	} else if newState != nil && stateChanged {
-		controller.Dispatch(newState)
-		drawTerminal(controller.GetScreen())
-	}
-}
-
 func handleTermboxEvents(controller *controller.Controller) {
 	didQuitApplication := false
 
@@ -95,7 +64,14 @@ func handleTermboxEvents(controller *controller.Controller) {
 				break
 			}
 
-			handleKeyPress(controller, event.Ch, event.Key)
+			newState, stateChanged, err := controller.HandleKeyPress(event.Ch, event.Key)
+
+			if err != nil {
+				panic(err)
+			} else if newState != nil && stateChanged {
+				controller.Dispatch(newState)
+				drawTerminal(controller.GetScreen())
+			}
 		}
 	}
 }

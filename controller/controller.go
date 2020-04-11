@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/kjirou/tower_of_go/models"
 	"github.com/kjirou/tower_of_go/utils"
+	"github.com/kjirou/tower_of_go/reducers"
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
 )
@@ -104,6 +105,31 @@ func (controller *Controller) Dispatch(newState *models.State) {
 	controller.state = newState
 	screenProps := mapStateModelToScreenProps(controller.state)
 	controller.screen.Render(screenProps)
+}
+
+// TODO: Replace `ch` type with termbox's `Cell.Ch` type.
+func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) (*models.State, bool, error) {
+	var newState *models.State
+	var stateChanged bool = false
+	var err error
+	state := controller.state
+
+	switch {
+	// Start or restart a game.
+	case ch == 's':
+		return reducers.StartOrRestartGame(*state)
+	// Move the hero.
+	case key == termbox.KeyArrowUp || ch == 'k':
+		return reducers.WalkHero(*state, utils.FourDirectionUp)
+	case key == termbox.KeyArrowRight || ch == 'l':
+		return reducers.WalkHero(*state, utils.FourDirectionRight)
+	case key == termbox.KeyArrowDown || ch == 'j':
+		return reducers.WalkHero(*state, utils.FourDirectionDown)
+	case key == termbox.KeyArrowLeft || ch == 'h':
+		return reducers.WalkHero(*state, utils.FourDirectionLeft)
+	}
+
+	return newState, stateChanged, err
 }
 
 func CreateController(state *models.State, screen *views.Screen) *Controller {
