@@ -9,22 +9,14 @@ import (
 var HeroPosition = &utils.MatrixPosition{Y: 1, X: 1}
 var UpstairsPosition = &utils.MatrixPosition{Y: 11, X: 19}
 
-type FieldObject struct {
-	Class string
-}
-
 type FieldFloorObject struct {
 	Class string
 }
 
-func (fieldObject *FieldObject) IsEmpty() bool {
-	return fieldObject.Class == "empty"
-}
-
 type FieldElement struct {
-	Object   FieldObject
 	FloorObject   FieldFloorObject
 	Position *utils.MatrixPosition
+	objectClass string
 }
 
 func (fieldElement *FieldElement) GetPosition() *utils.MatrixPosition {
@@ -32,7 +24,7 @@ func (fieldElement *FieldElement) GetPosition() *utils.MatrixPosition {
 }
 
 func (fieldElement *FieldElement) GetObjectClass() string {
-	return fieldElement.Object.Class
+	return fieldElement.objectClass
 }
 
 func (fieldElement *FieldElement) GetFloorObjectClass() string {
@@ -40,11 +32,11 @@ func (fieldElement *FieldElement) GetFloorObjectClass() string {
 }
 
 func (fieldElement *FieldElement) IsObjectEmpty() bool {
-	return fieldElement.Object.IsEmpty()
+	return fieldElement.objectClass == "empty"
 }
 
 func (fieldElement *FieldElement) UpdateObjectClass(class string) {
-	fieldElement.Object.Class = class
+	fieldElement.objectClass = class
 }
 
 func (fieldElement *FieldElement) UpdateFloorObjectClass(class string) {
@@ -74,12 +66,11 @@ func (field *Field) At(position *utils.MatrixPosition) (*FieldElement, error) {
 	return field.matrix[y][x], nil
 }
 
-// TODO: Refer `FieldObject.Class` type.
 func (field *Field) findElementsByObjectClass(objectClass string) []*FieldElement {
 	elements := make([]*FieldElement, 0)
 	for _, row := range field.matrix {
 		for _, element := range row {
-			if element.Object.Class == objectClass {
+			if element.objectClass == objectClass {
 				element_ := element
 				elements = append(elements, element_)
 			}
@@ -151,12 +142,10 @@ func createField(y int, x int) *Field {
 					Y: rowIndex,
 					X: columnIndex,
 				},
-				Object: FieldObject{
-					Class: "empty",
-				},
 				FloorObject: FieldFloorObject{
 					Class: "empty",
 				},
+				objectClass: "empty",
 			}
 		}
 		matrix[rowIndex] = row
