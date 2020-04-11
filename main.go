@@ -7,34 +7,32 @@ import (
 	"github.com/nsf/termbox-go"
 	"math/rand"
 	"os"
-	"strings"
 	"time"
 )
 
 func drawTerminal(screen *views.Screen) {
-	for y, row := range screen.GetMatrix() {
-		for x, element := range row {
-			// おそらく termbox.SetCell() の終了は非同期で、
-			//   同 cell へ高速で重複して出力した場合に互いの出力バッファが入れ子になる。
-			// メインループとキー操作それぞれで本関数を実行していたら、
-			//   頻繁に壊れた ANSI の破片のような文字列が出力されていたことからの推測である。
-			// メインループのみで描画していれば、問題なさそう。
-			termbox.SetCell(x, y, element.Symbol, element.ForegroundColor, element.BackgroundColor)
-		}
-	}
+	screen.ForEachCells(func (y int, x int, symbol rune, fg termbox.Attribute, bg termbox.Attribute) {
+		// おそらく termbox.SetCell() の終了は非同期で、
+		//   同 cell へ高速で重複して出力した場合に互いの出力バッファが入れ子になる。
+		// メインループとキー操作それぞれで本関数を実行していたら、
+		//   頻繁に壊れた ANSI の破片のような文字列が出力されていたことからの推測である。
+		// メインループのみで描画していれば、問題なさそう。
+		termbox.SetCell(x, y, symbol, fg, bg)
+	})
 	termbox.Flush()
 }
 
 func convertScreenToText(screen *views.Screen) string {
-	lines := make([]string, 0)
-	for _, row := range screen.GetMatrix() {
-		line := ""
-		for _, element := range row {
-			line += string(element.Symbol)
+	output := ""
+	lastY := 0
+	screen.ForEachCells(func (y int, x int, symbol rune, fg termbox.Attribute, bg termbox.Attribute) {
+		if y != lastY {
+			output += "\n"
+			lastY = y
 		}
-		lines = append(lines, line)
-	}
-	return strings.Join(lines, "\n")
+		output += string(symbol)
+	})
+	return output
 }
 
 func runMainLoop(controller *controller.Controller) {

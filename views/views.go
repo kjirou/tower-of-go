@@ -73,16 +73,26 @@ type Screen struct {
 	staticTexts []*screenText
 }
 
-func (screen *Screen) GetMatrix() [][]*screenCell {
-	return screen.matrix
-}
-
 func (screen *Screen) measureRowLength() int {
 	return len(screen.matrix)
 }
 
 func (screen *Screen) measureColumnLength() int {
 	return len(screen.matrix[0])
+}
+
+func (screen *Screen) ForEachCells(
+	callback func(
+		y int,
+		x int,
+		symbol rune,
+		foreground termbox.Attribute,
+		background termbox.Attribute)) {
+	for y, row := range screen.matrix {
+		for x, cell := range row {
+			callback(y, x, cell.Symbol, cell.ForegroundColor, cell.BackgroundColor)
+		}
+	}
 }
 
 func (screen *Screen) Render(props *ScreenProps) {
