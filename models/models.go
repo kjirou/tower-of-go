@@ -75,7 +75,7 @@ func (field *Field) At(position *utils.MatrixPosition) (*FieldElement, error) {
 }
 
 // TODO: Refer `FieldObject.Class` type.
-func (field *Field) FindElementsByObjectClass(objectClass string) []*FieldElement {
+func (field *Field) findElementsByObjectClass(objectClass string) []*FieldElement {
 	elements := make([]*FieldElement, 0)
 	for _, row := range field.matrix {
 		for _, element := range row {
@@ -89,7 +89,7 @@ func (field *Field) FindElementsByObjectClass(objectClass string) []*FieldElemen
 }
 
 func (field *Field) GetElementOfHero() *FieldElement {
-	elements := field.FindElementsByObjectClass("hero")
+	elements := field.findElementsByObjectClass("hero")
 	// TODO: Error handling.
 	if len(elements) == 0 {
 		panic("The hero does not exist.")
