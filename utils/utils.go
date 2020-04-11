@@ -63,12 +63,5 @@ type IGame interface {
 	Start(executionTime time.Duration)
 }
 
-type IState interface {
-	AlterExecutionTime(delta time.Duration)
-	GetExecutionTime() time.Duration
-	GetField() IField
-	GetGame() IGame
-}
-
 var HeroPosition IMatrixPosition = &MatrixPosition{Y: 1, X: 1}
 var UpstairsPosition IMatrixPosition = &MatrixPosition{Y: 11, X: 19}
