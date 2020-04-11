@@ -39,7 +39,7 @@ func convertScreenToText(screen *views.Screen) string {
 	return strings.Join(lines, "\n")
 }
 
-func handleTermboxEvents(controller *controller.Controller) {
+func observeTermboxEvents(controller *controller.Controller) {
 	didQuitApplication := false
 
 	for !didQuitApplication {
@@ -111,6 +111,6 @@ func main() {
 		defer termbox.Close()
 		drawTerminal(controller.GetScreen())
 		go runMainLoop(controller)
-		handleTermboxEvents(controller)
+		observeTermboxEvents(controller)
 	}
 }
