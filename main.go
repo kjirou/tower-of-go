@@ -39,16 +39,6 @@ func convertScreenToText(screen *views.Screen) string {
 	return strings.Join(lines, "\n")
 }
 
-func initializeTermbox() error {
-	termboxErr := termbox.Init()
-	if termboxErr != nil {
-		return termboxErr
-	}
-	termbox.SetInputMode(termbox.InputEsc)
-	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-	return nil
-}
-
 func handleTermboxEvents(controller *controller.Controller) {
 	didQuitApplication := false
 
@@ -112,10 +102,12 @@ func main() {
 	if debugMode {
 		fmt.Println(convertScreenToText(controller.GetScreen()))
 	} else {
-		termboxErr := initializeTermbox()
+		termboxErr := termbox.Init()
 		if termboxErr != nil {
 			panic(termboxErr)
 		}
+		termbox.SetInputMode(termbox.InputEsc)
+		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 		defer termbox.Close()
 		drawTerminal(controller.GetScreen())
 		go runMainLoop(controller)
