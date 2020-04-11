@@ -61,6 +61,9 @@ func createSequentialScreenTexts(position utils.IMatrixPosition, parts []*Screen
 	return texts
 }
 
+type ScreenProps struct {
+}
+
 type Screen struct {
 	matrix [][]ScreenElement
 	staticTexts []*ScreenText
@@ -78,7 +81,7 @@ func (screen *Screen) measureColumnLength() int {
 	return len(screen.matrix[0])
 }
 
-func (screen *Screen) Render(state utils.IState) {
+func (screen *Screen) Render(state utils.IState, props *ScreenProps) {
 	game := state.GetGame()
 
 	rowLength := screen.measureRowLength()

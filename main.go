@@ -15,6 +15,11 @@ import (
 	"time"
 )
 
+func mapStateModelToScreenProps(state *models.State) *views.ScreenProps {
+	props := &views.ScreenProps{}
+	return props
+}
+
 type Controller struct {
 	state  *models.State
 	screen *views.Screen
@@ -30,7 +35,8 @@ func (controller *Controller) GetScreen() *views.Screen {
 
 func (controller *Controller) Dispatch(newState *models.State) {
 	controller.state = newState
-	controller.screen.Render(controller.state)
+	screenProps := mapStateModelToScreenProps(controller.state)
+	controller.screen.Render(controller.state, screenProps)
 }
 
 func drawTerminal(screen *views.Screen) {
