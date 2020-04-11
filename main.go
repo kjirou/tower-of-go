@@ -39,6 +39,24 @@ func convertScreenToText(screen *views.Screen) string {
 	return strings.Join(lines, "\n")
 }
 
+func runMainLoop(controller *controller.Controller) {
+	// About 60fps.
+	// TODO: Some delay from real time.
+	interval := time.Millisecond * 17
+	for {
+		time.Sleep(interval)
+
+		newState, stateChanged, err := controller.HandleMainLoop(interval)
+
+		if err != nil {
+			panic(err)
+		} else if newState != nil && stateChanged {
+			controller.Dispatch(newState)
+			drawTerminal(controller.GetScreen())
+		}
+	}
+}
+
 func observeTermboxEvents(controller *controller.Controller) {
 	didQuitApplication := false
 
@@ -60,24 +78,6 @@ func observeTermboxEvents(controller *controller.Controller) {
 				controller.Dispatch(newState)
 				drawTerminal(controller.GetScreen())
 			}
-		}
-	}
-}
-
-func runMainLoop(controller *controller.Controller) {
-	// About 60fps.
-	// TODO: Some delay from real time.
-	interval := time.Millisecond * 17
-	for {
-		time.Sleep(interval)
-
-		newState, stateChanged, err := controller.HandleMainLoop(interval)
-
-		if err != nil {
-			panic(err)
-		} else if newState != nil && stateChanged {
-			controller.Dispatch(newState)
-			drawTerminal(controller.GetScreen())
 		}
 	}
 }
