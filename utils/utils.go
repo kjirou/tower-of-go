@@ -23,6 +23,3 @@ func (matrixPosition *MatrixPosition) Validate(rowLength int, columnLength int) 
 	x := matrixPosition.GetX()
 	return y >= 0 && y < rowLength && x >= 0 && x < columnLength
 }
-
-var HeroPosition = &MatrixPosition{Y: 1, X: 1}
-var UpstairsPosition = &MatrixPosition{Y: 11, X: 19}

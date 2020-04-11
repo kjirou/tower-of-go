@@ -98,7 +98,7 @@ func TestField(t *testing.T) {
 
 		t.Run("ヒーローが存在していたとき、ヒーローは削除される", func(t *testing.T) {
 			field := createField(7, 7)
-			element, err := field.At(utils.HeroPosition)
+			element, err := field.At(HeroPosition)
 			if err != nil {
 				t.Fatal("ヒーローの配置に失敗する")
 			}

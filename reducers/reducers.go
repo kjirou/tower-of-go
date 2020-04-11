@@ -20,7 +20,7 @@ func StartOrRestartGame(state models.State) (*models.State, bool, error) {
 	}
 
 	// Replace the hero.
-	heroFieldElement, _ := field.At(utils.HeroPosition)
+	heroFieldElement, _ := field.At(models.HeroPosition)
 	heroFieldElement.UpdateObjectClass("hero")
 
 	// Start the new game.
@@ -47,7 +47,7 @@ func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, 
 			}
 
 			// Relocate the hero to the entrance.
-			replacedHeroFieldElement, _ := field.At(utils.HeroPosition)
+			replacedHeroFieldElement, _ := field.At(models.HeroPosition)
 			replacedHeroFieldElement.UpdateObjectClass("hero")
 
 			game.IncrementFloorNumber()

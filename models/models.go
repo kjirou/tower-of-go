@@ -6,6 +6,9 @@ import (
 	"time"
 )
 
+var HeroPosition = &utils.MatrixPosition{Y: 1, X: 1}
+var UpstairsPosition = &utils.MatrixPosition{Y: 11, X: 19}
+
 type FieldObject struct {
 	Class string
 }
@@ -244,14 +247,14 @@ func (state *State) SetWelcomeData() error {
 	field := state.GetField()
 
 	// Place a hero to be the player's alter ego.
-	heroFieldElement, err := field.At(utils.HeroPosition)
+	heroFieldElement, err := field.At(HeroPosition)
 	if err != nil {
 		return err
 	}
 	heroFieldElement.UpdateObjectClass("hero")
 
 	// Place an upstairs.
-	upstairsFieldElement, err := field.At(utils.UpstairsPosition)
+	upstairsFieldElement, err := field.At(UpstairsPosition)
 	if err != nil {
 		return err
 	}
