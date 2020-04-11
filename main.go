@@ -42,7 +42,7 @@ func convertScreenToText(screen *views.Screen) string {
 func runMainLoop(controller *controller.Controller) {
 	// About 60fps.
 	// TODO: Some delay from real time.
-	interval := time.Millisecond * 17
+	interval := time.Microsecond * 16666
 	for {
 		time.Sleep(interval)
 
