@@ -72,7 +72,6 @@ func TestGenerateRawMazeMatrix(t *testing.T) {
 				[]int{4, 4},
 			}
 			for _, testCase := range testCases {
-				// TODO: Write in one line.
 				y := testCase[0]
 				x := testCase[1]
 				t.Run(fmt.Sprintf("Y=%d, X=%d は壊せない壁である", y, x), func(t *testing.T) {
