@@ -12,9 +12,16 @@ func StartOrRestartGame(state models.State) (*models.State, bool, error) {
 	game := state.GetGame()
 	field := state.GetField()
 
+	// Generate a new maze.
+	// Remove the hero.
+	err := field.ResetMaze()
+	if err != nil {
+		return &state, false, err
+	}
+
 	// Replace the hero.
-	var heroFieldElement utils.IFieldElement = field.GetElementOfHero()
-	field.MoveObject(heroFieldElement.GetPosition(), utils.HeroPosition)
+	heroFieldElement, _ := field.At(utils.HeroPosition)
+	heroFieldElement.UpdateObjectClass("hero")
 
 	// Start the new game.
 	game.Reset()

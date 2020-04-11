@@ -115,6 +115,31 @@ func (field *Field) MoveObject(from utils.IMatrixPosition, to utils.IMatrixPosit
 	return nil
 }
 
+func (field *Field) ResetMaze() error {
+	rowLength := field.MeasureRowLength()
+	columnLength := field.MeasureColumnLength()
+	mazeCells, err := utils.GenerateMaze(rowLength, columnLength)
+	if err != nil {
+		return err
+	}
+	for y, mazeRow := range mazeCells {
+		for x, mazeCell := range mazeRow {
+			var position utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
+			element, err := field.At(position)
+			if err != nil {
+				return err
+			}
+			switch mazeCell.Content {
+			case utils.MazeCellContentEmpty:
+				element.UpdateObjectClass("empty")
+			case utils.MazeCellContentUnbreakableWall:
+				element.UpdateObjectClass("wall")
+			}
+		}
+	}
+	return nil
+}
+
 func createField(y int, x int) Field {
 	matrix := make([][]FieldElement, y)
 	for rowIndex := 0; rowIndex < y; rowIndex++ {
@@ -235,7 +260,7 @@ func (state *State) SetWelcomeData() error {
 	}
 	upstairsFieldElement.UpdateFloorObjectClass("upstairs")
 
-	// Place walls.
+	// Place defalt walls.
 	fieldRowLength := field.MeasureRowLength()
 	fieldColumnLength := field.MeasureColumnLength()
 	for y := 0; y < fieldRowLength; y++ {

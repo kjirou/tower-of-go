@@ -49,6 +49,7 @@ type IField interface {
 	MeasureColumnLength() int
 	MeasureRowLength() int
 	MoveObject(from IMatrixPosition, to IMatrixPosition) error
+	ResetMaze() error
 }
 
 type IGame interface {
