@@ -85,7 +85,7 @@ func (screen *Screen) measureColumnLength() int {
 	return len(screen.matrix[0])
 }
 
-func (screen *Screen) Render(state utils.IState, props *ScreenProps) {
+func (screen *Screen) Render(props *ScreenProps) {
 	rowLength := screen.measureRowLength()
 	columnLength := screen.measureColumnLength()
 

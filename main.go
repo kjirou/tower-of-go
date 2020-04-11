@@ -109,7 +109,7 @@ func (controller *Controller) GetScreen() *views.Screen {
 func (controller *Controller) Dispatch(newState *models.State) {
 	controller.state = newState
 	screenProps := mapStateModelToScreenProps(controller.state)
-	controller.screen.Render(controller.state, screenProps)
+	controller.screen.Render(screenProps)
 }
 
 func drawTerminal(screen *views.Screen) {
