@@ -43,7 +43,10 @@ func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, 
 	// In the game.
 	if game.IsStarted() && !game.IsFinished() {
 		// The hero climbs up the stairs.
-		heroFieldElement := field.GetElementOfHero()
+		heroFieldElement, getElementOfHeroErr := field.GetElementOfHero()
+		if getElementOfHeroErr != nil {
+			return &state, false, getElementOfHeroErr
+		}
 		if (heroFieldElement.GetFloorObjectClass() == "upstairs") {
 			// Generate a new maze.
 			// Remove the hero.
@@ -78,7 +81,10 @@ func WalkHero(state models.State, direction FourDirection) (*models.State, bool,
 	}
 
 	field := state.GetField()
-	element := field.GetElementOfHero()
+	element, getElementOfHeroErr := field.GetElementOfHero()
+	if getElementOfHeroErr != nil {
+		return &state, false, getElementOfHeroErr
+	}
 	nextY := element.GetPosition().GetY()
 	nextX := element.GetPosition().GetX()
 	switch direction {

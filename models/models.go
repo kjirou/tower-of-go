@@ -75,15 +75,14 @@ func (field *Field) findElementsByObjectClass(objectClass string) []*FieldElemen
 	return elements
 }
 
-func (field *Field) GetElementOfHero() *FieldElement {
+func (field *Field) GetElementOfHero() (*FieldElement, error) {
 	elements := field.findElementsByObjectClass("hero")
-	// TODO: Error handling.
 	if len(elements) == 0 {
-		panic("The hero does not exist.")
+		return &FieldElement{}, fmt.Errorf("The hero does not exist.")
 	} else if len(elements) > 1 {
-		panic("There are multiple heroes.")
+		return &FieldElement{}, fmt.Errorf("There are multiple heroes.")
 	}
-	return elements[0]
+	return elements[0], nil
 }
 
 func (field *Field) MoveObject(from *utils.MatrixPosition, to *utils.MatrixPosition) error {
