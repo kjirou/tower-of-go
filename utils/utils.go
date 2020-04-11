@@ -52,16 +52,5 @@ type IField interface {
 	ResetMaze() error
 }
 
-type IGame interface {
-	CalculateRemainingTime(executionTime time.Duration) time.Duration
-	Finish()
-	GetFloorNumber() int
-	IncrementFloorNumber()
-	IsFinished() bool
-	IsStarted() bool
-	Reset()
-	Start(executionTime time.Duration)
-}
-
 var HeroPosition IMatrixPosition = &MatrixPosition{Y: 1, X: 1}
 var UpstairsPosition IMatrixPosition = &MatrixPosition{Y: 11, X: 19}

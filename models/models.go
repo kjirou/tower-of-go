@@ -223,7 +223,7 @@ type State struct {
 	// It is different from the real time.
 	executionTime time.Duration
 	field Field
-	game utils.IGame
+	game *Game
 }
 
 func (state *State) GetExecutionTime() time.Duration {
@@ -235,7 +235,7 @@ func (state *State) GetField() utils.IField {
 	return field
 }
 
-func (state *State) GetGame() utils.IGame {
+func (state *State) GetGame() *Game {
 	return state.game
 }
 
@@ -279,13 +279,12 @@ func (state *State) SetWelcomeData() error {
 }
 
 func CreateState() *State {
-	var game utils.IGame = &Game{}
 	executionTime, _ := time.ParseDuration("0")
 	state := &State{
 		executionTime: executionTime,
 		field: createField(13, 21),
-		game: game,
+		game: &Game{},
 	}
-	game.Reset()
+	state.game.Reset()
 	return state
 }
