@@ -43,7 +43,10 @@ func mapFieldElementToScreenCellProps(fieldElement utils.IFieldElement) *views.S
 }
 
 func mapStateModelToScreenProps(state *models.State) *views.ScreenProps {
+	game := state.GetGame()
 	field := state.GetField()
+
+	// Cells of the field.
 	fieldRowLength := field.MeasureRowLength()
 	fieldColumnLength := field.MeasureColumnLength()
 	fieldCells := make([][]*views.ScreenCellProps, fieldRowLength)
@@ -58,8 +61,35 @@ func mapStateModelToScreenProps(state *models.State) *views.ScreenProps {
 		fieldCells[y] = cellsRow
 	}
 
+	// Lank message.
+	lankMessage := ""
+	lankMessageForeground := termbox.ColorWhite
+	if game.IsFinished() {
+		score := game.GetFloorNumber()
+		switch {
+			case score == 3:
+				lankMessage = "Good!"
+				lankMessageForeground = termbox.ColorGreen
+			case score == 4:
+				lankMessage = "Excellent!"
+				lankMessageForeground = termbox.ColorGreen
+			case score == 5:
+				lankMessage = "Marvelous!"
+				lankMessageForeground = termbox.ColorGreen
+			case score >= 6:
+				lankMessage = "Gopher!!"
+				lankMessageForeground = termbox.ColorCyan
+			default:
+				lankMessage = "No good..."
+		}
+	}
+
 	return &views.ScreenProps{
 		FieldCells: fieldCells,
+		RemainingTime: game.CalculateRemainingTime(state.GetExecutionTime()).Seconds(),
+		FloorNumber: game.GetFloorNumber(),
+		LankMessage: lankMessage,
+		LankMessageForeground: lankMessageForeground,
 	}
 }
 

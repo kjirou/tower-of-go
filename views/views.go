@@ -62,6 +62,10 @@ func createSequentialScreenTexts(position utils.IMatrixPosition, parts []*Screen
 
 type ScreenProps struct {
 	FieldCells [][]*ScreenCellProps
+	FloorNumber int
+	LankMessage string
+	LankMessageForeground termbox.Attribute
+	RemainingTime float64
 }
 
 type Screen struct {
@@ -82,8 +86,6 @@ func (screen *Screen) measureColumnLength() int {
 }
 
 func (screen *Screen) Render(state utils.IState, props *ScreenProps) {
-	game := state.GetGame()
-
 	rowLength := screen.measureRowLength()
 	columnLength := screen.measureColumnLength()
 
@@ -124,8 +126,7 @@ func (screen *Screen) Render(state utils.IState, props *ScreenProps) {
 	texts := make([]*ScreenText, 0)
 	texts = append(texts, screen.staticTexts...)
 	var timeTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 3, X: 25}
-	remainingTime := game.CalculateRemainingTime(state.GetExecutionTime()).Seconds()
-	remainingTimeText := fmt.Sprintf("%4.1f", remainingTime)
+	remainingTimeText := fmt.Sprintf("%4.1f", props.RemainingTime)
 	timeText := ScreenText{
 		Position: timeTextPosition,
 		Text: fmt.Sprintf("Time : %s", remainingTimeText),
@@ -135,33 +136,16 @@ func (screen *Screen) Render(state utils.IState, props *ScreenProps) {
 	var floorNumberTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 4, X: 25}
 	floorNumberText := ScreenText{
 		Position: floorNumberTextPosition,
-		Text: fmt.Sprintf("Floor: %2d", game.GetFloorNumber()),
+		Text: fmt.Sprintf("Floor: %2d", props.FloorNumber),
 		Foreground: termbox.ColorWhite,
 	}
 	texts = append(texts, &floorNumberText)
-	if game.IsFinished() {
-		score := game.GetFloorNumber()
+	if props.LankMessage != "" {
 		var lankTextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 5, X: 27}
-		message := "No good..."
-		fg := termbox.ColorWhite
-		switch {
-			case score == 3:
-				message = "Good!"
-				fg = termbox.ColorGreen
-			case score == 4:
-				message = "Excellent!"
-				fg = termbox.ColorGreen
-			case score == 5:
-				message = "Marvelous!"
-				fg = termbox.ColorGreen
-			case score >= 6:
-				message = "Gopher!!"
-				fg = termbox.ColorCyan
-		}
 		lankText := ScreenText{
 			Position: lankTextPosition,
-			Text: message,
-			Foreground: fg,
+			Text: props.LankMessage,
+			Foreground: props.LankMessageForeground,
 		}
 		texts = append(texts, &lankText)
 	}
