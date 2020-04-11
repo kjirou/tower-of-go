@@ -33,8 +33,8 @@ func mapFieldElementToScreenCellProps(fieldElement *models.FieldElement) *views.
 	}
 	return &views.ScreenCellProps{
 		Symbol: symbol,
-		ForegroundColor: fg,
-		BackgroundColor: bg,
+		Foreground: fg,
+		Background: bg,
 	}
 }
 

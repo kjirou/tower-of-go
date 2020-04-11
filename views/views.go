@@ -12,22 +12,21 @@ import (
 
 type ScreenCellProps struct {
 	Symbol          rune
-	ForegroundColor termbox.Attribute
-	BackgroundColor termbox.Attribute
+	Foreground termbox.Attribute
+	Background termbox.Attribute
 }
 
-// TODO: "ForegroundColor"->"Foreground"
 // TODO: Prevent public access.
 type screenCell struct {
 	Symbol          rune
-	ForegroundColor termbox.Attribute
-	BackgroundColor termbox.Attribute
+	Foreground termbox.Attribute
+	Background termbox.Attribute
 }
 
 func (screenCell_ *screenCell) render(props *ScreenCellProps) {
 	screenCell_.Symbol = props.Symbol
-	screenCell_.ForegroundColor = props.ForegroundColor
-	screenCell_.BackgroundColor = props.BackgroundColor
+	screenCell_.Foreground = props.Foreground
+	screenCell_.Background = props.Background
 }
 
 type screenText struct {
@@ -90,7 +89,7 @@ func (screen *Screen) ForEachCells(
 		background termbox.Attribute)) {
 	for y, row := range screen.matrix {
 		for x, cell := range row {
-			callback(y, x, cell.Symbol, cell.ForegroundColor, cell.BackgroundColor)
+			callback(y, x, cell.Symbol, cell.Foreground, cell.Background)
 		}
 	}
 }
@@ -117,8 +116,8 @@ func (screen *Screen) Render(props *ScreenProps) {
 			cell := screen.matrix[y][x]
 			cell.render(&ScreenCellProps{
 				Symbol: symbol,
-				ForegroundColor: termbox.ColorWhite,
-				BackgroundColor: termbox.ColorBlack,
+				Foreground: termbox.ColorWhite,
+				Background: termbox.ColorBlack,
 			})
 		}
 	}
@@ -163,8 +162,8 @@ func (screen *Screen) Render(props *ScreenProps) {
 			cell := screen.matrix[textInstance.Position.GetY()][textInstance.Position.GetX() + deltaX]
 			cell.render(&ScreenCellProps{
 				Symbol: character,
-				ForegroundColor: textInstance.Foreground,
-				BackgroundColor: termbox.ColorBlack,
+				Foreground: textInstance.Foreground,
+				Background: termbox.ColorBlack,
 			})
 		}
 	}
@@ -177,8 +176,8 @@ func CreateScreen(rowLength int, columnLength int) *Screen {
 		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
 			row[columnIndex] = &screenCell{
 				Symbol:          '_',
-				ForegroundColor: termbox.ColorWhite,
-				BackgroundColor: termbox.ColorBlack,
+				Foreground: termbox.ColorWhite,
+				Background: termbox.ColorBlack,
 			}
 		}
 		matrix[rowIndex] = row
