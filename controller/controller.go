@@ -112,21 +112,20 @@ func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) (*models.
 	var newState *models.State
 	var stateChanged bool = false
 	var err error
-	state := controller.state
 
 	switch {
 	// Start or restart a game.
 	case ch == 's':
-		return reducers.StartOrRestartGame(*state)
+		return reducers.StartOrRestartGame(*controller.state)
 	// Move the hero.
 	case key == termbox.KeyArrowUp || ch == 'k':
-		return reducers.WalkHero(*state, reducers.FourDirectionUp)
+		return reducers.WalkHero(*controller.state, reducers.FourDirectionUp)
 	case key == termbox.KeyArrowRight || ch == 'l':
-		return reducers.WalkHero(*state, reducers.FourDirectionRight)
+		return reducers.WalkHero(*controller.state, reducers.FourDirectionRight)
 	case key == termbox.KeyArrowDown || ch == 'j':
-		return reducers.WalkHero(*state, reducers.FourDirectionDown)
+		return reducers.WalkHero(*controller.state, reducers.FourDirectionDown)
 	case key == termbox.KeyArrowLeft || ch == 'h':
-		return reducers.WalkHero(*state, reducers.FourDirectionLeft)
+		return reducers.WalkHero(*controller.state, reducers.FourDirectionLeft)
 	}
 
 	return newState, stateChanged, err
