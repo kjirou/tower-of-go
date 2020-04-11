@@ -1,5 +1,22 @@
 package controller
 
+//
+// NOTE: 全体的な設計について。
+//
+// Inputs   = 経過時間とキー入力が本アプリケーションが認識する外部入力である。
+//   |
+// Reducers = いち Reducer 関数は、その関数が対応する Input と現在の Models を組み合わせて、
+//   |          次の Models を生成して返す。
+// Models   = 本アプリケーションの正規化された状態である。
+//   |        これ以下の状態は全て Models の写像として生成される。
+// Props    = Views 側が要求する Views への更新クエリである。
+//   |        Models の写像として生成される。
+// Views    = 端末出力を抽象化した層である。
+//   |        termbox へ渡すためのセルの矩形の集合を生成することが目的である。
+// Outputs  = 基本的には termbox 経由で端末へ出力する。
+//            デバッグ用に標準出力をすることもある。
+//
+
 import (
 	"github.com/kjirou/tower_of_go/models"
 	"github.com/kjirou/tower_of_go/utils"
