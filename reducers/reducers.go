@@ -6,6 +6,14 @@ import(
 	"time"
 )
 
+type FourDirection int
+const (
+	FourDirectionUp FourDirection = iota
+	FourDirectionRight
+	FourDirectionDown
+	FourDirectionLeft
+)
+
 // TODO: Generalize the interface between reducer functions.
 
 func StartOrRestartGame(state models.State) (*models.State, bool, error) {
@@ -65,7 +73,7 @@ func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, 
 	return &state, true, nil
 }
 
-func WalkHero(state models.State, direction utils.FourDirection) (*models.State, bool, error) {
+func WalkHero(state models.State, direction FourDirection) (*models.State, bool, error) {
 	game := state.GetGame()
 	if game.IsFinished() {
 		return &state, true, nil
@@ -76,13 +84,13 @@ func WalkHero(state models.State, direction utils.FourDirection) (*models.State,
 	nextY := element.GetPosition().GetY()
 	nextX := element.GetPosition().GetX()
 	switch direction {
-	case utils.FourDirectionUp:
+	case FourDirectionUp:
 		nextY -= 1
-	case utils.FourDirectionRight:
+	case FourDirectionRight:
 		nextX += 1
-	case utils.FourDirectionDown:
+	case FourDirectionDown:
 		nextY += 1
-	case utils.FourDirectionLeft:
+	case FourDirectionLeft:
 		nextX -= 1
 	}
 	position := element.GetPosition()

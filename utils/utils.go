@@ -1,13 +1,5 @@
 package utils
 
-type FourDirection int
-const (
-	FourDirectionUp FourDirection = iota
-	FourDirectionRight
-	FourDirectionDown
-	FourDirectionLeft
-)
-
 type MatrixPosition struct {
 	X int
 	Y int
