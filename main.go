@@ -136,10 +136,10 @@ func runMainLoop(controller *Controller) {
 func main() {
 	// TODO: Look for a tiny CLI argument parser like the "minimist" of Node.js.
 	commandLineArgs := os.Args[1:]
-	doesRunTermbox := false
+	debugMode := false
 	for _, arg := range commandLineArgs {
-		if arg == "-t" {
-			doesRunTermbox = true
+		if arg == "--debug-mode" || arg == "-d" {
+			debugMode = true
 		}
 	}
 
@@ -160,7 +160,9 @@ func main() {
 
 	controller.Dispatch(&state)
 
-	if doesRunTermbox {
+	if debugMode {
+		fmt.Println(screen.AsText())
+	} else {
 		termboxErr := initializeTermbox()
 		if termboxErr != nil {
 			panic(termboxErr)
@@ -169,7 +171,5 @@ func main() {
 		drawTerminal(&screen)
 		go runMainLoop(&controller)
 		handleTermboxEvents(&controller)
-	} else {
-		fmt.Println(screen.AsText())
 	}
 }
