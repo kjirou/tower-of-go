@@ -88,20 +88,27 @@ func mapStateModelToScreenProps(state *models.State) *views.ScreenProps {
 }
 
 type Controller struct {
-	State  *models.State
-	Screen *views.Screen
+	state  *models.State
+	screen *views.Screen
 }
 
 func (controller *Controller) GetState() *models.State {
-	return controller.State
+	return controller.state
 }
 
 func (controller *Controller) GetScreen() *views.Screen {
-	return controller.Screen
+	return controller.screen
 }
 
 func (controller *Controller) Dispatch(newState *models.State) {
-	controller.State = newState
-	screenProps := mapStateModelToScreenProps(controller.State)
-	controller.Screen.Render(screenProps)
+	controller.state = newState
+	screenProps := mapStateModelToScreenProps(controller.state)
+	controller.screen.Render(screenProps)
+}
+
+func CreateController(state *models.State, screen *views.Screen) *Controller {
+	return &Controller{
+		state: state,
+		screen: screen,
+	}
 }
