@@ -50,7 +50,7 @@ func (fieldElement *FieldElement) UpdateFloorObjectClass(class string) {
 }
 
 type Field struct {
-	matrix [][]FieldElement
+	matrix [][]*FieldElement
 }
 
 func (field *Field) MeasureRowLength() int {
@@ -69,7 +69,7 @@ func (field *Field) At(position utils.IMatrixPosition) (*FieldElement, error) {
 	} else if x < 0 || x > field.MeasureColumnLength()-1 {
 		return &FieldElement{}, fmt.Errorf("That position (X=%d) does not exist on the field.", x)
 	}
-	return &(field.matrix[y][x]), nil
+	return field.matrix[y][x], nil
 }
 
 // TODO: Refer `FieldObject.Class` type.
@@ -79,7 +79,7 @@ func (field *Field) FindElementsByObjectClass(objectClass string) []*FieldElemen
 		for _, element := range row {
 			if element.Object.Class == objectClass {
 				element_ := element
-				elements = append(elements, &element_)
+				elements = append(elements, element_)
 			}
 		}
 	}
@@ -141,11 +141,11 @@ func (field *Field) ResetMaze() error {
 }
 
 func createField(y int, x int) *Field {
-	matrix := make([][]FieldElement, y)
+	matrix := make([][]*FieldElement, y)
 	for rowIndex := 0; rowIndex < y; rowIndex++ {
-		row := make([]FieldElement, x)
+		row := make([]*FieldElement, x)
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
-			row[columnIndex] = FieldElement{
+			row[columnIndex] = &FieldElement{
 				Position: utils.MatrixPosition{
 					Y: rowIndex,
 					X: columnIndex,
