@@ -170,16 +170,16 @@ func (screen *Screen) Render(props *ScreenProps) {
 
 func CreateScreen(rowLength int, columnLength int) *Screen {
 	matrix := make([][]*screenCell, rowLength)
-	for rowIndex := 0; rowIndex < rowLength; rowIndex++ {
+	for y := 0; y < rowLength; y++ {
 		row := make([]*screenCell, columnLength)
-		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
-			row[columnIndex] = &screenCell{
+		for x := 0; x < columnLength; x++ {
+			row[x] = &screenCell{
 				symbol:          '_',
 				foreground: termbox.ColorWhite,
 				background: termbox.ColorBlack,
 			}
 		}
-		matrix[rowIndex] = row
+		matrix[y] = row
 	}
 
 	staticTexts := make([]*screenText, 0)
