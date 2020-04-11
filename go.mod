@@ -1,4 +1,4 @@
-module github.com/kjirou/tower_of_go
+module github.com/kjirou/tower-of-go
 
 go 1.14
 

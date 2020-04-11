@@ -1,8 +1,8 @@
 package reducers
 
 import(
-	"github.com/kjirou/tower_of_go/models"
-	"github.com/kjirou/tower_of_go/utils"
+	"github.com/kjirou/tower-of-go/models"
+	"github.com/kjirou/tower-of-go/utils"
 	"time"
 )
 
