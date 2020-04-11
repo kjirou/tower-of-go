@@ -61,7 +61,7 @@ func (field *Field) MeasureColumnLength() int {
 	return len(field.matrix[0])
 }
 
-func (field *Field) At(position utils.IMatrixPosition) (utils.IFieldElement, error) {
+func (field *Field) At(position utils.IMatrixPosition) (*FieldElement, error) {
 	y := position.GetY()
 	x := position.GetX()
 	if y < 0 || y > field.MeasureRowLength()-1 {
@@ -86,7 +86,7 @@ func (field *Field) FindElementsByObjectClass(objectClass string) []*FieldElemen
 	return elements
 }
 
-func (field *Field) GetElementOfHero() utils.IFieldElement {
+func (field *Field) GetElementOfHero() *FieldElement {
 	elements := field.FindElementsByObjectClass("hero")
 	// TODO: Error handling.
 	if len(elements) == 0 {

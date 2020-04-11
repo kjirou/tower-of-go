@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func mapFieldElementToScreenCellProps(fieldElement utils.IFieldElement) *views.ScreenCellProps {
+func mapFieldElementToScreenCellProps(fieldElement *models.FieldElement) *views.ScreenCellProps {
 	symbol := '.'
 	fg := termbox.ColorWhite
 	bg := termbox.ColorBlack
