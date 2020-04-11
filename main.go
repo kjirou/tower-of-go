@@ -7,8 +7,8 @@ import (
 	"github.com/nsf/termbox-go"
 	"math/rand"
 	"os"
-	"time"
 	"strings"
+	"time"
 )
 
 func drawTerminal(screen *views.Screen) {
