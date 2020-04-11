@@ -69,11 +69,11 @@ type ScreenProps struct {
 }
 
 type Screen struct {
-	matrix [][]ScreenCell
+	matrix [][]*ScreenCell
 	staticTexts []*ScreenText
 }
 
-func (screen *Screen) GetMatrix() [][]ScreenCell {
+func (screen *Screen) GetMatrix() [][]*ScreenCell {
 	return screen.matrix
 }
 
@@ -104,7 +104,7 @@ func (screen *Screen) Render(props *ScreenProps) {
 			case !isTopOrBottomEdge && isLeftOrRightEdge:
 				symbol = '|'
 			}
-			cell := &(screen.matrix[y][x])
+			cell := screen.matrix[y][x]
 			cell.render(&ScreenCellProps{
 				Symbol: symbol,
 				ForegroundColor: termbox.ColorWhite,
@@ -117,7 +117,7 @@ func (screen *Screen) Render(props *ScreenProps) {
 	var fieldPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 2, X: 2}
 	for y, rowProps := range props.FieldCells {
 		for x, cellProps := range rowProps {
-			cell := &(screen.matrix[y + fieldPosition.GetY()][x + fieldPosition.GetX()])
+			cell := screen.matrix[y + fieldPosition.GetY()][x + fieldPosition.GetX()]
 			cell.render(cellProps)
 		}
 	}
@@ -153,7 +153,7 @@ func (screen *Screen) Render(props *ScreenProps) {
 	// Place texts.
 	for _, textInstance := range texts {
 		for deltaX, character := range textInstance.Text {
-			cell := &screen.matrix[textInstance.Position.GetY()][textInstance.Position.GetX() + deltaX]
+			cell := screen.matrix[textInstance.Position.GetY()][textInstance.Position.GetX() + deltaX]
 			cell.render(&ScreenCellProps{
 				Symbol: character,
 				ForegroundColor: textInstance.Foreground,
@@ -164,11 +164,11 @@ func (screen *Screen) Render(props *ScreenProps) {
 }
 
 func CreateScreen(rowLength int, columnLength int) Screen {
-	matrix := make([][]ScreenCell, rowLength)
+	matrix := make([][]*ScreenCell, rowLength)
 	for rowIndex := 0; rowIndex < rowLength; rowIndex++ {
-		row := make([]ScreenCell, columnLength)
+		row := make([]*ScreenCell, columnLength)
 		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
-			row[columnIndex] = ScreenCell{
+			row[columnIndex] = &ScreenCell{
 				Symbol:          '_',
 				ForegroundColor: termbox.ColorWhite,
 				BackgroundColor: termbox.ColorBlack,
