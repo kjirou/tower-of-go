@@ -13,6 +13,7 @@ import (
 	"math/rand"
 	"os"
 	"time"
+	"strings"
 )
 
 func mapFieldElementToScreenCellProps(fieldElement utils.IFieldElement) *views.ScreenCellProps {
@@ -98,6 +99,18 @@ func drawTerminal(screen *views.Screen) {
 		}
 	}
 	termbox.Flush()
+}
+
+func convertScreenToText(screen *views.Screen) string {
+	lines := make([]string, 0)
+	for _, row := range screen.GetMatrix() {
+		line := ""
+		for _, element := range row {
+			line += string(element.Symbol)
+		}
+		lines = append(lines, line)
+	}
+	return strings.Join(lines, "\n")
 }
 
 func initializeTermbox() error {
@@ -209,7 +222,7 @@ func main() {
 	controller.Dispatch(&state)
 
 	if debugMode {
-		fmt.Println(screen.AsText())
+		fmt.Println(convertScreenToText(&screen))
 	} else {
 		termboxErr := initializeTermbox()
 		if termboxErr != nil {

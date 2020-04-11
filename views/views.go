@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/utils"
 	"github.com/nsf/termbox-go"
-	"strings"
 )
 
 type ScreenCellProps struct {
@@ -170,20 +169,6 @@ func (screen *Screen) Render(state utils.IState, props *ScreenProps) {
 			element.ForegroundColor = textInstance.Foreground
 		}
 	}
-}
-
-func (screen *Screen) AsText() string {
-	rowLength := screen.measureRowLength()
-	columnLength := screen.measureColumnLength()
-	lines := make([]string, rowLength)
-	for y := 0; y < rowLength; y++ {
-		line := make([]rune, columnLength)
-		for x := 0; x < columnLength; x++ {
-			line[x] = screen.matrix[y][x].Symbol
-		}
-		lines[y] = string(line)
-	}
-	return strings.Join(lines, "\n")
 }
 
 func CreateScreen(rowLength int, columnLength int) Screen {
