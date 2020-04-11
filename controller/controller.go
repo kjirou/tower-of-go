@@ -94,10 +94,6 @@ type Controller struct {
 	screen *views.Screen
 }
 
-func (controller *Controller) GetState() *models.State {
-	return controller.state
-}
-
 func (controller *Controller) GetScreen() *views.Screen {
 	return controller.screen
 }
