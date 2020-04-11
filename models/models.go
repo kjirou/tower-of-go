@@ -140,7 +140,7 @@ func (field *Field) ResetMaze() error {
 	return nil
 }
 
-func createField(y int, x int) Field {
+func createField(y int, x int) *Field {
 	matrix := make([][]FieldElement, y)
 	for rowIndex := 0; rowIndex < y; rowIndex++ {
 		row := make([]FieldElement, x)
@@ -160,7 +160,7 @@ func createField(y int, x int) Field {
 		}
 		matrix[rowIndex] = row
 	}
-	return Field{
+	return &Field{
 		matrix: matrix,
 	}
 }
@@ -222,7 +222,7 @@ type State struct {
 	// This is the total of main loop intervals.
 	// It is different from the real time.
 	executionTime time.Duration
-	field Field
+	field *Field
 	game *Game
 }
 
@@ -231,7 +231,7 @@ func (state *State) GetExecutionTime() time.Duration {
 }
 
 func (state *State) GetField() *Field {
-	return &state.field
+	return state.field
 }
 
 func (state *State) GetGame() *Game {
