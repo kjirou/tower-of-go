@@ -7,10 +7,24 @@ import (
 	"strings"
 )
 
+type ScreenCellProps struct {
+	Symbol          rune
+	ForegroundColor termbox.Attribute
+	BackgroundColor termbox.Attribute
+}
+
+// TODO: "ForegroundColor"->"Foreground"
+// TODO: Prevent public access.
 type ScreenElement struct {
 	Symbol          rune
 	ForegroundColor termbox.Attribute
 	BackgroundColor termbox.Attribute
+}
+
+func (screenElement *ScreenElement) render(props *ScreenCellProps) {
+	screenElement.Symbol = props.Symbol
+	screenElement.ForegroundColor = props.ForegroundColor
+	screenElement.BackgroundColor = props.BackgroundColor
 }
 
 func (screenElement *ScreenElement) renderWithFieldElement(fieldElement utils.IFieldElement) {
@@ -35,9 +49,12 @@ func (screenElement *ScreenElement) renderWithFieldElement(fieldElement utils.IF
 			fg = termbox.ColorGreen
 		}
 	}
-	screenElement.Symbol = symbol
-	screenElement.ForegroundColor = fg
-	screenElement.BackgroundColor = bg
+	props := ScreenCellProps{
+		Symbol: symbol,
+		ForegroundColor: fg,
+		BackgroundColor: bg,
+	}
+	screenElement.render(&props)
 }
 
 type ScreenText struct {
