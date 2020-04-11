@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"github.com/kjirou/tower_of_go/utils"
+	"github.com/kjirou/tower-of-go/utils"
 	"time"
 )
 

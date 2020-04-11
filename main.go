@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/kjirou/tower_of_go/controller"
-	"github.com/kjirou/tower_of_go/views"
+	"github.com/kjirou/tower-of-go/controller"
+	"github.com/kjirou/tower-of-go/views"
 	"github.com/nsf/termbox-go"
 	"math/rand"
 	"os"

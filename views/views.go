@@ -6,7 +6,7 @@ package views
 
 import (
 	"fmt"
-	"github.com/kjirou/tower_of_go/utils"
+	"github.com/kjirou/tower-of-go/utils"
 	"github.com/nsf/termbox-go"
 )
 
@@ -195,7 +195,7 @@ func CreateScreen(rowLength int, columnLength int) *Screen {
 
 	urlText := &screenText{
 		Position: &utils.MatrixPosition{Y: 22, X: 41},
-		Text: "https://github.com/kjirou/tower_of_go",
+		Text: "https://github.com/kjirou/tower-of-go",
 		Foreground: termbox.ColorWhite | termbox.AttrUnderline,
 	}
 	staticTexts = append(staticTexts, urlText)
