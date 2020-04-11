@@ -27,36 +27,6 @@ func (screenElement *ScreenElement) render(props *ScreenCellProps) {
 	screenElement.BackgroundColor = props.BackgroundColor
 }
 
-func (screenElement *ScreenElement) renderWithFieldElement(fieldElement utils.IFieldElement) {
-	symbol := '.'
-	fg := termbox.ColorWhite
-	bg := termbox.ColorBlack
-	if !fieldElement.IsObjectEmpty() {
-		switch fieldElement.GetObjectClass() {
-		case "hero":
-			symbol = '@'
-			fg = termbox.ColorMagenta
-		case "wall":
-			symbol = '#'
-			fg = termbox.ColorYellow
-		default:
-			symbol = '?'
-		}
-	} else {
-		switch fieldElement.GetFloorObjectClass() {
-		case "upstairs":
-			symbol = '<'
-			fg = termbox.ColorGreen
-		}
-	}
-	props := ScreenCellProps{
-		Symbol: symbol,
-		ForegroundColor: fg,
-		BackgroundColor: bg,
-	}
-	screenElement.render(&props)
-}
-
 type ScreenText struct {
 	Position utils.IMatrixPosition
 	// ASCII only. Line breaks are not allowed.
@@ -112,11 +82,36 @@ func (screen *Screen) renderField(startPosition utils.IMatrixPosition, field uti
 	columnLength := field.MeasureColumnLength()
 	for y := 0; y < rowLength; y++ {
 		for x := 0; x < columnLength; x++ {
-			element := &(screen.matrix[y][x])
+			cell := &(screen.matrix[y][x])
 			var fieldElementPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
 			// TODO: Error handling.
 			var fieldElement, _ = field.At(fieldElementPosition)
-			element.renderWithFieldElement(fieldElement)
+			symbol := '.'
+			fg := termbox.ColorWhite
+			bg := termbox.ColorBlack
+			if !fieldElement.IsObjectEmpty() {
+				switch fieldElement.GetObjectClass() {
+				case "hero":
+					symbol = '@'
+					fg = termbox.ColorMagenta
+				case "wall":
+					symbol = '#'
+					fg = termbox.ColorYellow
+				default:
+					symbol = '?'
+				}
+			} else {
+				switch fieldElement.GetFloorObjectClass() {
+				case "upstairs":
+					symbol = '<'
+					fg = termbox.ColorGreen
+				}
+			}
+			cell.render(&ScreenCellProps{
+				Symbol: symbol,
+				ForegroundColor: fg,
+				BackgroundColor: bg,
+			})
 		}
 	}
 }
