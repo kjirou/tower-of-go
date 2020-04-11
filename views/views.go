@@ -24,7 +24,6 @@ type screenCell struct {
 	BackgroundColor termbox.Attribute
 }
 
-// TODO: What is the general receiver variable naming?
 func (screenCell_ *screenCell) render(props *ScreenCellProps) {
 	screenCell_.Symbol = props.Symbol
 	screenCell_.ForegroundColor = props.ForegroundColor

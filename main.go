@@ -80,7 +80,6 @@ func observeTermboxEvents(controller *controller.Controller) {
 }
 
 func main() {
-	// TODO: Look for a tiny CLI argument parser like the "minimist" of Node.js.
 	commandLineArgs := os.Args[1:]
 	debugMode := false
 	for _, arg := range commandLineArgs {

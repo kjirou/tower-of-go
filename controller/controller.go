@@ -107,7 +107,6 @@ func (controller *Controller) HandleMainLoop(interval time.Duration) (*models.St
 	return reducers.AdvanceTime(*controller.state, interval)
 }
 
-// TODO: Replace `ch` type with termbox's `Cell.Ch` type.
 func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) (*models.State, bool, error) {
 	var newState *models.State
 	var stateChanged bool = false

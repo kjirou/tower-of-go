@@ -14,8 +14,6 @@ const (
 	FourDirectionLeft
 )
 
-// TODO: Generalize the interface between reducer functions.
-
 func StartOrRestartGame(state models.State) (*models.State, bool, error) {
 	game := state.GetGame()
 	field := state.GetField()
