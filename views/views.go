@@ -1,5 +1,9 @@
 package views
 
+//
+// The "views" package creates a layer that avoids to write logics tightly coupled with "termbox".
+//
+
 import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/utils"
@@ -57,9 +61,6 @@ func createSequentialScreenTexts(position utils.IMatrixPosition, parts []*Screen
 	return texts
 }
 
-//
-// A layer that avoids to write logics tightly coupled with "termbox".
-//
 type Screen struct {
 	matrix [][]ScreenElement
 	staticTexts []*ScreenText
