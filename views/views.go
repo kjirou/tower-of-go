@@ -82,11 +82,11 @@ func (screen *Screen) GetMatrix() [][]ScreenElement {
 	return screen.matrix
 }
 
-func (screen *Screen) MeasureRowLength() int {
+func (screen *Screen) measureRowLength() int {
 	return len(screen.matrix)
 }
 
-func (screen *Screen) MeasureColumnLength() int {
+func (screen *Screen) measureColumnLength() int {
 	return len(screen.matrix[0])
 }
 
@@ -94,9 +94,9 @@ func (screen *Screen) At(position utils.IMatrixPosition) *ScreenElement {
 	y := position.GetY()
 	x := position.GetX()
 	// TODO: Error handling.
-	if y < 0 || y > screen.MeasureRowLength() {
+	if y < 0 || y > screen.measureRowLength() {
 		panic(fmt.Sprintf("That position (Y=%d) does not exist on the screen.", y))
-	} else if x < 0 || x > screen.MeasureColumnLength() {
+	} else if x < 0 || x > screen.measureColumnLength() {
 		panic(fmt.Sprintf("That position (X=%d) does not exist on the screen.", x))
 	}
 	return &(screen.matrix[y][x])
@@ -123,8 +123,8 @@ func (screen *Screen) renderField(startPosition utils.IMatrixPosition, field uti
 func (screen *Screen) Render(state utils.IState) {
 	game := state.GetGame()
 
-	rowLength := screen.MeasureRowLength()
-	columnLength := screen.MeasureColumnLength()
+	rowLength := screen.measureRowLength()
+	columnLength := screen.measureColumnLength()
 
 	// Pad elements with blanks.
 	// Set borders.
@@ -206,8 +206,8 @@ func (screen *Screen) Render(state utils.IState) {
 }
 
 func (screen *Screen) AsText() string {
-	rowLength := screen.MeasureRowLength()
-	columnLength := screen.MeasureColumnLength()
+	rowLength := screen.measureRowLength()
+	columnLength := screen.measureColumnLength()
 	lines := make([]string, rowLength)
 	for y := 0; y < rowLength; y++ {
 		line := make([]rune, columnLength)
