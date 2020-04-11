@@ -9,13 +9,9 @@ import (
 var HeroPosition = &utils.MatrixPosition{Y: 1, X: 1}
 var UpstairsPosition = &utils.MatrixPosition{Y: 11, X: 19}
 
-type FieldFloorObject struct {
-	Class string
-}
-
 type FieldElement struct {
-	FloorObject   FieldFloorObject
 	Position *utils.MatrixPosition
+	floorObjectClass string
 	objectClass string
 }
 
@@ -28,7 +24,7 @@ func (fieldElement *FieldElement) GetObjectClass() string {
 }
 
 func (fieldElement *FieldElement) GetFloorObjectClass() string {
-	return fieldElement.FloorObject.Class
+	return fieldElement.floorObjectClass
 }
 
 func (fieldElement *FieldElement) IsObjectEmpty() bool {
@@ -40,7 +36,7 @@ func (fieldElement *FieldElement) UpdateObjectClass(class string) {
 }
 
 func (fieldElement *FieldElement) UpdateFloorObjectClass(class string) {
-	fieldElement.FloorObject.Class = class
+	fieldElement.floorObjectClass = class
 }
 
 type Field struct {
@@ -142,10 +138,8 @@ func createField(y int, x int) *Field {
 					Y: rowIndex,
 					X: columnIndex,
 				},
-				FloorObject: FieldFloorObject{
-					Class: "empty",
-				},
 				objectClass: "empty",
+				floorObjectClass: "empty",
 			}
 		}
 		matrix[rowIndex] = row
