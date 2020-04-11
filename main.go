@@ -2,115 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/kjirou/tower_of_go/models"
-	"github.com/kjirou/tower_of_go/reducers"
-	"github.com/kjirou/tower_of_go/utils"
+	"github.com/kjirou/tower_of_go/controller"
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
 	"math/rand"
 	"os"
-	"time"
 	"strings"
+	"time"
 )
-
-func mapFieldElementToScreenCellProps(fieldElement utils.IFieldElement) *views.ScreenCellProps {
-	symbol := '.'
-	fg := termbox.ColorWhite
-	bg := termbox.ColorBlack
-	if !fieldElement.IsObjectEmpty() {
-		switch fieldElement.GetObjectClass() {
-		case "hero":
-			symbol = '@'
-			fg = termbox.ColorMagenta
-		case "wall":
-			symbol = '#'
-			fg = termbox.ColorYellow
-		default:
-			symbol = '?'
-		}
-	} else {
-		switch fieldElement.GetFloorObjectClass() {
-		case "upstairs":
-			symbol = '<'
-			fg = termbox.ColorGreen
-		}
-	}
-	return &views.ScreenCellProps{
-		Symbol: symbol,
-		ForegroundColor: fg,
-		BackgroundColor: bg,
-	}
-}
-
-func mapStateModelToScreenProps(state *models.State) *views.ScreenProps {
-	game := state.GetGame()
-	field := state.GetField()
-
-	// Cells of the field.
-	fieldRowLength := field.MeasureRowLength()
-	fieldColumnLength := field.MeasureColumnLength()
-	fieldCells := make([][]*views.ScreenCellProps, fieldRowLength)
-	for y := 0; y < fieldRowLength; y++ {
-		cellsRow := make([]*views.ScreenCellProps, fieldColumnLength)
-		for x := 0; x < fieldColumnLength; x++ {
-			var fieldElementPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
-			// TODO: Error handling.
-			var fieldElement, _ = field.At(fieldElementPosition)
-			cellsRow[x] = mapFieldElementToScreenCellProps(fieldElement)
-		}
-		fieldCells[y] = cellsRow
-	}
-
-	// Lank message.
-	lankMessage := ""
-	lankMessageForeground := termbox.ColorWhite
-	if game.IsFinished() {
-		score := game.GetFloorNumber()
-		switch {
-			case score == 3:
-				lankMessage = "Good!"
-				lankMessageForeground = termbox.ColorGreen
-			case score == 4:
-				lankMessage = "Excellent!"
-				lankMessageForeground = termbox.ColorGreen
-			case score == 5:
-				lankMessage = "Marvelous!"
-				lankMessageForeground = termbox.ColorGreen
-			case score >= 6:
-				lankMessage = "Gopher!!"
-				lankMessageForeground = termbox.ColorCyan
-			default:
-				lankMessage = "No good..."
-		}
-	}
-
-	return &views.ScreenProps{
-		FieldCells: fieldCells,
-		RemainingTime: game.CalculateRemainingTime(state.GetExecutionTime()).Seconds(),
-		FloorNumber: game.GetFloorNumber(),
-		LankMessage: lankMessage,
-		LankMessageForeground: lankMessageForeground,
-	}
-}
-
-type Controller struct {
-	state  *models.State
-	screen *views.Screen
-}
-
-func (controller *Controller) GetState() *models.State {
-	return controller.state
-}
-
-func (controller *Controller) GetScreen() *views.Screen {
-	return controller.screen
-}
-
-func (controller *Controller) Dispatch(newState *models.State) {
-	controller.state = newState
-	screenProps := mapStateModelToScreenProps(controller.state)
-	controller.screen.Render(screenProps)
-}
 
 func drawTerminal(screen *views.Screen) {
 	for y, row := range screen.GetMatrix() {
@@ -140,47 +39,25 @@ func convertScreenToText(screen *views.Screen) string {
 	return strings.Join(lines, "\n")
 }
 
-func initializeTermbox() error {
-	termboxErr := termbox.Init()
-	if termboxErr != nil {
-		return termboxErr
-	}
-	termbox.SetInputMode(termbox.InputEsc)
-	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
-	return nil
-}
+func runMainLoop(controller *controller.Controller) {
+	// About 60fps.
+	// TODO: Some delay from real time.
+	interval := time.Millisecond * 17
+	for {
+		time.Sleep(interval)
 
-// TODO: Replace `ch` type with termbox's `Cell.Ch` type.
-func handleKeyPress(controller *Controller, ch rune, key termbox.Key) {
-	var newState *models.State
-	var stateChanged bool = false
-	var err error
-	state := controller.GetState()
+		newState, stateChanged, err := controller.HandleMainLoop(interval)
 
-	switch {
-	// Start or restart a game.
-	case ch == 's':
-		newState, stateChanged, err = reducers.StartOrRestartGame(*state)
-	// Move the hero.
-	case key == termbox.KeyArrowUp || ch == 'k':
-		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionUp)
-	case key == termbox.KeyArrowRight || ch == 'l':
-		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionRight)
-	case key == termbox.KeyArrowDown || ch == 'j':
-		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionDown)
-	case key == termbox.KeyArrowLeft || ch == 'h':
-		newState, stateChanged, err = reducers.WalkHero(*state, utils.FourDirectionLeft)
-	}
-
-	if err != nil {
-		panic(err)
-	} else if newState != nil && stateChanged {
-		controller.Dispatch(newState)
-		drawTerminal(controller.GetScreen())
+		if err != nil {
+			panic(err)
+		} else if newState != nil && stateChanged {
+			controller.Dispatch(newState)
+			drawTerminal(controller.GetScreen())
+		}
 	}
 }
 
-func handleTermboxEvents(controller *Controller) {
+func observeTermboxEvents(controller *controller.Controller) {
 	didQuitApplication := false
 
 	for !didQuitApplication {
@@ -193,30 +70,14 @@ func handleTermboxEvents(controller *Controller) {
 				break
 			}
 
-			handleKeyPress(controller, event.Ch, event.Key)
-		}
-	}
-}
+			newState, stateChanged, err := controller.HandleKeyPress(event.Ch, event.Key)
 
-func runMainLoop(controller *Controller) {
-	// About 60fps.
-	// TODO: Some delay from real time.
-	interval := time.Millisecond * 17
-	for {
-		var newState *models.State
-		var stateChanged bool = false
-		var err error
-		state := controller.GetState()
-
-		time.Sleep(interval)
-
-		newState, stateChanged, err = reducers.AdvanceTime(*state, interval)
-
-		if err != nil {
-			panic(err)
-		} else if newState != nil && stateChanged {
-			controller.Dispatch(newState)
-			drawTerminal(controller.GetScreen())
+			if err != nil {
+				panic(err)
+			} else if newState != nil && stateChanged {
+				controller.Dispatch(newState)
+				drawTerminal(controller.GetScreen())
+			}
 		}
 	}
 }
@@ -233,31 +94,23 @@ func main() {
 
 	rand.Seed(time.Now().UnixNano())
 
-	state := models.CreateState()
-	err := state.SetWelcomeData()
-	if err != nil {
-		panic(err)
+	controller, createControllerErr := controller.CreateController()
+	if createControllerErr != nil {
+		panic(createControllerErr)
 	}
-
-	screen := views.CreateScreen(24, 80)
-
-	controller := Controller{
-		state:  &state,
-		screen: &screen,
-	}
-
-	controller.Dispatch(&state)
 
 	if debugMode {
-		fmt.Println(convertScreenToText(&screen))
+		fmt.Println(convertScreenToText(controller.GetScreen()))
 	} else {
-		termboxErr := initializeTermbox()
+		termboxErr := termbox.Init()
 		if termboxErr != nil {
 			panic(termboxErr)
 		}
+		termbox.SetInputMode(termbox.InputEsc)
+		termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 		defer termbox.Close()
-		drawTerminal(&screen)
-		go runMainLoop(&controller)
-		handleTermboxEvents(&controller)
+		drawTerminal(controller.GetScreen())
+		go runMainLoop(controller)
+		observeTermboxEvents(controller)
 	}
 }

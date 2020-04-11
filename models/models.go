@@ -278,10 +278,10 @@ func (state *State) SetWelcomeData() error {
 	return nil
 }
 
-func CreateState() State {
+func CreateState() *State {
 	var game utils.IGame = &Game{}
 	executionTime, _ := time.ParseDuration("0")
-	state := State{
+	state := &State{
 		executionTime: executionTime,
 		field: createField(13, 21),
 		game: game,
