@@ -39,8 +39,18 @@ func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, 
 		// The hero climbs up the stairs.
 		var heroFieldElement utils.IFieldElement = field.GetElementOfHero()
 		if (heroFieldElement.GetFloorObjectClass() == "upstairs") {
+			// Generate a new maze.
+			// Remove the hero.
+			err := field.ResetMaze()
+			if err != nil {
+				return &state, false, err
+			}
+
+			// Relocate the hero to the entrance.
+			replacedHeroFieldElement, _ := field.At(utils.HeroPosition)
+			replacedHeroFieldElement.UpdateObjectClass("hero")
+
 			game.IncrementFloorNumber()
-			field.MoveObject(heroFieldElement.GetPosition(), utils.HeroPosition)
 		}
 
 		// Time over of this game.
