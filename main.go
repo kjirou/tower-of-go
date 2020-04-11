@@ -1,8 +1,5 @@
 package main
 
-// TODO:
-// - Write unit test for each packages.
-
 import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/models"

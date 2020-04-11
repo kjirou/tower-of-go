@@ -102,7 +102,12 @@ func (screen *Screen) Render(state utils.IState, props *ScreenProps) {
 			case !isTopOrBottomEdge && isLeftOrRightEdge:
 				symbol = '|'
 			}
-			screen.matrix[y][x].Symbol = symbol
+			cell := &(screen.matrix[y][x])
+			cell.render(&ScreenCellProps{
+				Symbol: symbol,
+				ForegroundColor: termbox.ColorWhite,
+				BackgroundColor: termbox.ColorBlack,
+			})
 		}
 	}
 
@@ -164,9 +169,12 @@ func (screen *Screen) Render(state utils.IState, props *ScreenProps) {
 	// Place texts.
 	for _, textInstance := range texts {
 		for deltaX, character := range textInstance.Text {
-			element := &screen.matrix[textInstance.Position.GetY()][textInstance.Position.GetX() + deltaX]
-			element.Symbol = character
-			element.ForegroundColor = textInstance.Foreground
+			cell := &screen.matrix[textInstance.Position.GetY()][textInstance.Position.GetX() + deltaX]
+			cell.render(&ScreenCellProps{
+				Symbol: character,
+				ForegroundColor: textInstance.Foreground,
+				BackgroundColor: termbox.ColorBlack,
+			})
 		}
 	}
 }
