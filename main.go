@@ -15,9 +15,54 @@ import (
 	"time"
 )
 
+func mapFieldElementToScreenCellProps(fieldElement utils.IFieldElement) *views.ScreenCellProps {
+	symbol := '.'
+	fg := termbox.ColorWhite
+	bg := termbox.ColorBlack
+	if !fieldElement.IsObjectEmpty() {
+		switch fieldElement.GetObjectClass() {
+		case "hero":
+			symbol = '@'
+			fg = termbox.ColorMagenta
+		case "wall":
+			symbol = '#'
+			fg = termbox.ColorYellow
+		default:
+			symbol = '?'
+		}
+	} else {
+		switch fieldElement.GetFloorObjectClass() {
+		case "upstairs":
+			symbol = '<'
+			fg = termbox.ColorGreen
+		}
+	}
+	return &views.ScreenCellProps{
+		Symbol: symbol,
+		ForegroundColor: fg,
+		BackgroundColor: bg,
+	}
+}
+
 func mapStateModelToScreenProps(state *models.State) *views.ScreenProps {
-	props := &views.ScreenProps{}
-	return props
+	field := state.GetField()
+	fieldRowLength := field.MeasureRowLength()
+	fieldColumnLength := field.MeasureColumnLength()
+	fieldCells := make([][]*views.ScreenCellProps, fieldRowLength)
+	for y := 0; y < fieldRowLength; y++ {
+		cellsRow := make([]*views.ScreenCellProps, fieldColumnLength)
+		for x := 0; x < fieldColumnLength; x++ {
+			var fieldElementPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
+			// TODO: Error handling.
+			var fieldElement, _ = field.At(fieldElementPosition)
+			cellsRow[x] = mapFieldElementToScreenCellProps(fieldElement)
+		}
+		fieldCells[y] = cellsRow
+	}
+
+	return &views.ScreenProps{
+		FieldCells: fieldCells,
+	}
 }
 
 type Controller struct {

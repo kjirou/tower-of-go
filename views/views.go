@@ -62,6 +62,7 @@ func createSequentialScreenTexts(position utils.IMatrixPosition, parts []*Screen
 }
 
 type ScreenProps struct {
+	FieldCells [][]*ScreenCellProps
 }
 
 type Screen struct {
@@ -108,42 +109,10 @@ func (screen *Screen) Render(state utils.IState, props *ScreenProps) {
 
 	// Place the field.
 	var fieldPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 2, X: 2}
-	field := state.GetField()
-	fieldRowLength := field.MeasureRowLength()
-	fieldColumnLength := field.MeasureColumnLength()
-	for y := 0; y < fieldRowLength; y++ {
-		for x := 0; x < fieldColumnLength; x++ {
-			var fieldElementPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
-			// TODO: Error handling.
-			var fieldElement, _ = field.At(fieldElementPosition)
-			symbol := '.'
-			fg := termbox.ColorWhite
-			bg := termbox.ColorBlack
-			if !fieldElement.IsObjectEmpty() {
-				switch fieldElement.GetObjectClass() {
-				case "hero":
-					symbol = '@'
-					fg = termbox.ColorMagenta
-				case "wall":
-					symbol = '#'
-					fg = termbox.ColorYellow
-				default:
-					symbol = '?'
-				}
-			} else {
-				switch fieldElement.GetFloorObjectClass() {
-				case "upstairs":
-					symbol = '<'
-					fg = termbox.ColorGreen
-				}
-			}
-
+	for y, rowProps := range props.FieldCells {
+		for x, cellProps := range rowProps {
 			cell := &(screen.matrix[y + fieldPosition.GetY()][x + fieldPosition.GetX()])
-			cell.render(&ScreenCellProps{
-				Symbol: symbol,
-				ForegroundColor: fg,
-				BackgroundColor: bg,
-			})
+			cell.render(cellProps)
 		}
 	}
 
