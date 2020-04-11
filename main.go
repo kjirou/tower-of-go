@@ -16,7 +16,7 @@ import (
 )
 
 type Controller struct {
-	state *models.State
+	state  *models.State
 	screen *views.Screen
 }
 
@@ -151,7 +151,7 @@ func main() {
 	screen := views.CreateScreen(24, 80)
 
 	controller := Controller{
-		state: &state,
+		state:  &state,
 		screen: &screen,
 	}
 
