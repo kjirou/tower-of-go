@@ -16,17 +16,16 @@ type ScreenCellProps struct {
 	Background termbox.Attribute
 }
 
-// TODO: Prevent public access.
 type screenCell struct {
-	Symbol          rune
-	Foreground termbox.Attribute
-	Background termbox.Attribute
+	symbol          rune
+	foreground termbox.Attribute
+	background termbox.Attribute
 }
 
 func (screenCell_ *screenCell) render(props *ScreenCellProps) {
-	screenCell_.Symbol = props.Symbol
-	screenCell_.Foreground = props.Foreground
-	screenCell_.Background = props.Background
+	screenCell_.symbol = props.Symbol
+	screenCell_.foreground = props.Foreground
+	screenCell_.background = props.Background
 }
 
 type screenText struct {
@@ -89,7 +88,7 @@ func (screen *Screen) ForEachCells(
 		background termbox.Attribute)) {
 	for y, row := range screen.matrix {
 		for x, cell := range row {
-			callback(y, x, cell.Symbol, cell.Foreground, cell.Background)
+			callback(y, x, cell.symbol, cell.foreground, cell.background)
 		}
 	}
 }
@@ -175,9 +174,9 @@ func CreateScreen(rowLength int, columnLength int) *Screen {
 		row := make([]*screenCell, columnLength)
 		for columnIndex := 0; columnIndex < columnLength; columnIndex++ {
 			row[columnIndex] = &screenCell{
-				Symbol:          '_',
-				Foreground: termbox.ColorWhite,
-				Background: termbox.ColorBlack,
+				symbol:          '_',
+				foreground: termbox.ColorWhite,
+				background: termbox.ColorBlack,
 			}
 		}
 		matrix[rowIndex] = row
