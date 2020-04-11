@@ -164,7 +164,7 @@ func (screen *Screen) Render(props *ScreenProps) {
 	}
 }
 
-func CreateScreen(rowLength int, columnLength int) Screen {
+func CreateScreen(rowLength int, columnLength int) *Screen {
 	matrix := make([][]*screenCell, rowLength)
 	for rowIndex := 0; rowIndex < rowLength; rowIndex++ {
 		row := make([]*screenCell, columnLength)
@@ -241,7 +241,7 @@ func CreateScreen(rowLength int, columnLength int) Screen {
 	}
 	staticTexts = append(staticTexts, &description2Text)
 
-	return Screen{
+	return &Screen{
 		matrix: matrix,
 		staticTexts: staticTexts,
 	}

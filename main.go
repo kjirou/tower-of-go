@@ -141,18 +141,18 @@ func main() {
 		panic(err)
 	}
 	screen := views.CreateScreen(24, 80)
-	controller := controller.CreateController(&state, &screen)
-	controller.Dispatch(&state)
+	controller := controller.CreateController(state, screen)
+	controller.Dispatch(state)
 
 	if debugMode {
-		fmt.Println(convertScreenToText(&screen))
+		fmt.Println(convertScreenToText(screen))
 	} else {
 		termboxErr := initializeTermbox()
 		if termboxErr != nil {
 			panic(termboxErr)
 		}
 		defer termbox.Close()
-		drawTerminal(&screen)
+		drawTerminal(screen)
 		go runMainLoop(controller)
 		handleTermboxEvents(controller)
 	}
