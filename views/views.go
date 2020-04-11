@@ -280,6 +280,22 @@ func CreateScreen(rowLength int, columnLength int) Screen {
 		createSequentialScreenTexts(moveKeysHelpTextPosition, moveKeysHelpTextParts)...
 	)
 
+	var description1TextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 17, X: 3}
+	description1Text := ScreenText{
+		Position: description1TextPosition,
+		Text: "Move the player in the upper left to reach the stairs in the lower right.",
+		Foreground: termbox.ColorWhite,
+	}
+	staticTexts = append(staticTexts, &description1Text)
+
+	var description2TextPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 18, X: 3}
+	description2Text := ScreenText{
+		Position: description2TextPosition,
+		Text: "The score is the number of floors that can be reached within 30 seconds.",
+		Foreground: termbox.ColorWhite,
+	}
+	staticTexts = append(staticTexts, &description2Text)
+
 	return Screen{
 		matrix: matrix,
 		staticTexts: staticTexts,
