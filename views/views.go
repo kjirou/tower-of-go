@@ -173,11 +173,13 @@ func CreateScreen(rowLength int, columnLength int) *Screen {
 	for y := 0; y < rowLength; y++ {
 		row := make([]*screenCell, columnLength)
 		for x := 0; x < columnLength; x++ {
-			row[x] = &screenCell{
-				symbol:          '_',
-				foreground: termbox.ColorWhite,
-				background: termbox.ColorBlack,
-			}
+			cell := &screenCell{}
+			cell.render(&ScreenCellProps{
+				Symbol:          '_',
+				Foreground: termbox.ColorWhite,
+				Background: termbox.ColorBlack,
+			})
+			row[x] = cell
 		}
 		matrix[y] = row
 	}
