@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/kjirou/tower_of_go/controller"
 	"github.com/kjirou/tower_of_go/models"
-	"github.com/kjirou/tower_of_go/reducers"
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
 	"math/rand"
@@ -81,14 +80,9 @@ func runMainLoop(controller *controller.Controller) {
 	// TODO: Some delay from real time.
 	interval := time.Millisecond * 17
 	for {
-		var newState *models.State
-		var stateChanged bool = false
-		var err error
-		state := controller.GetState()
-
 		time.Sleep(interval)
 
-		newState, stateChanged, err = reducers.AdvanceTime(*state, interval)
+		newState, stateChanged, err := controller.HandleMainLoop(interval)
 
 		if err != nil {
 			panic(err)

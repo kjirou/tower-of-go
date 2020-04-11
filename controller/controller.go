@@ -6,6 +6,7 @@ import (
 	"github.com/kjirou/tower_of_go/reducers"
 	"github.com/kjirou/tower_of_go/views"
 	"github.com/nsf/termbox-go"
+	"time"
 )
 
 func mapFieldElementToScreenCellProps(fieldElement utils.IFieldElement) *views.ScreenCellProps {
@@ -105,6 +106,10 @@ func (controller *Controller) Dispatch(newState *models.State) {
 	controller.state = newState
 	screenProps := mapStateModelToScreenProps(controller.state)
 	controller.screen.Render(screenProps)
+}
+
+func (controller *Controller) HandleMainLoop(interval time.Duration) (*models.State, bool, error) {
+	return reducers.AdvanceTime(*controller.state, interval)
 }
 
 // TODO: Replace `ch` type with termbox's `Cell.Ch` type.
