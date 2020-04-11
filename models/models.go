@@ -10,13 +10,13 @@ var HeroPosition = &utils.MatrixPosition{Y: 1, X: 1}
 var UpstairsPosition = &utils.MatrixPosition{Y: 11, X: 19}
 
 type FieldElement struct {
-	Position *utils.MatrixPosition
 	floorObjectClass string
 	objectClass string
+	position *utils.MatrixPosition
 }
 
 func (fieldElement *FieldElement) GetPosition() *utils.MatrixPosition {
-	return fieldElement.Position
+	return fieldElement.position
 }
 
 func (fieldElement *FieldElement) GetObjectClass() string {
@@ -134,7 +134,7 @@ func createField(y int, x int) *Field {
 		row := make([]*FieldElement, x)
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
 			row[columnIndex] = &FieldElement{
-				Position: &utils.MatrixPosition{
+				position: &utils.MatrixPosition{
 					Y: rowIndex,
 					X: columnIndex,
 				},
