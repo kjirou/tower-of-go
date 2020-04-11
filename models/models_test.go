@@ -13,8 +13,7 @@ func TestField(t *testing.T) {
 		field := createField(2, 3)
 
 		t.Run("指定した位置の要素を取得できる", func(t *testing.T) {
-			var position utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 2}
-			element, _ := field.At(position)
+			element, _ := field.At(&utils.MatrixPosition{Y: 1, X: 2})
 			if element.GetPosition().GetY() != 1 {
 				t.Fatal("Y が違う")
 			} else if element.GetPosition().GetX() != 2 {
@@ -35,8 +34,7 @@ func TestField(t *testing.T) {
 			for _, tc := range testCases {
 				tc := tc
 				t.Run(fmt.Sprintf("Y=%d,X=%dはエラーを返す", tc.Y, tc.X), func(t *testing.T) {
-					var position utils.IMatrixPosition = &utils.MatrixPosition{Y: tc.Y, X: tc.X}
-					_, err := field.At(position)
+					_, err := field.At(&utils.MatrixPosition{Y: tc.Y, X: tc.X})
 					if err == nil {
 						t.Fatal("エラーを返さない")
 					}
@@ -47,8 +45,8 @@ func TestField(t *testing.T) {
 
 	t.Run("MoveObject", func(t *testing.T) {
 		field := createField(2, 3)
-		var fromPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 0, X: 0}
-		var toPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: 1, X: 2}
+		fromPosition := &utils.MatrixPosition{Y: 0, X: 0}
+		toPosition := &utils.MatrixPosition{Y: 1, X: 2}
 		fromElement, _ := field.At(fromPosition)
 		toElement, _ := field.At(toPosition)
 

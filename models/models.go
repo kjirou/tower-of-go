@@ -21,12 +21,11 @@ func (fieldObject *FieldObject) IsEmpty() bool {
 type FieldElement struct {
 	Object   FieldObject
 	FloorObject   FieldFloorObject
-	Position utils.MatrixPosition
+	Position *utils.MatrixPosition
 }
 
-func (fieldElement *FieldElement) GetPosition() utils.IMatrixPosition {
-	var position utils.IMatrixPosition = &fieldElement.Position
-	return position
+func (fieldElement *FieldElement) GetPosition() *utils.MatrixPosition {
+	return fieldElement.Position
 }
 
 func (fieldElement *FieldElement) GetObjectClass() string {
@@ -61,7 +60,7 @@ func (field *Field) MeasureColumnLength() int {
 	return len(field.matrix[0])
 }
 
-func (field *Field) At(position utils.IMatrixPosition) (*FieldElement, error) {
+func (field *Field) At(position *utils.MatrixPosition) (*FieldElement, error) {
 	y := position.GetY()
 	x := position.GetX()
 	if y < 0 || y > field.MeasureRowLength()-1 {
@@ -97,7 +96,7 @@ func (field *Field) GetElementOfHero() *FieldElement {
 	return elements[0]
 }
 
-func (field *Field) MoveObject(from utils.IMatrixPosition, to utils.IMatrixPosition) error {
+func (field *Field) MoveObject(from *utils.MatrixPosition, to *utils.MatrixPosition) error {
 	fromElement, err := field.At(from)
 	if err != nil {
 		return err
@@ -124,8 +123,7 @@ func (field *Field) ResetMaze() error {
 	}
 	for y, mazeRow := range mazeCells {
 		for x, mazeCell := range mazeRow {
-			var position utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
-			element, err := field.At(position)
+			element, err := field.At(&utils.MatrixPosition{Y: y, X: x})
 			if err != nil {
 				return err
 			}
@@ -146,7 +144,7 @@ func createField(y int, x int) *Field {
 		row := make([]*FieldElement, x)
 		for columnIndex := 0; columnIndex < x; columnIndex++ {
 			row[columnIndex] = &FieldElement{
-				Position: utils.MatrixPosition{
+				Position: &utils.MatrixPosition{
 					Y: rowIndex,
 					X: columnIndex,
 				},
@@ -267,8 +265,7 @@ func (state *State) SetWelcomeData() error {
 			isTopOrBottomEdge := y == 0 || y == fieldRowLength-1
 			isLeftOrRightEdge := x == 0 || x == fieldColumnLength-1
 			if isTopOrBottomEdge || isLeftOrRightEdge {
-				var wallPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
-				var elem, _ = field.At(wallPosition)
+				elem, _ := field.At(&utils.MatrixPosition{Y: y, X: x})
 				elem.UpdateObjectClass("wall")
 			}
 		}

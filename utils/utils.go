@@ -8,12 +8,6 @@ const (
 	FourDirectionLeft
 )
 
-type IMatrixPosition interface {
-	GetX() int
-	GetY() int
-	Validate(rowLength int, columnLength int) bool
-}
-
 type MatrixPosition struct {
 	X int
 	Y int
@@ -30,5 +24,5 @@ func (matrixPosition *MatrixPosition) Validate(rowLength int, columnLength int) 
 	return y >= 0 && y < rowLength && x >= 0 && x < columnLength
 }
 
-var HeroPosition IMatrixPosition = &MatrixPosition{Y: 1, X: 1}
-var UpstairsPosition IMatrixPosition = &MatrixPosition{Y: 11, X: 19}
+var HeroPosition = &MatrixPosition{Y: 1, X: 1}
+var UpstairsPosition = &MatrixPosition{Y: 11, X: 19}

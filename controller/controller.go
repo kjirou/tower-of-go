@@ -49,9 +49,8 @@ func mapStateModelToScreenProps(state *models.State) *views.ScreenProps {
 	for y := 0; y < fieldRowLength; y++ {
 		cellsRow := make([]*views.ScreenCellProps, fieldColumnLength)
 		for x := 0; x < fieldColumnLength; x++ {
-			var fieldElementPosition utils.IMatrixPosition = &utils.MatrixPosition{Y: y, X: x}
 			// TODO: Error handling.
-			var fieldElement, _ = field.At(fieldElementPosition)
+			fieldElement, _ := field.At(&utils.MatrixPosition{Y: y, X: x})
 			cellsRow[x] = mapFieldElementToScreenCellProps(fieldElement)
 		}
 		fieldCells[y] = cellsRow

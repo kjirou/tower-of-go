@@ -85,8 +85,8 @@ func WalkHero(state models.State, direction utils.FourDirection) (*models.State,
 	case utils.FourDirectionLeft:
 		nextX -= 1
 	}
-	var position utils.IMatrixPosition = element.GetPosition()
-	var nextPosition utils.IMatrixPosition = &utils.MatrixPosition{
+	position := element.GetPosition()
+	nextPosition := &utils.MatrixPosition{
 		Y: nextY,
 		X: nextX,
 	}
