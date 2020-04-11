@@ -59,9 +59,6 @@ func initializeTermbox() error {
 	return nil
 }
 
-// It may need to make the following processes:
-//   https://github.com/nsf/termbox-go/blob/4d2b513ad8bee47a9a5a65b0dee0182049a31916/_demos/keyboard.go#L669
-//   (However, details cannot be read...)
 // TODO: Replace `ch` type with termbox's `Cell.Ch` type.
 func handleKeyPress(controller *Controller, ch rune, key termbox.Key) {
 	var newState *models.State
