@@ -1,9 +1,5 @@
 package utils
 
-import(
-	"time"
-)
-
 type FourDirection int
 const (
 	FourDirectionUp FourDirection = iota
@@ -41,15 +37,6 @@ type IFieldElement interface {
 	IsObjectEmpty() bool
 	UpdateFloorObjectClass(class string)
 	UpdateObjectClass(class string)
-}
-
-type IField interface {
-	At(position IMatrixPosition) (IFieldElement, error)
-	GetElementOfHero() IFieldElement
-	MeasureColumnLength() int
-	MeasureRowLength() int
-	MoveObject(from IMatrixPosition, to IMatrixPosition) error
-	ResetMaze() error
 }
 
 var HeroPosition IMatrixPosition = &MatrixPosition{Y: 1, X: 1}

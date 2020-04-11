@@ -230,9 +230,8 @@ func (state *State) GetExecutionTime() time.Duration {
 	return state.executionTime
 }
 
-func (state *State) GetField() utils.IField {
-	var field utils.IField = &state.field
-	return field
+func (state *State) GetField() *Field {
+	return &state.field
 }
 
 func (state *State) GetGame() *Game {
