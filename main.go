@@ -97,7 +97,7 @@ func handleTermboxEvents(controller *Controller) {
 		switch event.Type {
 		case termbox.EventKey:
 			// Quit the application. Only this operation is resolved with priority.
-			if event.Key == termbox.KeyCtrlC || event.Key == termbox.KeyCtrlQ {
+			if event.Key == termbox.KeyEsc || event.Key == termbox.KeyCtrlC || event.Key == termbox.KeyCtrlQ {
 				didQuitApplication = true
 				break
 			}
