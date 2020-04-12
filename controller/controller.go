@@ -113,8 +113,12 @@ func (controller *Controller) GetScreen() *views.Screen {
 	return controller.screen
 }
 
+func (controller *Controller) SetState(state *models.State) {
+	controller.state = state
+}
+
 func (controller *Controller) Dispatch(newState *models.State) {
-	controller.state = newState
+	controller.SetState(newState)
 	screenProps := mapStateModelToScreenProps(controller.state)
 	controller.screen.Render(screenProps)
 }

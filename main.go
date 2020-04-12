@@ -71,7 +71,7 @@ func observeTermboxEvents(controller *controller.Controller) {
 			if err != nil {
 				panic(err)
 			} else if newState != nil && stateChanged {
-				controller.Dispatch(newState)
+				controller.SetState(newState)
 			}
 		}
 	}
