@@ -5,6 +5,8 @@ A tiny maze game that runs on the terminal.
 
 ## Demo
 
+![A Tower of Go Demo](/documents/tower-of-go-demo.gif)
+
 
 ## Installation
 
