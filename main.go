@@ -42,11 +42,11 @@ func runMainLoop(controller *controller.Controller) {
 	for {
 		time.Sleep(interval)
 
-		newState, stateChanged, err := controller.HandleMainLoop(interval)
+		newState, err := controller.HandleMainLoop(interval)
 
 		if err != nil {
 			panic(err)
-		} else if newState != nil && stateChanged {
+		} else if newState != nil {
 			controller.Dispatch(newState)
 			drawTerminal(controller.GetScreen())
 		}
@@ -66,11 +66,11 @@ func observeTermboxEvents(controller *controller.Controller) {
 				break
 			}
 
-			newState, stateChanged, err := controller.HandleKeyPress(event.Ch, event.Key)
+			newState, err := controller.HandleKeyPress(event.Ch, event.Key)
 
 			if err != nil {
 				panic(err)
-			} else if newState != nil && stateChanged {
+			} else if newState != nil {
 				controller.SetState(newState)
 			}
 		}

@@ -14,7 +14,7 @@ const (
 	FourDirectionLeft
 )
 
-func StartOrRestartGame(state models.State) (*models.State, bool, error) {
+func StartOrRestartGame(state models.State) (*models.State, error) {
 	game := state.GetGame()
 	field := state.GetField()
 
@@ -22,7 +22,7 @@ func StartOrRestartGame(state models.State) (*models.State, bool, error) {
 	// Remove the hero.
 	err := field.ResetMaze()
 	if err != nil {
-		return &state, false, err
+		return &state, err
 	}
 
 	// Replace the hero.
@@ -33,10 +33,10 @@ func StartOrRestartGame(state models.State) (*models.State, bool, error) {
 	game.Reset()
 	game.Start(state.GetExecutionTime())
 
-	return &state, true, nil
+	return &state, nil
 }
 
-func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, error) {
+func AdvanceTime(state models.State, delta time.Duration) (*models.State, error) {
 	game := state.GetGame()
 	field := state.GetField()
 
@@ -45,14 +45,14 @@ func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, 
 		// The hero climbs up the stairs.
 		heroFieldElement, getElementOfHeroErr := field.GetElementOfHero()
 		if getElementOfHeroErr != nil {
-			return &state, false, getElementOfHeroErr
+			return &state, getElementOfHeroErr
 		}
 		if (heroFieldElement.GetFloorObjectClass() == "upstairs") {
 			// Generate a new maze.
 			// Remove the hero.
 			err := field.ResetMaze()
 			if err != nil {
-				return &state, false, err
+				return &state, err
 			}
 
 			// Relocate the hero to the entrance.
@@ -71,19 +71,19 @@ func AdvanceTime(state models.State, delta time.Duration) (*models.State, bool, 
 
 	state.AlterExecutionTime(delta)
 
-	return &state, true, nil
+	return &state, nil
 }
 
-func WalkHero(state models.State, direction FourDirection) (*models.State, bool, error) {
+func WalkHero(state models.State, direction FourDirection) (*models.State, error) {
 	game := state.GetGame()
 	if game.IsFinished() {
-		return &state, true, nil
+		return &state, nil
 	}
 
 	field := state.GetField()
 	element, getElementOfHeroErr := field.GetElementOfHero()
 	if getElementOfHeroErr != nil {
-		return &state, false, getElementOfHeroErr
+		return &state, getElementOfHeroErr
 	}
 	nextY := element.GetPosition().GetY()
 	nextX := element.GetPosition().GetX()
@@ -105,11 +105,11 @@ func WalkHero(state models.State, direction FourDirection) (*models.State, bool,
 	if nextPosition.Validate(field.MeasureRowLength(), field.MeasureColumnLength()) {
 		element, err := field.At(nextPosition)
 		if err != nil {
-			return &state, false, err
+			return &state, err
 		} else if element.IsObjectEmpty() {
 			err := field.MoveObject(position, nextPosition)
-			return &state, err == nil, err
+			return &state, err
 		}
 	}
-	return &state, true, nil
+	return &state, nil
 }

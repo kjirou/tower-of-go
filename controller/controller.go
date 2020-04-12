@@ -123,31 +123,30 @@ func (controller *Controller) Dispatch(newState *models.State) {
 	controller.screen.Render(screenProps)
 }
 
-func (controller *Controller) HandleMainLoop(interval time.Duration) (*models.State, bool, error) {
+func (controller *Controller) HandleMainLoop(interval time.Duration) (*models.State, error) {
 	return reducers.AdvanceTime(*controller.state, interval)
 }
 
-func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) (*models.State, bool, error) {
+func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) (*models.State, error) {
 	var newState *models.State
-	var stateChanged bool = false
 	var err error
 
 	switch {
 	// Start or restart a game.
 	case ch == 's':
-		newState, stateChanged, err = reducers.StartOrRestartGame(*controller.state)
+		newState, err = reducers.StartOrRestartGame(*controller.state)
 	// Move the hero.
 	case key == termbox.KeyArrowUp || ch == 'k':
-		newState, stateChanged, err = reducers.WalkHero(*controller.state, reducers.FourDirectionUp)
+		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionUp)
 	case key == termbox.KeyArrowRight || ch == 'l':
-		newState, stateChanged, err = reducers.WalkHero(*controller.state, reducers.FourDirectionRight)
+		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionRight)
 	case key == termbox.KeyArrowDown || ch == 'j':
-		newState, stateChanged, err = reducers.WalkHero(*controller.state, reducers.FourDirectionDown)
+		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionDown)
 	case key == termbox.KeyArrowLeft || ch == 'h':
-		newState, stateChanged, err = reducers.WalkHero(*controller.state, reducers.FourDirectionLeft)
+		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionLeft)
 	}
 
-	return newState, stateChanged, err
+	return newState, err
 }
 
 func CreateController() (*Controller, error) {
