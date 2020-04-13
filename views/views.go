@@ -22,10 +22,10 @@ type screenCell struct {
 	background termbox.Attribute
 }
 
-func (screenCell_ *screenCell) render(props *ScreenCellProps) {
-	screenCell_.symbol = props.Symbol
-	screenCell_.foreground = props.Foreground
-	screenCell_.background = props.Background
+func (screenCell *screenCell) render(props *ScreenCellProps) {
+	screenCell.symbol = props.Symbol
+	screenCell.foreground = props.Foreground
+	screenCell.background = props.Background
 }
 
 type screenText struct {
