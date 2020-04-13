@@ -105,6 +105,8 @@ func mapStateModelToScreenProps(state *models.State) *views.ScreenProps {
 }
 
 type Controller struct {
+	inputtedCharacter rune
+	inputtedKey termbox.Key
 	state  *models.State
 	screen *views.Screen
 }
@@ -117,36 +119,51 @@ func (controller *Controller) SetState(state *models.State) {
 	controller.state = state
 }
 
+func (controller *Controller) setKeyInputs(ch rune, key termbox.Key) {
+	controller.inputtedCharacter = ch
+	controller.inputtedKey = key
+}
+
+func (controller *Controller) resetKeyInputs() {
+	controller.setKeyInputs(0, 0)
+}
+
 func (controller *Controller) Dispatch(newState *models.State) {
 	controller.SetState(newState)
 	screenProps := mapStateModelToScreenProps(controller.state)
 	controller.screen.Render(screenProps)
 }
 
-func (controller *Controller) HandleMainLoop(interval time.Duration) (*models.State, error) {
-	return reducers.AdvanceTime(*controller.state, interval)
-}
+func (controller *Controller) HandleMainLoop(elapsedTime time.Duration) (*models.State, error) {
+	ch := controller.inputtedCharacter
+	key := controller.inputtedKey
+	controller.resetKeyInputs()
 
-func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) (*models.State, error) {
 	var newState *models.State
 	var err error
 
 	switch {
 	// Start or restart a game.
 	case ch == 's':
-		newState, err = reducers.StartOrRestartGame(*controller.state)
+		newState, err = reducers.StartOrRestartGame(*controller.state, elapsedTime)
 	// Move the hero.
 	case key == termbox.KeyArrowUp || ch == 'k':
-		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionUp)
+		newState, err = reducers.WalkHero(*controller.state, elapsedTime, reducers.FourDirectionUp)
 	case key == termbox.KeyArrowRight || ch == 'l':
-		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionRight)
+		newState, err = reducers.WalkHero(*controller.state, elapsedTime, reducers.FourDirectionRight)
 	case key == termbox.KeyArrowDown || ch == 'j':
-		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionDown)
+		newState, err = reducers.WalkHero(*controller.state, elapsedTime, reducers.FourDirectionDown)
 	case key == termbox.KeyArrowLeft || ch == 'h':
-		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionLeft)
+		newState, err = reducers.WalkHero(*controller.state, elapsedTime, reducers.FourDirectionLeft)
+	default:
+		newState, err = reducers.AdvanceOnlyTime(*controller.state, elapsedTime)
 	}
 
 	return newState, err
+}
+
+func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) {
+	controller.setKeyInputs(ch, key)
 }
 
 func CreateController() (*Controller, error) {
@@ -160,6 +177,7 @@ func CreateController() (*Controller, error) {
 
 	screen := views.CreateScreen(24, 80)
 
+	controller.resetKeyInputs()
 	controller.state = state
 	controller.screen = screen
 	controller.Dispatch(state)

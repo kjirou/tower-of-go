@@ -14,7 +14,49 @@ const (
 	FourDirectionLeft
 )
 
-func StartOrRestartGame(state models.State) (*models.State, error) {
+func proceedMainLoopFrame(state *models.State, elapsedTime time.Duration) (*models.State, error) {
+	game := state.GetGame()
+	field := state.GetField()
+
+	// In the game.
+	if game.IsStarted() && !game.IsFinished() {
+		// The hero climbs up the stairs.
+		heroFieldElement, getElementOfHeroErr := field.GetElementOfHero()
+		if getElementOfHeroErr != nil {
+			return state, getElementOfHeroErr
+		}
+		if (heroFieldElement.GetFloorObjectClass() == "upstairs") {
+			// Generate a new maze.
+			// Remove the hero.
+			err := field.ResetMaze()
+			if err != nil {
+				return state, err
+			}
+
+			// Relocate the hero to the entrance.
+			replacedHeroFieldElement, _ := field.At(models.HeroPosition)
+			replacedHeroFieldElement.UpdateObjectClass("hero")
+
+			game.IncrementFloorNumber()
+		}
+
+		// Time over of this game.
+		remainingTime := game.CalculateRemainingTime(state.GetExecutionTime())
+		if remainingTime == 0 {
+			game.Finish()
+		}
+	}
+
+	state.AlterExecutionTime(elapsedTime)
+
+	return state, nil
+}
+
+func AdvanceOnlyTime(state models.State, elapsedTime time.Duration) (*models.State, error) {
+	return proceedMainLoopFrame(&state, elapsedTime)
+}
+
+func StartOrRestartGame(state models.State, elapsedTime time.Duration) (*models.State, error) {
 	game := state.GetGame()
 	field := state.GetField()
 
@@ -33,48 +75,10 @@ func StartOrRestartGame(state models.State) (*models.State, error) {
 	game.Reset()
 	game.Start(state.GetExecutionTime())
 
-	return &state, nil
+	return proceedMainLoopFrame(&state, elapsedTime)
 }
 
-func AdvanceTime(state models.State, delta time.Duration) (*models.State, error) {
-	game := state.GetGame()
-	field := state.GetField()
-
-	// In the game.
-	if game.IsStarted() && !game.IsFinished() {
-		// The hero climbs up the stairs.
-		heroFieldElement, getElementOfHeroErr := field.GetElementOfHero()
-		if getElementOfHeroErr != nil {
-			return &state, getElementOfHeroErr
-		}
-		if (heroFieldElement.GetFloorObjectClass() == "upstairs") {
-			// Generate a new maze.
-			// Remove the hero.
-			err := field.ResetMaze()
-			if err != nil {
-				return &state, err
-			}
-
-			// Relocate the hero to the entrance.
-			replacedHeroFieldElement, _ := field.At(models.HeroPosition)
-			replacedHeroFieldElement.UpdateObjectClass("hero")
-
-			game.IncrementFloorNumber()
-		}
-
-		// Time over of this game.
-		remainingTime := game.CalculateRemainingTime(state.GetExecutionTime())
-		if remainingTime == 0 {
-			game.Finish()
-		}
-	}
-
-	state.AlterExecutionTime(delta)
-
-	return &state, nil
-}
-
-func WalkHero(state models.State, direction FourDirection) (*models.State, error) {
+func WalkHero(state models.State, elapsedTime time.Duration, direction FourDirection) (*models.State, error) {
 	game := state.GetGame()
 	if game.IsFinished() {
 		return &state, nil
@@ -111,5 +115,5 @@ func WalkHero(state models.State, direction FourDirection) (*models.State, error
 			return &state, err
 		}
 	}
-	return &state, nil
+	return proceedMainLoopFrame(&state, elapsedTime)
 }
