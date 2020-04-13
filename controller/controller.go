@@ -134,7 +134,7 @@ func (controller *Controller) Dispatch(newState *models.State) {
 	controller.screen.Render(screenProps)
 }
 
-func (controller *Controller) HandleMainLoop(interval time.Duration) (*models.State, error) {
+func (controller *Controller) HandleMainLoop(elapsedTime time.Duration) (*models.State, error) {
 	ch := controller.inputtedCharacter
 	key := controller.inputtedKey
 	controller.resetKeyInputs()
@@ -145,27 +145,21 @@ func (controller *Controller) HandleMainLoop(interval time.Duration) (*models.St
 	switch {
 	// Start or restart a game.
 	case ch == 's':
-		newState, err = reducers.StartOrRestartGame(*controller.state)
+		newState, err = reducers.StartOrRestartGame(*controller.state, elapsedTime)
 	// Move the hero.
 	case key == termbox.KeyArrowUp || ch == 'k':
-		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionUp)
+		newState, err = reducers.WalkHero(*controller.state, elapsedTime, reducers.FourDirectionUp)
 	case key == termbox.KeyArrowRight || ch == 'l':
-		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionRight)
+		newState, err = reducers.WalkHero(*controller.state, elapsedTime, reducers.FourDirectionRight)
 	case key == termbox.KeyArrowDown || ch == 'j':
-		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionDown)
+		newState, err = reducers.WalkHero(*controller.state, elapsedTime, reducers.FourDirectionDown)
 	case key == termbox.KeyArrowLeft || ch == 'h':
-		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionLeft)
+		newState, err = reducers.WalkHero(*controller.state, elapsedTime, reducers.FourDirectionLeft)
+	default:
+		newState, err = reducers.AdvanceOnlyTime(*controller.state, elapsedTime)
 	}
 
-	if err != nil {
-		return newState, err
-	}
-
-	if newState == nil {
-		return reducers.AdvanceTime(*controller.state, interval)
-	} else {
-		return reducers.AdvanceTime(*newState, interval)
-	}
+	return newState, err
 }
 
 func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) {
