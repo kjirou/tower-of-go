@@ -1,12 +1,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/kjirou/tower-of-go/controller"
 	"github.com/kjirou/tower-of-go/views"
 	"github.com/nsf/termbox-go"
 	"math/rand"
-	"os"
 	"time"
 )
 
@@ -88,13 +88,9 @@ func observeTermboxEvents(controller *controller.Controller) {
 }
 
 func main() {
-	commandLineArgs := os.Args[1:]
-	debugMode := false
-	for _, arg := range commandLineArgs {
-		if arg == "--debug-mode" || arg == "-d" {
-			debugMode = true
-		}
-	}
+	var debugMode bool
+	flag.BoolVar(&debugMode, "debug", false, "Runs with debug mode.")
+	flag.Parse()
 
 	rand.Seed(time.Now().UnixNano())
 
