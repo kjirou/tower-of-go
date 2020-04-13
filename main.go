@@ -63,24 +63,6 @@ func runMainLoop(controller *controller.Controller) {
 	}
 }
 
-func observeTermboxEvents(controller *controller.Controller) {
-	didQuitApplication := false
-
-	for !didQuitApplication {
-		event := termbox.PollEvent()
-		switch event.Type {
-		case termbox.EventKey:
-			// Quit the application. Only this operation is resolved with priority.
-			if event.Key == termbox.KeyEsc || event.Key == termbox.KeyCtrlC || event.Key == termbox.KeyCtrlQ {
-				didQuitApplication = true
-				break
-			}
-
-			controller.HandleKeyPress(event.Ch, event.Key)
-		}
-	}
-}
-
 func main() {
 	var debugMode bool
 	flag.BoolVar(&debugMode, "debug", false, "Runs with debug mode.")
@@ -105,6 +87,19 @@ func main() {
 		defer termbox.Close()
 		drawTerminal(controller.GetScreen())
 		go runMainLoop(controller)
-		observeTermboxEvents(controller)
+		// Observe termbox events.
+		didQuitApplication := false
+		for !didQuitApplication {
+			event := termbox.PollEvent()
+			switch event.Type {
+			case termbox.EventKey:
+				// Quit the application. Only this operation is resolved with priority.
+				if event.Key == termbox.KeyEsc || event.Key == termbox.KeyCtrlC || event.Key == termbox.KeyCtrlQ {
+					didQuitApplication = true
+					break
+				}
+				controller.HandleKeyPress(event.Ch, event.Key)
+			}
+		}
 	}
 }
