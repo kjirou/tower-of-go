@@ -105,6 +105,8 @@ func mapStateModelToScreenProps(state *models.State) *views.ScreenProps {
 }
 
 type Controller struct {
+	inputtedCharacter rune
+	inputtedKey termbox.Key
 	state  *models.State
 	screen *views.Screen
 }
@@ -117,6 +119,15 @@ func (controller *Controller) SetState(state *models.State) {
 	controller.state = state
 }
 
+func (controller *Controller) setKeyInputs(ch rune, key termbox.Key) {
+	controller.inputtedCharacter = ch
+	controller.inputtedKey = key
+}
+
+func (controller *Controller) resetKeyInputs() {
+	controller.setKeyInputs(0, 0)
+}
+
 func (controller *Controller) Dispatch(newState *models.State) {
 	controller.SetState(newState)
 	screenProps := mapStateModelToScreenProps(controller.state)
@@ -124,10 +135,10 @@ func (controller *Controller) Dispatch(newState *models.State) {
 }
 
 func (controller *Controller) HandleMainLoop(interval time.Duration) (*models.State, error) {
-	return reducers.AdvanceTime(*controller.state, interval)
-}
+	ch := controller.inputtedCharacter
+	key := controller.inputtedKey
+	controller.resetKeyInputs()
 
-func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) (*models.State, error) {
 	var newState *models.State
 	var err error
 
@@ -146,7 +157,19 @@ func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) (*models.
 		newState, err = reducers.WalkHero(*controller.state, reducers.FourDirectionLeft)
 	}
 
-	return newState, err
+	if err != nil {
+		return newState, err
+	}
+
+	if newState == nil {
+		return reducers.AdvanceTime(*controller.state, interval)
+	} else {
+		return reducers.AdvanceTime(*newState, interval)
+	}
+}
+
+func (controller *Controller) HandleKeyPress(ch rune, key termbox.Key) {
+	controller.setKeyInputs(ch, key)
 }
 
 func CreateController() (*Controller, error) {
@@ -160,6 +183,7 @@ func CreateController() (*Controller, error) {
 
 	screen := views.CreateScreen(24, 80)
 
+	controller.resetKeyInputs()
 	controller.state = state
 	controller.screen = screen
 	controller.Dispatch(state)

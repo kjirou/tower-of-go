@@ -76,13 +76,7 @@ func observeTermboxEvents(controller *controller.Controller) {
 				break
 			}
 
-			newState, err := controller.HandleKeyPress(event.Ch, event.Key)
-
-			if err != nil {
-				panic(err)
-			} else if newState != nil {
-				controller.SetState(newState)
-			}
+			controller.HandleKeyPress(event.Ch, event.Key)
 		}
 	}
 }
