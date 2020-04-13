@@ -115,10 +115,6 @@ func (controller *Controller) GetScreen() *views.Screen {
 	return controller.screen
 }
 
-func (controller *Controller) SetState(state *models.State) {
-	controller.state = state
-}
-
 func (controller *Controller) setKeyInputs(ch rune, key termbox.Key) {
 	controller.inputtedCharacter = ch
 	controller.inputtedKey = key
@@ -129,7 +125,7 @@ func (controller *Controller) resetKeyInputs() {
 }
 
 func (controller *Controller) Dispatch(newState *models.State) {
-	controller.SetState(newState)
+	controller.state = newState
 	screenProps := mapStateModelToScreenProps(controller.state)
 	controller.screen.Render(screenProps)
 }
