@@ -48,7 +48,7 @@ func runMainLoop(controller *controller.Controller) {
 	//       なお、fps を落とすとその分現実時間に近づく。手元環境だと 25fps ならほぼ現実時間に等しくなる。
 
 	// About 60fps.
-	interval := time.Microsecond * 16666
+	interval := time.Microsecond*16666
 	for {
 		time.Sleep(interval)
 
