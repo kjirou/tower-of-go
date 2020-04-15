@@ -12,11 +12,9 @@ import (
 
 func drawTerminal(screen *views.Screen) {
 	screen.ForEachCells(func (y int, x int, symbol rune, fg termbox.Attribute, bg termbox.Attribute) {
-		// おそらく termbox.SetCell() の終了は非同期で、
-		//   同 cell へ高速で重複して出力した場合に互いの出力バッファが入れ子になる。
-		// メインループとキー操作それぞれで本関数を実行していたら、
-		//   頻繁に壊れた ANSI の破片のような文字列が出力されていたことからの推測である。
-		// メインループのみで描画していれば、問題なさそう。
+		// NOTE: Probably, termbox.SetCell's outputs are asynchronous.
+		//       Therefore, multiple executions on the same cell at the same time will nest the output buffers.
+		//       As a result, the display will be corrupted.
 		termbox.SetCell(x, y, symbol, fg, bg)
 	})
 	termbox.Flush()
