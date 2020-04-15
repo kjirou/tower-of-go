@@ -107,6 +107,7 @@ func mapStateModelToScreenProps(state *models.State) *views.ScreenProps {
 type Controller struct {
 	inputtedCharacter rune
 	inputtedKey termbox.Key
+	lastMainLoopRanAt time.Time
 	state  *models.State
 	screen *views.Screen
 }
@@ -122,6 +123,24 @@ func (controller *Controller) setKeyInputs(ch rune, key termbox.Key) {
 
 func (controller *Controller) resetKeyInputs() {
 	controller.setKeyInputs(0, 0)
+}
+
+func (controller *Controller) CalculateIntervalToNextMainLoop(now time.Time) time.Duration {
+	// About 60fps.
+	intervalOfPurpose := time.Microsecond*16666
+	minInterval := time.Microsecond*8333
+	nextInterval := intervalOfPurpose
+	if !controller.lastMainLoopRanAt.IsZero() {
+		actualInterval := now.Sub(controller.lastMainLoopRanAt)
+		nextInterval = intervalOfPurpose - (actualInterval - intervalOfPurpose)
+		if nextInterval < minInterval {
+			nextInterval = minInterval
+		} else if nextInterval > intervalOfPurpose {
+			nextInterval = intervalOfPurpose
+		}
+	}
+	controller.lastMainLoopRanAt = now
+	return nextInterval
 }
 
 func (controller *Controller) Dispatch(newState *models.State) {

@@ -36,20 +36,11 @@ func convertScreenToText(screen *views.Screen) string {
 }
 
 func runMainLoop(controller *controller.Controller) {
-	// TODO: 現実時間よりゲーム時間の進みが遅い。
-	//       手元環境だと、ゲーム時間 30 秒に対して現実時間 36 秒というずれになっている。
-	//
-	//       HandleMainLoop が同期的に止めている時間かと思ったが、HandleMainLoop 呼び出しの直前から
-	//         for の最後までを time.Now() の差分で計測したら、800 マイクロ秒程度だった。
-	//
-	//       一方で time.Sleep の呼びだしの時間を計測すると、17000-20000マイクロ秒程度あった。
-	//       こちらのずれの方が大きい。このずれの理由はまだ不明。
-	//
-	//       なお、fps を落とすとその分現実時間に近づく。手元環境だと 25fps ならほぼ現実時間に等しくなる。
-
-	// About 60fps.
-	interval := time.Microsecond * 16666
 	for {
+		// TODO: Expecting 60fps. However, it is behind the real time.
+		//       For example, my computer needs 33-36 seconds of real time for 30 seconds of a game.
+		//       It becomes more accurate if fps is lowered.
+		interval := controller.CalculateIntervalToNextMainLoop(time.Now())
 		time.Sleep(interval)
 
 		newState, err := controller.HandleMainLoop(interval)
