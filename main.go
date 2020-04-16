@@ -44,6 +44,7 @@ func runMainLoop(controller *controller.Controller) {
 		newState, err := controller.HandleMainLoop(interval)
 
 		if err != nil {
+			termbox.Close()
 			errMessage, _ := fmt.Printf("%+v", err)
 			panic(errMessage)
 		} else if newState != nil {
