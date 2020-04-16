@@ -1,7 +1,7 @@
 package utils
 
 import(
-	"fmt"
+	"github.com/pkg/errors"
 	"math/rand"
 )
 
@@ -23,9 +23,9 @@ func generateRawMazeMatrix(rowLength int, columnLength int) ([][]*mazeCell, erro
 	cells := make([][]*mazeCell, rowLength)
 
 	if rowLength < 3 || columnLength < 3 {
-		return cells, fmt.Errorf("The number of rows and columns must be at least 3.")
+		return cells, errors.Errorf("The number of rows and columns must be at least 3.")
 	} else if (rowLength % 2 != 1 || columnLength % 2 != 1) {
-		return cells, fmt.Errorf("The number of rows and columns should be 2n+1.")
+		return cells, errors.Errorf("The number of rows and columns should be 2n+1.")
 	}
 
 	clusterIndex := 0

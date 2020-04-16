@@ -1,6 +1,7 @@
 package reducers
 
 import(
+	"github.com/pkg/errors"
 	"github.com/kjirou/tower-of-go/models"
 	"github.com/kjirou/tower-of-go/utils"
 	"time"
@@ -23,14 +24,14 @@ func proceedMainLoopFrame(state *models.State, elapsedTime time.Duration) (*mode
 		// The hero climbs up the stairs.
 		heroFieldElement, getElementOfHeroErr := field.GetElementOfHero()
 		if getElementOfHeroErr != nil {
-			return state, getElementOfHeroErr
+			return state, errors.WithStack(getElementOfHeroErr)
 		}
 		if (heroFieldElement.GetFloorObjectClass() == "upstairs") {
 			// Generate a new maze.
 			// Remove the hero.
 			err := field.ResetMaze()
 			if err != nil {
-				return state, err
+				return state, errors.WithStack(err)
 			}
 
 			// Relocate the hero to the entrance.
@@ -64,7 +65,7 @@ func StartOrRestartGame(state models.State, elapsedTime time.Duration) (*models.
 	// Remove the hero.
 	err := field.ResetMaze()
 	if err != nil {
-		return &state, err
+		return &state, errors.WithStack(err)
 	}
 
 	// Replace the hero.
@@ -87,7 +88,7 @@ func WalkHero(state models.State, elapsedTime time.Duration, direction FourDirec
 	field := state.GetField()
 	element, getElementOfHeroErr := field.GetElementOfHero()
 	if getElementOfHeroErr != nil {
-		return &state, getElementOfHeroErr
+		return &state, errors.WithStack(getElementOfHeroErr)
 	}
 	nextY := element.GetPosition().GetY()
 	nextX := element.GetPosition().GetX()
@@ -109,10 +110,10 @@ func WalkHero(state models.State, elapsedTime time.Duration, direction FourDirec
 	if nextPosition.Validate(field.MeasureRowLength(), field.MeasureColumnLength()) {
 		element, err := field.At(nextPosition)
 		if err != nil {
-			return &state, err
+			return &state, errors.WithStack(err)
 		} else if element.IsObjectEmpty() {
 			err := field.MoveObject(position, nextPosition)
-			return &state, err
+			return &state, errors.WithStack(err)
 		}
 	}
 	return proceedMainLoopFrame(&state, elapsedTime)
