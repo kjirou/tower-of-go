@@ -37,8 +37,34 @@ func TestField(t *testing.T) {
 					_, err := field.At(&utils.MatrixPosition{Y: tc.Y, X: tc.X})
 					if err == nil {
 						t.Fatal("エラーを返さない")
+					} else if !strings.Contains(err.Error(), " position ") {
+						t.Fatal("意図したエラーメッセージではない")
 					}
 				})
+			}
+		})
+	})
+
+	t.Run("GetElementOfHero", func(t *testing.T) {
+		t.Run("ヒーローが存在しないときはエラーを返す", func(t *testing.T) {
+			field := createField(3, 5)
+			_, err := field.GetElementOfHero()
+			if err == nil {
+				t.Fatal("エラーを返さない")
+			} else if !strings.Contains(err.Error(), "does not exist") {
+				t.Fatal("意図したエラーメッセージではない")
+			}
+		})
+
+		t.Run("ヒーローが複数存在するときはエラーを返す", func(t *testing.T) {
+			field := createField(3, 5)
+			field.matrix[0][0].UpdateObjectClass("hero")
+			field.matrix[0][1].UpdateObjectClass("hero")
+			_, err := field.GetElementOfHero()
+			if err == nil {
+				t.Fatal("エラーを返さない")
+			} else if !strings.Contains(err.Error(), " multiple ") {
+				t.Fatal("意図したエラーメッセージではない")
 			}
 		})
 	})

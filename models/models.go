@@ -1,8 +1,8 @@
 package models
 
 import (
-	"fmt"
 	"github.com/kjirou/tower-of-go/utils"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -55,9 +55,9 @@ func (field *Field) At(position *utils.MatrixPosition) (*FieldElement, error) {
 	y := position.GetY()
 	x := position.GetX()
 	if y < 0 || y > field.MeasureRowLength()-1 {
-		return &FieldElement{}, fmt.Errorf("That position (Y=%d) does not exist on the field.", y)
+		return &FieldElement{}, errors.Errorf("That position (Y=%d) does not exist on the field.", y)
 	} else if x < 0 || x > field.MeasureColumnLength()-1 {
-		return &FieldElement{}, fmt.Errorf("That position (X=%d) does not exist on the field.", x)
+		return &FieldElement{}, errors.Errorf("That position (X=%d) does not exist on the field.", x)
 	}
 	return field.matrix[y][x], nil
 }
@@ -78,9 +78,9 @@ func (field *Field) findElementsByObjectClass(objectClass string) []*FieldElemen
 func (field *Field) GetElementOfHero() (*FieldElement, error) {
 	elements := field.findElementsByObjectClass("hero")
 	if len(elements) == 0 {
-		return &FieldElement{}, fmt.Errorf("The hero does not exist.")
+		return &FieldElement{}, errors.Errorf("The hero does not exist.")
 	} else if len(elements) > 1 {
-		return &FieldElement{}, fmt.Errorf("There are multiple heroes.")
+		return &FieldElement{}, errors.Errorf("There are multiple heroes.")
 	}
 	return elements[0], nil
 }
@@ -90,13 +90,13 @@ func (field *Field) MoveObject(from *utils.MatrixPosition, to *utils.MatrixPosit
 	if err != nil {
 		return err
 	} else if fromElement.IsObjectEmpty() {
-		return fmt.Errorf("The object to be moved does not exist.")
+		return errors.Errorf("The object to be moved does not exist.")
 	}
 	toElement, err := field.At(to)
 	if err != nil {
 		return err
 	} else if !toElement.IsObjectEmpty() {
-		return fmt.Errorf("An object exists at the destination.")
+		return errors.Errorf("An object exists at the destination.")
 	}
 	toElement.UpdateObjectClass(fromElement.GetObjectClass())
 	fromElement.UpdateObjectClass("empty")
