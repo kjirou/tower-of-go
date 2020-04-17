@@ -1,3 +1,6 @@
+get:
+	go get -v -t -d ./...
+
 run:
 	go run main.go
 
