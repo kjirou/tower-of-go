@@ -1,5 +1,7 @@
 # A Tower of Go
 
+[![CircleCI](https://circleci.com/gh/kjirou/tower-of-go.svg?style=svg)](https://circleci.com/gh/kjirou/tower-of-go)
+
 A tiny maze game that runs on the terminal.
 
 
