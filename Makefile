@@ -7,5 +7,5 @@ run:
 run-with-debug-mode:
 	go run main.go -debug
 
-test-all:
+test:
 	go test -v ./...
