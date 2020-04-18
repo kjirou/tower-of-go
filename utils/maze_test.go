@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"math/rand"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -146,7 +147,7 @@ func TestGenerateRawMazeMatrix(t *testing.T) {
 func exploreMaze(
 	cells [][]*mazeCell, currentCell *mazeCell, beforeCell *mazeCell, steppedCells []*mazeCell) []*mazeCell {
 	steppedCells = append(steppedCells, currentCell)
-	fourDirections := []struct{
+	fourDirections := []struct {
 		deltaY int
 		deltaX int
 	}{
@@ -156,8 +157,8 @@ func exploreMaze(
 		{deltaY: 0, deltaX: -1},
 	}
 	for _, direction := range fourDirections {
-		nextCell := cells[currentCell.Y + direction.deltaY][currentCell.X + direction.deltaX]
-		if (nextCell != beforeCell && nextCell.Content == MazeCellContentEmpty) {
+		nextCell := cells[currentCell.Y+direction.deltaY][currentCell.X+direction.deltaX]
+		if nextCell != beforeCell && nextCell.Content == MazeCellContentEmpty {
 			steppedCells = exploreMaze(cells, nextCell, currentCell, steppedCells)
 		}
 	}
@@ -168,9 +169,9 @@ func TestGenerateMaze(t *testing.T) {
 	var seed int64 = time.Now().UnixNano()
 
 	t.Run("クラスタリングによる迷路を生成していること", func(t *testing.T) {
-		testCases := []struct{
+		testCases := []struct {
 			columnLength int
-			rowLength int
+			rowLength    int
 		}{
 			{rowLength: 3, columnLength: 3},
 			{rowLength: 5, columnLength: 3},
@@ -232,4 +233,31 @@ func TestGenerateMaze(t *testing.T) {
 			})
 		}
 	})
+}
+
+func Test_generateRawMazeMatrix(t *testing.T) {
+	type args struct {
+		rowLength    int
+		columnLength int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    [][]*mazeCell
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := generateRawMazeMatrix(tt.args.rowLength, tt.args.columnLength)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("generateRawMazeMatrix() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("generateRawMazeMatrix() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }
