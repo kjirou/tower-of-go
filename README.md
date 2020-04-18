@@ -5,12 +5,12 @@
 A tiny maze game that runs on the terminal.
 
 
-## Demo
+## :tipping_hand_woman: Demo
 
 ![A Tower of Go Demo](/documents/tower-of-go-demo.gif)
 
 
-## Installation
+## :rocket: Installation
 
 ```bash
 go get github.com/kjirou/tower-of-go
@@ -23,7 +23,7 @@ tower-of-go
 ```
 
 
-## Development
+## :wrench: Development
 ### Softwares that needs to be locally installed
 
 - [gotests](https://github.com/cweill/gotests).
