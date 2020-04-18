@@ -21,3 +21,9 @@ Then launch the application.
 ```bash
 tower-of-go
 ```
+
+
+## Development
+### Softwares that needs to be locally installed
+
+- [gotests](https://github.com/cweill/gotests).

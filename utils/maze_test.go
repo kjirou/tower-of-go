@@ -3,39 +3,62 @@ package utils
 import (
 	"fmt"
 	"math/rand"
+	"reflect"
 	"testing"
 	"time"
 )
 
-func TestGenerateRawMazeMatrix(t *testing.T) {
-	t.Run("行数が3未満のときはエラーを返す", func(t *testing.T) {
-		_, err := generateRawMazeMatrix(2, 3)
-		if err == nil {
-			t.Fatal("エラーを返さない")
-		}
-	})
+func Test_generateRawMazeMatrix(t *testing.T) {
+	type args struct {
+		rowLength    int
+		columnLength int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    [][]*mazeCell
+		wantErr bool
+	}{
+		{
+			name: "Returns an error if rowLength is less than 3",
+			args: args{rowLength: 2, columnLength: 3},
+			want: nil,
+			wantErr: true,
+		},
+		{
+			name: "Returns an error if columnLength is less than 3",
+			args: args{rowLength: 3, columnLength: 2},
+			want: nil,
+			wantErr: true,
+		},
+		{
+			name: "Returns an error if rowLength equals 4",
+			args: args{rowLength: 4, columnLength: 3},
+			want: nil,
+			wantErr: true,
+		},
+		{
+			name: "Returns an error if columnLength equals 4",
+			args: args{rowLength: 3, columnLength: 4},
+			want: nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := generateRawMazeMatrix(tt.args.rowLength, tt.args.columnLength)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("generateRawMazeMatrix() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr && !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("generateRawMazeMatrix() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
-	t.Run("列数が3未満のときはエラーを返す", func(t *testing.T) {
-		_, err := generateRawMazeMatrix(3, 2)
-		if err == nil {
-			t.Fatal("エラーを返さない")
-		}
-	})
-
-	t.Run("行数が4のときはエラーを返す", func(t *testing.T) {
-		_, err := generateRawMazeMatrix(4, 3)
-		if err == nil {
-			t.Fatal("エラーを返さない")
-		}
-	})
-
-	t.Run("列数が4のときはエラーを返す", func(t *testing.T) {
-		_, err := generateRawMazeMatrix(3, 4)
-		if err == nil {
-			t.Fatal("エラーを返さない")
-		}
-	})
-
+func Test_generateRawMazeMatrix_NotTD(t *testing.T) {
 	t.Run("指定した行数と同じ長さの行列を返す", func(t *testing.T) {
 		cells, _ := generateRawMazeMatrix(3, 5)
 		if len(cells) != 3 {
@@ -146,7 +169,7 @@ func TestGenerateRawMazeMatrix(t *testing.T) {
 func exploreMaze(
 	cells [][]*mazeCell, currentCell *mazeCell, beforeCell *mazeCell, steppedCells []*mazeCell) []*mazeCell {
 	steppedCells = append(steppedCells, currentCell)
-	fourDirections := []struct{
+	fourDirections := []struct {
 		deltaY int
 		deltaX int
 	}{
@@ -156,21 +179,21 @@ func exploreMaze(
 		{deltaY: 0, deltaX: -1},
 	}
 	for _, direction := range fourDirections {
-		nextCell := cells[currentCell.Y + direction.deltaY][currentCell.X + direction.deltaX]
-		if (nextCell != beforeCell && nextCell.Content == MazeCellContentEmpty) {
+		nextCell := cells[currentCell.Y+direction.deltaY][currentCell.X+direction.deltaX]
+		if nextCell != beforeCell && nextCell.Content == MazeCellContentEmpty {
 			steppedCells = exploreMaze(cells, nextCell, currentCell, steppedCells)
 		}
 	}
 	return steppedCells
 }
 
-func TestGenerateMaze(t *testing.T) {
+func TestGenerateMaze_NotTD(t *testing.T) {
 	var seed int64 = time.Now().UnixNano()
 
 	t.Run("クラスタリングによる迷路を生成していること", func(t *testing.T) {
-		testCases := []struct{
+		testCases := []struct {
 			columnLength int
-			rowLength int
+			rowLength    int
 		}{
 			{rowLength: 3, columnLength: 3},
 			{rowLength: 5, columnLength: 3},

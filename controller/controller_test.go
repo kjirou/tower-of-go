@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func TestControllerCalculateIntervalToNextMainLoop(t *testing.T) {
+func TestController_CalculateIntervalToNextMainLoop_NotTD(t *testing.T) {
 	controller := &Controller{}
 
 	t.Run("以前に一度もこの関数を呼び出していないとき、lastMainLoopRanAtはゼロ値である", func(t *testing.T) {
