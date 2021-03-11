@@ -13,8 +13,12 @@ A tiny maze game that runs on the terminal.
 ## :rocket: Installation
 
 ```bash
+// Golang < 1.16
 go get github.com/kjirou/tower-of-go
 go install github.com/kjirou/tower-of-go
+
+// Golang >= 1.16
+go install github.com/kjirou/tower-of-go@latest
 ```
 
 Then launch the application.
